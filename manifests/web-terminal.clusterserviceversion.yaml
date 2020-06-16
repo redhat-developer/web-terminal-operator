@@ -1,0 +1,393 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "kind": "DevWorkspace",
+          "apiVersion": "workspace.devfile.io/v1alpha1",
+          "metadata": {
+              "name": "web-terminal",
+              "annotations": {
+                "controller.devfile.io/restricted-access": "true"
+              },
+              "labels": {
+                "console.openshift.io/terminal": "true"
+              }
+          },
+          "spec": {
+              "started": true,
+              "routingClass": "web-terminal",
+              "template": {
+                "components": [
+                    {
+                      "plugin": {
+                          "name": "web-terminal",
+                          "id": "redhat-developer/web-terminal/4.5.0"
+                      }
+                    }
+                ]
+              }
+          }
+        }
+      ]
+    capabilities: Basic Install
+    categories: Developer Tools
+    certified: "false"
+    containerImage: quay.io/che-incubator/che-workspace-controller:nightly
+    createdAt: "2020-05-27T05:12:57Z"
+    description: |
+      Start a Web terminal in your browser with common tools installed such
+      as bash, oc, odo, kubectl, kubens, kubectx, helm, tkn, kn, istioctl,
+      crwctl, curl, git, yq, jq, watch
+    operators.operatorframework.io/internal-objects: '["workspaceroutings.workspace.che.eclipse.org","components.workspace.che.eclipse.org"]'
+  name: web-terminal.v1.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+      - description: Component is the Schema for the components API
+        kind: Component
+        name: components.controller.devfile.io
+        version: v1alpha1
+      - description: WorkspaceRouting is the Schema for the workspaceroutings API
+        kind: WorkspaceRouting
+        name: workspaceroutings.controller.devfile.io
+        version: v1alpha1
+      - description: |
+          Web Terminal based on a Devfile description,
+          that provides bash, oc, odo, kubectl, kubens, kubectx, helm, tkn, kn, istioctl,
+          crwctl, curl, git, yq, jq, watch
+        displayName: Workspace
+        kind: DevWorkspace
+        name: devworkspaces.workspace.devfile.io
+        version: v1alpha1
+        specDescriptors:
+          - description: Expected status
+            displayName: Started
+            path: started
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        statusDescriptors:
+          - description: Workspace status
+            displayName: Status
+            path: phase
+            x-descriptors:
+              - urn:alm:descriptor:io.kubernetes.phase
+          - description: URL to have access to the web terminal
+            displayName: Web Terminal URL
+            path: ideUrl
+            x-descriptors:
+              - urn:alm:descriptor:org.w3:link
+          - description: Web Terminal ID
+            displayName: ID of the Web Terminal
+            path: workspaceId
+            x-descriptors:
+              - urn:alm:descriptor:text
+          - description: Conditions of the workspace activity
+            displayName: Conditions
+            path: conditions
+            x-descriptors:
+              - urn:alm:descriptor:io.kubernetes.conditions
+  description: |
+    Start a Web terminal in your browser with common tools installed such
+    as bash, oc, odo, kubectl, kubens, kubectx, helm, tkn, kn, istioctl,
+    crwctl, curl, git, yq, jq, watch
+  displayName: Web Terminal
+  icon:
+    - base64data: ""
+      mediatype: ""
+  install:
+    spec:
+      clusterPermissions:
+        - rules:
+            - apiGroups:
+                - workspace.devfile.io
+              resources:
+                - devworkspaces
+              verbs:
+                - create
+                - delete
+                - deletecollection
+                - patch
+                - update
+            - apiGroups:
+                - controller.devfile.io
+              resources:
+                - workspaceroutings
+                - components
+              verbs:
+                - create
+                - delete
+                - deletecollection
+                - patch
+                - update
+          serviceAccountName: edit-workspaces
+        - rules:
+            - apiGroups:
+                - ""
+              resources:
+                - pods
+                - services
+                - endpoints
+                - persistentvolumeclaims
+                - events
+                - configmaps
+                - secrets
+              verbs:
+                - "*"
+            - apiGroups:
+                - ""
+              resources:
+                - namespaces
+              verbs:
+                - get
+            - apiGroups:
+                - ""
+              resources:
+                - serviceaccounts
+              verbs:
+                - watch
+                - list
+                - get
+                - create
+                - update
+                - patch
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - roles
+                - rolebindings
+              verbs:
+                - watch
+                - list
+                - get
+                - create
+                - update
+            - apiGroups:
+                - rbac.authorization.k8s.io
+              resources:
+                - clusterroles
+              verbs:
+                - list
+                - get
+                - watch
+            - apiGroups:
+                - apps
+                - extensions
+              resources:
+                - deployments
+                - replicasets
+              verbs:
+                - "*"
+            - apiGroups:
+                - extensions
+              resources:
+                - ingresses
+              verbs:
+                - "*"
+            - apiGroups:
+                - ""
+                - route.openshift.io
+              resources:
+                - routes
+              verbs:
+                - create
+                - delete
+                - deleteCollection
+                - get
+                - list
+                - patch
+                - update
+                - watch
+            - apiGroups:
+                - ""
+                - route.openshift.io
+              resources:
+                - routes/custom-host
+              verbs:
+                - create
+            - apiGroups:
+                - ""
+                - route.openshift.io
+              resources:
+                - routes/status
+              verbs:
+                - get
+                - list
+                - watch
+            - apiGroups:
+                - monitoring.coreos.com
+              resources:
+                - servicemonitors
+              verbs:
+                - get
+                - create
+            - apiGroups:
+                - apps
+              resourceNames:
+                - che-workspace-controller
+              resources:
+                - deployments/finalizers
+              verbs:
+                - update
+            - apiGroups:
+                - controller.devfile.io
+              resources:
+                - "*"
+              verbs:
+                - "*"
+            - apiGroups:
+                - workspace.devfile.io
+              resources:
+                - "*"
+              verbs:
+                - "*"
+            - apiGroups:
+                - ""
+              resources:
+                - pods/exec
+              verbs:
+                - create
+            - apiGroups:
+                - admissionregistration.k8s.io
+              resources:
+                - mutatingwebhookconfigurations
+                - validatingwebhookconfigurations
+              verbs:
+                - "*"
+            - apiGroups:
+                - oauth.openshift.io
+              resources:
+                - oauthclients
+              verbs:
+                - create
+                - get
+                - delete
+                - list
+                - patch
+                - update
+                - watch
+                - deletecollection
+          serviceAccountName: che-workspace-controller
+        - rules:
+            - apiGroups:
+                - workspace.devfile.io
+              resources:
+                - devworkspaces
+              verbs:
+                - get
+                - list
+                - watch
+            - apiGroups:
+                - controller.devfile.io
+              resources:
+                - workspaceroutings
+                - components
+              verbs:
+                - get
+                - list
+                - watch
+          serviceAccountName: view-workspaces
+      deployments:
+        - name: che-workspace-controller-cert-gen
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: che-workspace-controller-cert-gen
+            strategy: {}
+            template:
+              metadata:
+                annotations:
+                  kubectl.kubernetes.io/restartedAt: ""
+                labels:
+                  app: che-workspace-controller-cert-gen
+              spec:
+                containers:
+                  - image: quay.io/che-incubator/che-workspace-controller-cert-gen:latest
+                    imagePullPolicy: Always
+                    name: che-workspace-controller-cert-gen
+                    resources: {}
+                serviceAccountName: che-workspace-controller
+        - name: che-workspace-controller
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: che-workspace-controller
+            strategy: {}
+            template:
+              metadata:
+                annotations:
+                  kubectl.kubernetes.io/restartedAt: ""
+                labels:
+                  app: che-workspace-controller
+              spec:
+                containers:
+                  - env:
+                      - name: WATCH_NAMESPACE
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.annotations['olm.targetNamespaces']
+                      - name: POD_NAME
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.name
+                      - name: OPERATOR_NAME
+                        value: che-workspace-operator
+                      - name: SERVICE_ACCOUNT_NAME
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: spec.serviceAccountName
+                    image: quay.io/che-incubator/che-workspace-controller:nightly
+                    imagePullPolicy: Always
+                    name: che-workspace-controller
+                    ports:
+                      - containerPort: 8443
+                        name: webhook-server
+                    resources: {}
+                    volumeMounts:
+                      - mountPath: /tmp/k8s-webhook-server/serving-certs
+                        name: webhook-tls-certs
+                        readOnly: true
+                serviceAccountName: che-workspace-controller
+                volumes:
+                  - name: webhook-tls-certs
+                    projected:
+                      sources:
+                        - configMap:
+                            items:
+                              - key: service-ca.crt
+                                path: ./ca.crt
+                            name: che-workspace-controller-secure-service
+                        - secret:
+                            name: workspace-controller
+    strategy: deployment
+  installModes:
+    - supported: false
+      type: OwnNamespace
+    - supported: false
+      type: SingleNamespace
+    - supported: false
+      type: MultiNamespace
+    - supported: true
+      type: AllNamespaces
+  keywords:
+    - workspaces
+    - devtools
+    - developer
+    - ide
+    - terminal
+  maintainers:
+    - email: dfestal@redhat.com
+      name: David Festal
+    - email: jpinkney@redhat.com
+      name: Josh Pinkney
+  maturity: alpha
+  provider:
+    name: Red Hat
+    url: https://github.com/che-incubator/che-workspace-operator/
+  version: 1.0.0
