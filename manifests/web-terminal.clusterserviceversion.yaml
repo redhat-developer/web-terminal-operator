@@ -37,11 +37,13 @@ metadata:
     certified: "false"
     containerImage: quay.io/che-incubator/che-workspace-controller:nightly
     createdAt: "2020-05-27T05:12:57Z"
+    repository: https://github.com/devfile/devworkspace-operator
+    support: Red Hat, Inc.
     description: |
       Start a Web terminal in your browser with common tools installed such
       as bash, oc, odo, kubectl, kubens, kubectx, helm, tkn, kn, istioctl,
       crwctl, curl, git, yq, jq, watch
-    operators.operatorframework.io/internal-objects: '["workspaceroutings.workspace.che.eclipse.org","components.workspace.che.eclipse.org"]'
+    operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
   name: web-terminal.v1.0.0
   namespace: placeholder
 spec:
@@ -76,11 +78,6 @@ spec:
             path: phase
             x-descriptors:
               - urn:alm:descriptor:io.kubernetes.phase
-          - description: URL to have access to the web terminal
-            displayName: Web Terminal URL
-            path: ideUrl
-            x-descriptors:
-              - urn:alm:descriptor:org.w3:link
           - description: Web Terminal ID
             displayName: ID of the Web Terminal
             path: workspaceId
@@ -292,26 +289,6 @@ spec:
                 - watch
           serviceAccountName: view-workspaces
       deployments:
-        - name: che-workspace-controller-cert-gen
-          spec:
-            replicas: 1
-            selector:
-              matchLabels:
-                app: che-workspace-controller-cert-gen
-            strategy: {}
-            template:
-              metadata:
-                annotations:
-                  kubectl.kubernetes.io/restartedAt: ""
-                labels:
-                  app: che-workspace-controller-cert-gen
-              spec:
-                containers:
-                  - image: quay.io/che-incubator/che-workspace-controller-cert-gen:latest
-                    imagePullPolicy: Always
-                    name: che-workspace-controller-cert-gen
-                    resources: {}
-                serviceAccountName: che-workspace-controller
         - name: che-workspace-controller
           spec:
             replicas: 1
@@ -365,6 +342,26 @@ spec:
                             name: che-workspace-controller-secure-service
                         - secret:
                             name: workspace-controller
+        - name: che-workspace-controller-cert-gen
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: che-workspace-controller-cert-gen
+            strategy: {}
+            template:
+              metadata:
+                annotations:
+                  kubectl.kubernetes.io/restartedAt: ""
+                labels:
+                  app: che-workspace-controller-cert-gen
+              spec:
+                containers:
+                  - image: quay.io/che-incubator/che-workspace-controller-cert-gen:latest
+                    imagePullPolicy: Always
+                    name: che-workspace-controller-cert-gen
+                    resources: {}
+                serviceAccountName: che-workspace-controller
     strategy: deployment
   installModes:
     - supported: false
@@ -387,7 +384,9 @@ spec:
     - email: jpinkney@redhat.com
       name: Josh Pinkney
   maturity: alpha
+  links:
+    - name: Operator GitHub Repo
+      url: https://github.com/devfile/devworkspace-operator
   provider:
     name: Red Hat
-    url: https://github.com/che-incubator/che-workspace-operator/
   version: 1.0.0
