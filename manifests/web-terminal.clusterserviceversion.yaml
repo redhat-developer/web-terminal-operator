@@ -39,10 +39,7 @@ metadata:
     createdAt: "2020-05-27T05:12:57Z"
     repository: https://github.com/devfile/devworkspace-operator
     support: Red Hat, Inc.
-    description: |
-      Start a Web terminal in your browser with common tools installed such
-      as bash, oc, odo, kubectl, kubens, kubectx, helm, tkn, kn, istioctl,
-      crwctl, curl, git, yq, jq, watch
+    description: Start a Web terminal in your browser with common CLI tools installed to work with cluster
     operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
   name: web-terminal.v1.0.0
   namespace: placeholder
@@ -58,10 +55,7 @@ spec:
         kind: WorkspaceRouting
         name: workspaceroutings.controller.devfile.io
         version: v1alpha1
-      - description: |
-          Web Terminal based on a Devfile description,
-          that provides bash, oc, odo, kubectl, kubens, kubectx, helm, tkn, kn, istioctl,
-          crwctl, curl, git, yq, jq, watch
+      - description: Start a Web terminal in your browser with common CLI tools installed to work with cluster
         displayName: Workspace
         kind: DevWorkspace
         name: devworkspaces.workspace.devfile.io
@@ -88,10 +82,7 @@ spec:
             path: conditions
             x-descriptors:
               - urn:alm:descriptor:io.kubernetes.conditions
-  description: |
-    Start a Web terminal in your browser with common tools installed such
-    as bash, oc, odo, kubectl, kubens, kubectx, helm, tkn, kn, istioctl,
-    crwctl, curl, git, yq, jq, watch
+  description: Start a Web terminal in your browser with common CLI tools installed to work with cluster
   displayName: Web Terminal
   icon:
     - base64data: ""
@@ -302,6 +293,8 @@ spec:
                   kubectl.kubernetes.io/restartedAt: ""
                 labels:
                   app: che-workspace-controller
+                  app.kubernetes.io/name: devworkspace-controller
+                  app.kubernetes.io/part-of: devworkspace-controller
               spec:
                 containers:
                   - env:
@@ -355,6 +348,8 @@ spec:
                   kubectl.kubernetes.io/restartedAt: ""
                 labels:
                   app: che-workspace-controller-cert-gen
+                  app.kubernetes.io/name: devworkspace-controller-cert-gen
+                  app.kubernetes.io/part-of: devworkspace-operator
               spec:
                 containers:
                   - image: quay.io/che-incubator/che-workspace-controller-cert-gen:latest
