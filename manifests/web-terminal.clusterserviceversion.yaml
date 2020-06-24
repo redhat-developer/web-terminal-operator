@@ -84,35 +84,9 @@ spec:
               - urn:alm:descriptor:io.kubernetes.conditions
   description: Start a Web terminal in your browser with common CLI tools installed to work with cluster
   displayName: Web Terminal
-  icon:
-    - base64data: ""
-      mediatype: ""
   install:
     spec:
       clusterPermissions:
-        - rules:
-            - apiGroups:
-                - workspace.devfile.io
-              resources:
-                - devworkspaces
-              verbs:
-                - create
-                - delete
-                - deletecollection
-                - patch
-                - update
-            - apiGroups:
-                - controller.devfile.io
-              resources:
-                - workspaceroutings
-                - components
-              verbs:
-                - create
-                - delete
-                - deletecollection
-                - patch
-                - update
-          serviceAccountName: edit-workspaces
         - rules:
             - apiGroups:
                 - ""
@@ -260,25 +234,6 @@ spec:
                 - watch
                 - deletecollection
           serviceAccountName: che-workspace-controller
-        - rules:
-            - apiGroups:
-                - workspace.devfile.io
-              resources:
-                - devworkspaces
-              verbs:
-                - get
-                - list
-                - watch
-            - apiGroups:
-                - controller.devfile.io
-              resources:
-                - workspaceroutings
-                - components
-              verbs:
-                - get
-                - list
-                - watch
-          serviceAccountName: view-workspaces
       deployments:
         - name: che-workspace-controller
           spec:
