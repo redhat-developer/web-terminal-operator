@@ -73,7 +73,7 @@ gen_terminal_csv : update_devworkspace_crds update_devworkspace_operator
 	cp ./deploy/view-workspaces-cluster-role.yaml ./manifests
 
 ### olm_build_bundle_index: build the terminal bundle and index and push them to a docker registry
-olm_build_bundle_index: _print_vars check-env
+olm_build_bundle_index: _print_vars _check_imgs_env
 	# Create the bundle and push it to a docker registry
 	operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
 	docker push $(BUNDLE_IMG)
@@ -83,7 +83,7 @@ olm_build_bundle_index: _print_vars check-env
 	docker push $(INDEX_IMG)
 
 ### olm_install_local: use the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
-olm_install_local: _print_vars
+olm_install_local: _print_vars _check_imgs_env
 	# replace references of catalogsource img with your image
 	sed -i.bak -e  "s|quay.io/che-incubator/che-workspace-operator-index:latest|$(INDEX_IMG)|g" ./catalog-source.yaml
 	oc apply -f ./catalog-source.yaml
@@ -93,13 +93,13 @@ olm_install_local: _print_vars
 	rm ./catalog-source.yaml.bak
 
 ### olm_build_install_local: build the catalog and deploys the catalog to the cluster
-olm_build_install_local: _print_vars olm_build_bundle olm_create_index olm_start_local
+olm_build_install_local: _print_vars olm_build_bundle_index olm_install_local
 
 ### olm_uninstall: uninstalls the operator
 olm_uninstall:
-	oc delete catalogsource che-workspace-crd-registry -n openshift-marketplace
+	oc delete catalogsource web-terminal-crd-registry -n openshift-marketplace
 
-check-env:
+_check_imgs_env:
 	if test "$(BUNDLE_IMG)" = "" ; then \
 		echo "BUNDLE_IMG not set"; \
 		exit 1; \
@@ -113,7 +113,7 @@ check-env:
 ### help: print this message
 help: Makefile
 	@echo 'Available rules:'
-	@sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-30s -%s\n", $$1, $$2 }'
+	@sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-32s -%s\n", $$1, $$2 }'
 	@echo ''
 	@echo 'Supported environment variables:'
 	@echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on. Defaults to master'
