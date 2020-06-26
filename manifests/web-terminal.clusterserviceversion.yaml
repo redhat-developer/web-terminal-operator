@@ -335,8 +335,8 @@ spec:
       name: Josh Pinkney
   maturity: alpha
   links:
-    - name: Operator GitHub Repo
-      url: https://github.com/devfile/devworkspace-operator
+    - name: Web Terminal Repo
+      url: https://github.com/redhat-developer/web-terminal-operator/
   provider:
     name: Red Hat
   version: 1.0.0
