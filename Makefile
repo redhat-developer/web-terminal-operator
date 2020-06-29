@@ -1,7 +1,7 @@
 DEVWORKSPACE_API_VERSION ?= master
 DEVWORKSPACE_OPERATOR_VERSION ?= master
-BUNDLE_IMG ?= ""
-INDEX_IMG ?= ""
+BUNDLE_IMG ?=
+INDEX_IMG ?=
 
 all: help
 
@@ -100,12 +100,12 @@ olm_uninstall:
 	oc delete catalogsource web-terminal-crd-registry -n openshift-marketplace
 
 _check_imgs_env:
-	if test "$(BUNDLE_IMG)" = "" ; then \
-		$(error "BUNDLE_IMG not set")
-	fi
-	if test "$(INDEX_IMG)" = "" ; then \
-		$(error "INDEX_IMG not set")
-	fi
+ifndef BUNDLE_IMG
+	$(error "BUNDLE_IMG not set")
+endif
+ifndef INDEX_IMG
+	$(error "INDEX_IMG not set")
+endif
 
 .PHONY: help
 ### help: print this message
