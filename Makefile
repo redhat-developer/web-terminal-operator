@@ -64,13 +64,13 @@ gen_terminal_csv : update_devworkspace_crds update_devworkspace_operator
 	cat ../manifests/web-terminal.clusterserviceversion.yaml | \
 	yq -Y \
 	'.spec.install.spec.deployments[] |= select( .spec.selector.matchLabels.app? and .spec.selector.matchLabels.app=="che-workspace-controller")' | \
-	tee ../manifests/web\ terminal.clusterserviceversion.yaml >>/dev/null
+	tee ../manifests/web-terminal.clusterserviceversion.yaml >>/dev/null
 
-	cp ../devworkspace-crds/deploy/crds/workspace.devfile.io_devworkspaces_crd.yaml ./manifests
+	cp ../devworkspace-crds/deploy/crds/workspace.devfile.io_devworkspaces_crd.yaml ../manifests
 	
 	# Add in the edit workspaces and view workspaces cluster roles
-	cp ./deploy/edit-workspaces-cluster-role.yaml ./manifests
-	cp ./deploy/view-workspaces-cluster-role.yaml ./manifests
+	cp ./deploy/edit-workspaces-cluster-role.yaml ../manifests
+	cp ./deploy/view-workspaces-cluster-role.yaml ../manifests
 
 ### olm_build_bundle_index: build the terminal bundle and index and push them to a docker registry
 olm_build_bundle_index: _print_vars _check_imgs_env
@@ -101,12 +101,10 @@ olm_uninstall:
 
 _check_imgs_env:
 	if test "$(BUNDLE_IMG)" = "" ; then \
-		echo "BUNDLE_IMG not set"; \
-		exit 1; \
+		$(error "BUNDLE_IMG not set")
 	fi
 	if test "$(INDEX_IMG)" = "" ; then \
-		echo "INDEX_IMG not set"; \
-		exit 1; \
+		$(error "INDEX_IMG not set")
 	fi
 
 .PHONY: help
