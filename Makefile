@@ -3,6 +3,7 @@ DEVWORKSPACE_OPERATOR_VERSION ?= master
 BUNDLE_IMG ?=
 INDEX_IMG ?=
 
+.ONESHELL:
 all: help
 
 _print_vars:
@@ -12,50 +13,11 @@ _print_vars:
 	@echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	@echo "    INDEX_IMG=$(INDEX_IMG)"
 
-### update_devworkspace_crds: pull latest devworkspace CRDs to ./devworkspace-crds. Pulls $(DEVWORKSPACE_API_VERSION) branch/tag
-.ONESHELL:
-update_devworkspace_crds:
-	@mkdir -p devworkspace-crds
-	cd devworkspace-crds
-	if [ ! -d ./.git ]; then
-		git init
-		git remote add origin -f https://github.com/devfile/kubernetes-api.git
-		git config core.sparsecheckout true
-		echo "deploy/crds/*" > .git/info/sparse-checkout
-	else
-		git remote set-url origin https://github.com/devfile/kubernetes-api.git
-	fi
-	git fetch --tags -p origin
-	if git show-ref --verify refs/tags/$(DEVWORKSPACE_API_VERSION) --quiet; then
-		echo 'DevWorkspace API is specified from tag'
-		git checkout tags/$(DEVWORKSPACE_API_VERSION)
-	else
-		echo 'DevWorkspace API is specified from branch'
-		git checkout $(DEVWORKSPACE_API_VERSION) && git reset --hard origin/$(DEVWORKSPACE_API_VERSION)
-	fi
-
-### update_devworkspace_operator: pull latest operator to ./devworkspace-operator. Pulls $(DEVWORKSPACE_OPERATOR_VERSION) branch/tag
-.ONESHELL:
-update_devworkspace_operator:
-	@mkdir -p devworkspace-operator
-	cd devworkspace-operator
-	if [ ! -d ./.git ]; then
-		git init
-		git remote add origin -f https://github.com/devfile/devworkspace-operator.git
-	else
-		git remote set-url origin https://github.com/devfile/devworkspace-operator.git
-	fi
-	git fetch --tags -p origin
-	if git show-ref --verify refs/tags/$(DEVWORKSPACE_OPERATOR_VERSION) --quiet; then
-		echo 'Operator is specified from tag'
-		git checkout tags/$(DEVWORKSPACE_OPERATOR_VERSION)
-	else
-		echo 'Operator is specified from branch'
-		git checkout $(DEVWORKSPACE_OPERATOR_VERSION) && git reset --hard origin/$(DEVWORKSPACE_OPERATOR_VERSION)
-	fi
+update_dependencies:
+	./collect-sources.sh
 
 ### gen_terminal_csv : generate the csv for a newer version. Refer to gen_terminal_csv makefile definition for extra manual steps that are needed.
-gen_terminal_csv : update_devworkspace_crds update_devworkspace_operator
+gen_terminal_csv : update_dependencies
 	# Some steps need to be done manually in order to get the csv ready
 	# This includes:
 	# 1. Updating the description
@@ -63,20 +25,13 @@ gen_terminal_csv : update_devworkspace_crds update_devworkspace_operator
 	# 3. Update the alm-examples (they are reset on each csv generate)
 
 	# Need to be in root of the controller in order to run operator-sdk
-	cd devworkspace-operator
-	operator-sdk generate csv --apis-dir ./devworkspace-operator/pkg/apis --csv-version 1.0.0 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
-	
-	# filter the deployments so that only the valid deployment is available. See: https://github.com/eclipse/che/issues/17010
-	cat ../manifests/web-terminal.clusterserviceversion.yaml | \
-	yq -Y \
-	'.spec.install.spec.deployments[] |= select( .spec.selector.matchLabels.app? and .spec.selector.matchLabels.app=="che-workspace-controller")' | \
-	tee ../manifests/web-terminal.clusterserviceversion.yaml >>/dev/null
+	pushd devworkspace-dependencies > /dev/null
+	operator-sdk generate csv --apis-dir ./pkg/apis --csv-version 1.0.0 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
+	popd > /dev/null
 
-	cp ../devworkspace-crds/deploy/crds/workspace.devfile.io_devworkspaces_crd.yaml ../manifests
-	
 	# Add in the edit workspaces and view workspaces cluster roles
-	cp ./deploy/edit-workspaces-cluster-role.yaml ../manifests
-	cp ./deploy/view-workspaces-cluster-role.yaml ../manifests
+	cp devworkspace-operator/deploy/edit-workspaces-cluster-role.yaml manifests/
+	cp devworkspace-operator/deploy/view-workspaces-cluster-role.yaml manifests/
 
 ### olm_build_bundle_index: build the terminal bundle and index and push them to a docker registry
 olm_build_bundle_index: _print_vars _check_imgs_env
