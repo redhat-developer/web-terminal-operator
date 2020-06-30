@@ -54,8 +54,14 @@ update_devworkspace_operator:
 		git checkout $(DEVWORKSPACE_OPERATOR_VERSION) && git reset --hard origin/$(DEVWORKSPACE_OPERATOR_VERSION)
 	fi
 
-### gen_terminal_csv : generate the csv for a newer version
+### gen_terminal_csv : generate the csv for a newer version. Refer to gen_terminal_csv makefile definition for extra manual steps that are needed.
 gen_terminal_csv : update_devworkspace_crds update_devworkspace_operator
+	# Some steps need to be done manually in order to get the csv ready
+	# This includes:
+	# 1. Updating the description
+	# 2. Remove the edit and view workspaces role from the csv
+	# 3. Update the alm-examples (they are reset on each csv generate)
+
 	# Need to be in root of the controller in order to run operator-sdk
 	cd devworkspace-operator
 	operator-sdk generate csv --apis-dir ./devworkspace-operator/pkg/apis --csv-version 1.0.0 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
