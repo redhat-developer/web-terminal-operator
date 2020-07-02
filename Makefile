@@ -35,6 +35,7 @@ gen_terminal_csv : update_dependencies
 	# Add in the edit workspaces and view workspaces cluster roles
 	cp devworkspace-operator/deploy/edit-workspaces-cluster-role.yaml manifests/
 	cp devworkspace-operator/deploy/view-workspaces-cluster-role.yaml manifests/
+	cp devworkspace-operator/deploy/os/service.yaml manifests/web-terminal.service.yaml
 
 ### olm_build_bundle_index: build the terminal bundle and index and push them to a docker registry
 olm_build_bundle_index: _print_vars _check_imgs_env _check_skopeo_installed
