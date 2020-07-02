@@ -39,22 +39,24 @@ gen_terminal_csv : update_dependencies
 ### olm_build_bundle_index: build the terminal bundle and index and push them to a docker registry
 olm_build_bundle_index: _print_vars _check_imgs_env
 	# Create the bundle and push it to a docker registry
-	operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
+	@operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
 	docker push $(BUNDLE_IMG)
 
+	BUNDLE_DIGEST=$$(skopeo inspect docker://$(BUNDLE_IMG) | jq -r '.Digest')
+	BUNDLE_IMG_DIGEST="$${BUNDLE_IMG%:*}@$${BUNDLE_DIGEST}"
 	# create / update and push an index that contains the bundle
-	opm index add -c docker --bundles $(BUNDLE_IMG) --tag $(INDEX_IMG)
+	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG)
 	docker push $(INDEX_IMG)
 
 ### olm_install_local: use the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
 olm_install_local: _print_vars _check_imgs_env
 	# replace references of catalogsource img with your image
-	sed -i.bak -e  "s|quay.io/che-incubator/che-workspace-operator-index:latest|$(INDEX_IMG)|g" ./catalog-source.yaml
-	oc apply -f ./catalog-source.yaml
-	sed -i.bak -e "s|$(INDEX_IMG)|quay.io/che-incubator/che-workspace-operator-index:latest|g" ./catalog-source.yaml
+	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
+	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
 
-	# remove the .bak files
-	rm ./catalog-source.yaml.bak
+	sed -i.bak -e "s|quay.io/che-incubator/che-workspace-operator-index:latest|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
+	oc apply -f ./catalog-source.yaml
+	mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
 ### olm_build_install_local: build the catalog and deploys the catalog to the cluster
 olm_build_install_local: _print_vars olm_build_bundle_index olm_install_local
