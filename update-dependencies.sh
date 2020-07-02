@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-set -x
 
 SCRIPT_DIR=${PROJECT_ROOT:-$(cd "$(dirname "$0")" || exit; pwd)}
 
@@ -17,7 +16,11 @@ DEVWORKSPACE_OPERATOR_VERSION=${DEVWORKSPACE_OPERATOR_VERSION:-"master"}
 COMBINED_DIR="${SCRIPT_DIR}/devworkspace-dependencies"
 
 function log() {
-  echo -e "\033[0;31m${1}\033[0m" | sed 's|^|    |'
+  if [ -t 1 ]; then
+    echo "$1" | sed 's|.*|\o033[0;31m&\o033[0m|'
+  else
+    echo "$1"
+  fi
 }
 
 function update_dep() {
@@ -42,22 +45,23 @@ function update_dep() {
   fi
   git fetch --tags -p origin
   if git show-ref --verify "refs/tags/${version}" --quiet; then
-    log 'DevWorkspace API is specified from tag'
+    log 'Version is specified from tag'
 		git checkout "tags/${version}"
 	else
-		log 'DevWorkspace API is specified from branch'
+		log 'Version is specified from branch'
 		git checkout "$version" && git reset --hard "origin/${version}"
 	fi
   popd > /dev/null
 }
 
-log "checking out repo $CRDS_REPO to $CRDS_DIR with version $DEVWORKSPACE_API_VERSION"
+log "Checking out repo '$CRDS_REPO' to '$CRDS_DIR' with version '$DEVWORKSPACE_API_VERSION'"
 update_dep "$CRDS_REPO" "$CRDS_DIR" "$DEVWORKSPACE_API_VERSION"
 
-log "checking out repo $OPERATOR_REPO to $OPERATOR_DIR with version $DEVWORKSPACE_OPERATOR_VERSION"
+log "Checking out repo '$OPERATOR_REPO' to '$OPERATOR_DIR' with version '$DEVWORKSPACE_OPERATOR_VERSION'"
 update_dep "$OPERATOR_REPO" "$OPERATOR_DIR" "$DEVWORKSPACE_OPERATOR_VERSION" "true"
 
-log "merging repos to $COMBINED_DIR"
+log "Merging repos to $COMBINED_DIR"
+rm -rf "$COMBINED_DIR"
 mkdir -p "$COMBINED_DIR"
 cp -rn "${OPERATOR_DIR}/"* "${COMBINED_DIR}/"
 cp -rn "${CRDS_DIR}/"* "${COMBINED_DIR}/"
