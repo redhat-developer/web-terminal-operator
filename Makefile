@@ -37,7 +37,7 @@ gen_terminal_csv : update_dependencies
 	cp devworkspace-operator/deploy/view-workspaces-cluster-role.yaml manifests/
 
 ### olm_build_bundle_index: build the terminal bundle and index and push them to a docker registry
-olm_build_bundle_index: _print_vars _check_imgs_env
+olm_build_bundle_index: _print_vars _check_imgs_env _check_skopeo_installed
 	# Create the bundle and push it to a docker registry
 	@operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
 	docker push $(BUNDLE_IMG)
@@ -49,7 +49,7 @@ olm_build_bundle_index: _print_vars _check_imgs_env
 	docker push $(INDEX_IMG)
 
 ### olm_install_local: use the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
-olm_install_local: _print_vars _check_imgs_env
+olm_install_local: _print_vars _check_imgs_env _check_skopeo_installed
 	# replace references of catalogsource img with your image
 	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
 	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
@@ -63,7 +63,10 @@ olm_build_install_local: _print_vars olm_build_bundle_index olm_install_local
 
 ### olm_uninstall: uninstalls the operator
 olm_uninstall:
-	oc delete catalogsource web-terminal-crd-registry -n openshift-marketplace
+	@oc delete catalogsource web-terminal-crd-registry -n openshift-marketplace --ignore-not-found=true
+	oc delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found=true
+	oc delete csv web-terminal.v1.0.0 -n openshift-operators --ignore-not-found=true
+	echo "Note additional steps required for a full uninstall -- clusterroles, services, and CRDs remain on the cluster"
 
 _check_imgs_env:
 ifndef BUNDLE_IMG
@@ -71,6 +74,11 @@ ifndef BUNDLE_IMG
 endif
 ifndef INDEX_IMG
 	$(error "INDEX_IMG not set")
+endif
+
+_check_skopeo_installed:
+ifeq ($(shell command -v kubectl 2> /dev/null),)
+	$(error "skopeo is required for building and deploying bundle, but is not installed")
 endif
 
 .PHONY: help
