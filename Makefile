@@ -17,7 +17,7 @@ _print_vars:
 	echo "    INDEX_IMG=$(INDEX_IMG)"
 
 update_dependencies:
-	./collect-sources.sh
+	./update-dependencies.sh
 
 ### gen_terminal_csv : generate the csv for a newer version. Refer to gen_terminal_csv makefile definition for extra manual steps that are needed.
 gen_terminal_csv : update_dependencies
