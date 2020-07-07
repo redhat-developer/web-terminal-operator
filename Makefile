@@ -36,8 +36,8 @@ gen_terminal_csv : update_dependencies
 	cp devworkspace-operator/deploy/edit-workspaces-cluster-role.yaml manifests/
 	cp devworkspace-operator/deploy/view-workspaces-cluster-role.yaml manifests/
 
-### olm_build_bundle_index: build the terminal bundle and index and push them to a docker registry
-olm_build_bundle_index: _print_vars _check_imgs_env _check_skopeo_installed
+### build: build the terminal bundle and index and push them to a docker registry
+build: _print_vars _check_imgs_env _check_skopeo_installed
 	# Create the bundle and push it to a docker registry
 	@operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
 	docker push $(BUNDLE_IMG)
@@ -48,8 +48,8 @@ olm_build_bundle_index: _print_vars _check_imgs_env _check_skopeo_installed
 	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG)
 	docker push $(INDEX_IMG)
 
-### olm_install_local: use the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
-olm_install_local: _print_vars _check_imgs_env _check_skopeo_installed
+### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
+register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	# replace references of catalogsource img with your image
 	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
 	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
@@ -58,12 +58,15 @@ olm_install_local: _print_vars _check_imgs_env _check_skopeo_installed
 	oc apply -f ./catalog-source.yaml
 	mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
-### olm_build_install_local: build the catalog and deploys the catalog to the cluster
-olm_build_install_local: _print_vars olm_build_bundle_index olm_install_local
+### build_install: build the catalog and create catalogsource and operator subscription on the cluster
+build_install: _print_vars build install
 
-### olm_uninstall: uninstalls the operator
-olm_uninstall:
-	@oc delete catalogsource web-terminal-crd-registry -n openshift-marketplace --ignore-not-found=true
+### install: creates catalog source along with operator subscription on the cluster
+install: _print_vars register_catalogsource
+	oc apply -f ./operator-subscription.yaml
+
+### uninstall: uninstalls the catalog source along with operator subscription
+uninstall:
 	oc delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found=true
 	oc delete csv web-terminal.v1.0.0 -n openshift-operators --ignore-not-found=true
 	echo "Note additional steps required for a full uninstall -- clusterroles, services, and CRDs remain on the cluster"
