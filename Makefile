@@ -15,11 +15,11 @@ _print_vars:
 	echo "    DEVWORKSPACE_OPERATOR_VERSION=$(DEVWORKSPACE_OPERATOR_VERSION)"
 	echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	echo "    INDEX_IMG=$(INDEX_IMG)"
-
+### update_dependencies: updates files from DevWorkspace API and Operators
 update_dependencies:
 	./update-dependencies.sh
 
-### gen_terminal_csv : generate the csv for a newer version. Refer to gen_terminal_csv makefile definition for extra manual steps that are needed.
+### gen_terminal_csv: generate the csv for a newer version. Refer to gen_terminal_csv makefile definition for extra manual steps that are needed.
 gen_terminal_csv : update_dependencies
 	# Some steps need to be done manually in order to get the csv ready
 	# This includes:
