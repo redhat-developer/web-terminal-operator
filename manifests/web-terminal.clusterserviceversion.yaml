@@ -238,34 +238,6 @@ spec:
           - deletecollection
         serviceAccountName: che-workspace-controller
       deployments:
-      - name: che-workspace-controller-cert-gen
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app.kubernetes.io/name: cert-generator
-              app.kubernetes.io/part-of: devworkspace-operator
-          strategy: {}
-          template:
-            metadata:
-              annotations:
-                kubectl.kubernetes.io/restartedAt: ""
-              labels:
-                app.kubernetes.io/name: cert-generator
-                app.kubernetes.io/part-of: devworkspace-operator
-            spec:
-              containers:
-              - image: quay.io/che-incubator/che-workspace-controller-cert-gen:nightly
-                imagePullPolicy: Always
-                name: che-workspace-controller-cert-gen
-                resources:
-                  limits:
-                    cpu: 100m
-                    memory: 100Mi
-                  requests:
-                    cpu: 50m
-                    memory: 50Mi
-              serviceAccountName: che-workspace-controller
       - name: che-workspace-controller
         spec:
           replicas: 1
@@ -320,21 +292,14 @@ spec:
                   name: webhook-server
                 resources: {}
                 volumeMounts:
-                - mountPath: /tmp/k8s-webhook-server/serving-certs
+                - mountPath: /apiserver.local.config/certificates/
                   name: webhook-tls-certs
                   readOnly: true
               serviceAccountName: che-workspace-controller
               volumes:
               - name: webhook-tls-certs
-                projected:
-                  sources:
-                  - configMap:
-                      items:
-                      - key: service-ca.crt
-                        path: ./ca.crt
-                      name: devworkspace-controller-secure-service
-                  - secret:
-                      name: devworkspace-controller
+                secret:
+                  secretName: devworkspace-controller
     strategy: deployment
   installModes:
   - supported: false
