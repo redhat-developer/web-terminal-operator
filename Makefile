@@ -38,6 +38,7 @@ gen_terminal_csv : update_dependencies
 
 ### build: build the terminal bundle and index and push them to a docker registry
 build: _print_vars _check_imgs_env _check_skopeo_installed
+	rm -rf ./generated
 	# Create the bundle and push it to a docker registry
 	@operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
 	docker push $(BUNDLE_IMG)
