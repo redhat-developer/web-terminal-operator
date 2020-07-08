@@ -193,7 +193,7 @@ spec:
         - apiGroups:
           - apps
           resourceNames:
-          - che-workspace-controller
+          - devworkspace-controller
           resources:
           - deployments/finalizers
           verbs:
@@ -236,37 +236,9 @@ spec:
           - update
           - watch
           - deletecollection
-        serviceAccountName: che-workspace-controller
+        serviceAccountName: devworkspace-controller
       deployments:
-      - name: che-workspace-controller-cert-gen
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app.kubernetes.io/name: cert-generator
-              app.kubernetes.io/part-of: devworkspace-operator
-          strategy: {}
-          template:
-            metadata:
-              annotations:
-                kubectl.kubernetes.io/restartedAt: ""
-              labels:
-                app.kubernetes.io/name: cert-generator
-                app.kubernetes.io/part-of: devworkspace-operator
-            spec:
-              containers:
-              - image: quay.io/che-incubator/che-workspace-controller-cert-gen:nightly
-                imagePullPolicy: Always
-                name: che-workspace-controller-cert-gen
-                resources:
-                  limits:
-                    cpu: 100m
-                    memory: 100Mi
-                  requests:
-                    cpu: 50m
-                    memory: 50Mi
-              serviceAccountName: che-workspace-controller
-      - name: che-workspace-controller
+      - name: devworkspace-controller
         spec:
           replicas: 1
           selector:
@@ -293,7 +265,7 @@ spec:
                     fieldRef:
                       fieldPath: metadata.name
                 - name: OPERATOR_NAME
-                  value: che-workspace-operator
+                  value: devworkspace-operator
                 - name: SERVICE_ACCOUNT_NAME
                   valueFrom:
                     fieldRef:
@@ -314,7 +286,7 @@ spec:
                   value: openshift/oauth-proxy:latest
                 image: quay.io/che-incubator/che-workspace-controller:nightly
                 imagePullPolicy: Always
-                name: che-workspace-controller
+                name: devworkspace-controller
                 ports:
                 - containerPort: 8443
                   name: webhook-server
@@ -323,7 +295,7 @@ spec:
                 - mountPath: /tmp/k8s-webhook-server/serving-certs
                   name: webhook-tls-certs
                   readOnly: true
-              serviceAccountName: che-workspace-controller
+              serviceAccountName: devworkspace-controller
               volumes:
               - name: webhook-tls-certs
                 projected:
@@ -335,6 +307,34 @@ spec:
                       name: devworkspace-controller-secure-service
                   - secret:
                       name: devworkspace-controller
+      - name: devworkspace-controller-cert-gen
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: cert-generator
+              app.kubernetes.io/part-of: devworkspace-operator
+          strategy: {}
+          template:
+            metadata:
+              annotations:
+                kubectl.kubernetes.io/restartedAt: ""
+              labels:
+                app.kubernetes.io/name: cert-generator
+                app.kubernetes.io/part-of: devworkspace-operator
+            spec:
+              containers:
+              - image: quay.io/che-incubator/che-workspace-controller-cert-gen:nightly
+                imagePullPolicy: Always
+                name: devworkspace-controller-cert-gen
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 100Mi
+                  requests:
+                    cpu: 50m
+                    memory: 50Mi
+              serviceAccountName: devworkspace-controller
     strategy: deployment
   installModes:
   - supported: false
