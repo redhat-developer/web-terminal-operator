@@ -3,10 +3,10 @@
 Web Terminal Operator provides an ability for users to use terminal embedded into OpenShift Console.
 
 ### Deploying the controller with olm
-In order to deploy the operator you need to first create the olm bundle, olm index, push that to a docker registry then deploy the crd registry to your cluster.
-You can do this by using the Makefile olm_build_install_local rule:
+In order to deploy the operator you need to first create the olm bundle, olm index, push that to a docker registry then create catalog source with and install WebTerminal Operator on your cluster.
+You can do this by using the Makefile build_install rule:
 ```bash
-make olm_build_install_local
+make build_install
 ```
 Before doing this you need to set environment variables BUNDLE_IMG, INDEX_IMG
 
@@ -14,15 +14,20 @@ When this is done running you'll need to go to your docker registry and make the
 
 If you already have the index image on your docker registry then you can use the rule
 ```bash
-make olm_install_local
+make install
 ```
-to deploy the crd registry to your cluster
+to install WebTerminal Operator on your cluster.
 
-To remove the crd registry use
+There is also an ability to register CatalogSource with WebTerminal Operator without installing it, to do it:
 ```bash
-make olm_uninstall
+make register_catalogsource
+```
+After that admins are able to set WebTerminal Operator on OperatorHub and install it when needed.
+
+To remove the WebTerminal Operator along with CatalogSource use
+```bash
+make uninstall
 ```
 
 ### Related Projects
 - The Web Terminal Operator is powered by the [devworkspace-operator](https://github.com/devfile/devworkspace-operator)
-
