@@ -4,45 +4,17 @@ metadata:
   annotations:
     alm-examples: |-
       [
-        {
-          "apiVersion": "workspace.devfile.io/v1alpha1",
-          "kind": "DevWorkspace",
-          "metadata": {
-            "annotations": {
-              "controller.devfile.io/restricted-access": "true"
-            },
-            "labels": {
-              "console.openshift.io/terminal": "true"
-            },
-            "name": "web-terminal"
-          },
-          "spec": {
-            "routingClass": "web-terminal",
-            "started": true,
-            "template": {
-              "components": [
-                {
-                  "plugin": {
-                    "id": "redhat-developer/web-terminal/4.5.0",
-                    "name": "web-terminal"
-                  }
-                }
-              ]
-            }
-          }
-        }
       ]
     capabilities: Basic Install
     categories: Developer Tools
     certified: "false"
     containerImage: quay.io/che-incubator/che-workspace-controller:nightly
     createdAt: "2020-05-27T05:12:57Z"
-    description: Start a Web terminal in your browser with common CLI tools installed
-      to work with cluster
+    description: Start a Dev Workspace
     operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
     repository: https://github.com/devfile/devworkspace-operator
     support: Red Hat, Inc.
-  name: web-terminal.v1.0.0
+  name: devworkspace-operator.v1.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -52,8 +24,7 @@ spec:
       kind: Component
       name: components.controller.devfile.io
       version: v1alpha1
-    - description: Start a Web terminal in your browser with common CLI tools installed
-        to work with cluster
+    - description: Start a Devworkspace operator
       displayName: Workspace
       kind: DevWorkspace
       name: devworkspaces.workspace.devfile.io
@@ -69,8 +40,8 @@ spec:
         path: phase
         x-descriptors:
         - urn:alm:descriptor:io.kubernetes.phase
-      - description: Web Terminal ID
-        displayName: ID of the Web Terminal
+      - description: Devworkspace ID
+        displayName: ID of the Devworkspace
         path: workspaceId
         x-descriptors:
         - urn:alm:descriptor:text
@@ -84,9 +55,8 @@ spec:
       kind: WorkspaceRouting
       name: workspaceroutings.controller.devfile.io
       version: v1alpha1
-  description: Start a Web terminal in your browser with common CLI tools installed
-    to work with cluster
-  displayName: Web Terminal
+  description: Start a Devworkspace Operator
+  displayName: Devworkspace Operator
   install:
     spec:
       clusterPermissions:
@@ -352,8 +322,8 @@ spec:
   - ide
   - terminal
   links:
-  - name: Web Terminal Repo
-    url: https://github.com/redhat-developer/web-terminal-operator/
+  - name: Devworkspace Operator
+    url: https://github.com/devfile/devworkspace-operator
   maintainers:
   - email: dfestal@redhat.com
     name: David Festal
