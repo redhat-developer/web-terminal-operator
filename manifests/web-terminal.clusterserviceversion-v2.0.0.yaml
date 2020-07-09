@@ -111,3 +111,5 @@ spec:
   provider:
     name: Red Hat
   version: 2.0.0
+  replaces: web-terminal.v1.0.0
+
