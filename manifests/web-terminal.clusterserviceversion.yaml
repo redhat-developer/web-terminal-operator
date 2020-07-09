@@ -39,19 +39,15 @@ metadata:
     createdAt: "2020-05-27T05:12:57Z"
     description: Start a Web terminal in your browser with common CLI tools installed
       to work with cluster
-    operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
+    operators.operatorframework.io/internal-objects: '[]'
     repository: https://github.com/devfile/devworkspace-operator
     support: Red Hat, Inc.
-  name: web-terminal.v1.0.0
+  name: web-terminal.v2.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
-    owned:
-    - description: Component is the Schema for the components API
-      kind: Component
-      name: components.controller.devfile.io
-      version: v1alpha1
+    required:
     - description: Start a Web terminal in your browser with common CLI tools installed
         to work with cluster
       displayName: Workspace
@@ -80,261 +76,13 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:io.kubernetes.conditions
       version: v1alpha1
-    - description: WorkspaceRouting is the Schema for the workspaceroutings API
-      kind: WorkspaceRouting
-      name: workspaceroutings.controller.devfile.io
-      version: v1alpha1
   description: Start a Web terminal in your browser with common CLI tools installed
     to work with cluster
   displayName: Web Terminal
   install:
     spec:
-      clusterPermissions:
-      - rules:
-        - apiGroups:
-          - ""
-          resources:
-          - pods
-          - services
-          - endpoints
-          - persistentvolumeclaims
-          - events
-          - configmaps
-          - secrets
-          verbs:
-          - '*'
-        - apiGroups:
-          - ""
-          resources:
-          - namespaces
-          verbs:
-          - get
-        - apiGroups:
-          - ""
-          resources:
-          - serviceaccounts
-          verbs:
-          - watch
-          - list
-          - get
-          - create
-          - update
-          - patch
-        - apiGroups:
-          - rbac.authorization.k8s.io
-          resources:
-          - roles
-          - rolebindings
-          verbs:
-          - watch
-          - list
-          - get
-          - create
-          - update
-        - apiGroups:
-          - rbac.authorization.k8s.io
-          resources:
-          - clusterroles
-          verbs:
-          - list
-          - get
-          - watch
-        - apiGroups:
-          - apps
-          - extensions
-          resources:
-          - deployments
-          - replicasets
-          verbs:
-          - '*'
-        - apiGroups:
-          - extensions
-          resources:
-          - ingresses
-          verbs:
-          - '*'
-        - apiGroups:
-          - ""
-          - route.openshift.io
-          resources:
-          - routes
-          verbs:
-          - create
-          - delete
-          - deleteCollection
-          - get
-          - list
-          - patch
-          - update
-          - watch
-        - apiGroups:
-          - ""
-          - route.openshift.io
-          resources:
-          - routes/custom-host
-          verbs:
-          - create
-        - apiGroups:
-          - ""
-          - route.openshift.io
-          resources:
-          - routes/status
-          verbs:
-          - get
-          - list
-          - watch
-        - apiGroups:
-          - monitoring.coreos.com
-          resources:
-          - servicemonitors
-          verbs:
-          - get
-          - create
-        - apiGroups:
-          - apps
-          resourceNames:
-          - devworkspace-controller
-          resources:
-          - deployments/finalizers
-          verbs:
-          - update
-        - apiGroups:
-          - controller.devfile.io
-          resources:
-          - '*'
-          verbs:
-          - '*'
-        - apiGroups:
-          - workspace.devfile.io
-          resources:
-          - '*'
-          verbs:
-          - '*'
-        - apiGroups:
-          - ""
-          resources:
-          - pods/exec
-          verbs:
-          - create
-        - apiGroups:
-          - admissionregistration.k8s.io
-          resources:
-          - mutatingwebhookconfigurations
-          - validatingwebhookconfigurations
-          verbs:
-          - '*'
-        - apiGroups:
-          - oauth.openshift.io
-          resources:
-          - oauthclients
-          verbs:
-          - create
-          - get
-          - delete
-          - list
-          - patch
-          - update
-          - watch
-          - deletecollection
-        serviceAccountName: devworkspace-controller
-      deployments:
-      - name: devworkspace-controller
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app.kubernetes.io/name: devworkspace-controller
-              app.kubernetes.io/part-of: devworkspace-operator
-          strategy: {}
-          template:
-            metadata:
-              annotations:
-                kubectl.kubernetes.io/restartedAt: ""
-              labels:
-                app.kubernetes.io/name: devworkspace-controller
-                app.kubernetes.io/part-of: devworkspace-operator
-            spec:
-              containers:
-              - env:
-                - name: WATCH_NAMESPACE
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: metadata.annotations['olm.targetNamespaces']
-                - name: POD_NAME
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: metadata.name
-                - name: OPERATOR_NAME
-                  value: devworkspace-operator
-                - name: SERVICE_ACCOUNT_NAME
-                  valueFrom:
-                    fieldRef:
-                      fieldPath: spec.serviceAccountName
-                - name: RELATED_IMAGE_plugin_redhat_developer_web_terminal_4_5_0
-                  value: quay.io/eclipse/che-machine-exec:nightly
-                - name: RELATED_IMAGE_plugin_redhat_developer_web_terminal_nightly
-                  value: quay.io/eclipse/che-machine-exec:nightly
-                - name: RELATED_IMAGE_plugin_redhat_developer_web_terminal_dev_4_5_0
-                  value: quay.io/eclipse/che-machine-exec:nightly
-                - name: RELATED_IMAGE_plugin_redhat_developer_web_terminal_dev_nightly
-                  value: quay.io/eclipse/che-machine-exec:nightly
-                - name: RELATED_IMAGE_plugin_eclipse_cloud_shell_nightly
-                  value: quay.io/eclipse/che-machine-exec:nightly
-                - name: RELATED_IMAGE_web_terminal_tooling
-                  value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.1
-                - name: RELATED_IMAGE_openshift_oauth_proxy
-                  value: openshift/oauth-proxy:latest
-                image: quay.io/che-incubator/che-workspace-controller:nightly
-                imagePullPolicy: Always
-                name: devworkspace-controller
-                ports:
-                - containerPort: 8443
-                  name: webhook-server
-                resources: {}
-                volumeMounts:
-                - mountPath: /tmp/k8s-webhook-server/serving-certs
-                  name: webhook-tls-certs
-                  readOnly: true
-              serviceAccountName: devworkspace-controller
-              volumes:
-              - name: webhook-tls-certs
-                projected:
-                  sources:
-                  - configMap:
-                      items:
-                      - key: service-ca.crt
-                        path: ./ca.crt
-                      name: devworkspace-controller-secure-service
-                  - secret:
-                      name: devworkspace-controller
-      - name: devworkspace-controller-cert-gen
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app.kubernetes.io/name: cert-generator
-              app.kubernetes.io/part-of: devworkspace-operator
-          strategy: {}
-          template:
-            metadata:
-              annotations:
-                kubectl.kubernetes.io/restartedAt: ""
-              labels:
-                app.kubernetes.io/name: cert-generator
-                app.kubernetes.io/part-of: devworkspace-operator
-            spec:
-              containers:
-              - image: quay.io/che-incubator/che-workspace-controller-cert-gen:nightly
-                imagePullPolicy: Always
-                name: devworkspace-controller-cert-gen
-                resources:
-                  limits:
-                    cpu: 100m
-                    memory: 100Mi
-                  requests:
-                    cpu: 50m
-                    memory: 50Mi
-              serviceAccountName: devworkspace-controller
+      clusterPermissions: []
+      deployments: []
     strategy: deployment
   installModes:
   - supported: false
@@ -362,4 +110,4 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-  version: 1.0.0
+  version: 2.0.0
