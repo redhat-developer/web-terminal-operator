@@ -125,20 +125,14 @@ spec:
           resources:
           - roles
           - rolebindings
+          - clusterrolebindings
+          - clusterroles
           verbs:
           - watch
           - list
           - get
           - create
           - update
-        - apiGroups:
-          - rbac.authorization.k8s.io
-          resources:
-          - clusterroles
-          verbs:
-          - list
-          - get
-          - watch
         - apiGroups:
           - apps
           - extensions
@@ -222,7 +216,11 @@ spec:
           - mutatingwebhookconfigurations
           - validatingwebhookconfigurations
           verbs:
-          - '*'
+          - get
+          - list
+          - create
+          - patch
+          - update
         - apiGroups:
           - oauth.openshift.io
           resources:
@@ -266,7 +264,7 @@ spec:
                       fieldPath: metadata.name
                 - name: OPERATOR_NAME
                   value: devworkspace-operator
-                - name: SERVICE_ACCOUNT_NAME
+                - name: CONTROLLER_SERVICE_ACCOUNT_NAME
                   valueFrom:
                     fieldRef:
                       fieldPath: spec.serviceAccountName
@@ -284,56 +282,12 @@ spec:
                   value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.1
                 - name: RELATED_IMAGE_openshift_oauth_proxy
                   value: openshift/oauth-proxy:latest
-                image: quay.io/che-incubator/che-workspace-controller:nightly
+                - name: RELATED_IMAGE_devworkspace_webhook_server
+                  value: quay.io/devfile/devworkspace-controller:next
+                image: quay.io/devfile/devworkspace-controller:next
                 imagePullPolicy: Always
                 name: devworkspace-controller
-                ports:
-                - containerPort: 8443
-                  name: webhook-server
                 resources: {}
-                volumeMounts:
-                - mountPath: /tmp/k8s-webhook-server/serving-certs
-                  name: webhook-tls-certs
-                  readOnly: true
-              serviceAccountName: devworkspace-controller
-              volumes:
-              - name: webhook-tls-certs
-                projected:
-                  sources:
-                  - configMap:
-                      items:
-                      - key: service-ca.crt
-                        path: ./ca.crt
-                      name: devworkspace-controller-secure-service
-                  - secret:
-                      name: devworkspace-controller
-      - name: devworkspace-controller-cert-gen
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app.kubernetes.io/name: cert-generator
-              app.kubernetes.io/part-of: devworkspace-operator
-          strategy: {}
-          template:
-            metadata:
-              annotations:
-                kubectl.kubernetes.io/restartedAt: ""
-              labels:
-                app.kubernetes.io/name: cert-generator
-                app.kubernetes.io/part-of: devworkspace-operator
-            spec:
-              containers:
-              - image: quay.io/che-incubator/che-workspace-controller-cert-gen:nightly
-                imagePullPolicy: Always
-                name: devworkspace-controller-cert-gen
-                resources:
-                  limits:
-                    cpu: 100m
-                    memory: 100Mi
-                  requests:
-                    cpu: 50m
-                    memory: 50Mi
               serviceAccountName: devworkspace-controller
     strategy: deployment
   installModes:
