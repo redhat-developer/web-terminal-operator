@@ -49,6 +49,13 @@ build: _print_vars _check_imgs_env _check_skopeo_installed
 	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG)
 	docker push $(INDEX_IMG)
 
+### export: export the bundles stored in the index to the exported-manifests folder
+export: _print_vars _check_imgs_env
+	rm -rf ./exported-manifests
+	# Export the bundles with the name web-terminal inside of $(INDEX_IMG)
+	# This command basic exports the index back into the old format
+	opm index export -c docker -f exported-manifests -i $(INDEX_IMG) -o web-terminal
+
 ### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	# replace references of catalogsource img with your image
