@@ -84,8 +84,35 @@ spec:
       kind: WorkspaceRouting
       name: workspaceroutings.controller.devfile.io
       version: v1alpha1
-  description: Start a Web terminal in your browser with common CLI tools installed
-    to work with cluster
+  description: |
+    Start a Web Terminal in your browser with common CLI tools installed to work with cluster.
+
+    ## How to Install
+    Press the **Install** button, choose the upgrade strategy, and wait for the **Installed** Operator status.
+
+    When the operator is installed, you will see a terminal button appear on the top right of the console.
+
+    Note: The Web Terminal does not work with kubeadmin at this point in time
+
+    ## How to Uninstall
+    Parts of the operator must be manually uninstalled for security purposes. In order to fully uninstall an admin
+    must:
+
+    1. Ensure that all Devworkspace Custom Resources are removed along with their related k8s objects, like deployments.
+
+            kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all
+    	    kubectl delete devworkspacetemplates.workspace.devfile.io --all-namespaces --all
+            kubectl delete workspaceroutings.controller.devfile.io --all-namespaces --all --wait
+
+     2. Remove mutating/validating webhooks configuration
+
+            kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
+            kubectl delete validatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
+
+    3. Remove DevWorkspace Webhook Server Deployment itself
+
+            kubectl delete deployment/devworkspace-webhook-server -n openshift-operators
+
   displayName: Web Terminal
   install:
     spec:
