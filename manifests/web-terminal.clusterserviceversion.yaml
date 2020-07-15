@@ -95,23 +95,32 @@ spec:
     Note: The Web Terminal does not work with kubeadmin at this point in time
 
     ## How to Uninstall
-    Parts of the operator must be manually uninstalled for security purposes. In order to fully uninstall an admin
-    must:
+    Parts of the operator must be manually uninstalled for security purposes. It also allows you to save cluster resources,
+    as terminals cannot be idled when the operator is uninstalled. In order to fully uninstall an admin must:
 
     1. Ensure that all Devworkspace Custom Resources are removed along with their related k8s objects, like deployments.
+       It is crucial that this is done first, otherwise finalizers might make it difficult to fully uninstall the operator.
 
             kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all
-    	    kubectl delete devworkspacetemplates.workspace.devfile.io --all-namespaces --all
+            kubectl delete devworkspacetemplates.workspace.devfile.io --all-namespaces --all
             kubectl delete workspaceroutings.controller.devfile.io --all-namespaces --all --wait
 
-     2. Remove mutating/validating webhooks configuration
-
-            kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
-            kubectl delete validatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
+    2. Uninstall the Operator
 
     3. Remove DevWorkspace Webhook Server Deployment itself
 
             kubectl delete deployment/devworkspace-webhook-server -n openshift-operators
+
+    4. Remove mutating/validating webhooks configuration. _note:_ there may be a few seconds where you cannot exec into
+       a pod between steps 3 and 4. This is expected. Once you remove the webhooks you will be able to exec into pods again.
+
+            kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
+            kubectl delete validatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
+
+    5. Remove lingering service and secrets
+
+            kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
+
 
   displayName: Web Terminal
   install:
