@@ -2,3 +2,4 @@ devworkspace-crds
 devworkspace-operator
 devworkspace-dependencies
 generated
+exported-manifests
