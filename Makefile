@@ -21,11 +21,9 @@ update_dependencies:
 
 ### gen_terminal_csv: generate the csv for a newer version. Refer to gen_terminal_csv makefile definition for extra manual steps that are needed.
 gen_terminal_csv : update_dependencies
-	# Some steps need to be done manually in order to get the csv ready
-	# This includes:
-	# 1. Updating the description
-	# 2. Remove the edit and view workspaces role from the csv
-	# 3. Update the alm-examples (they are reset on each csv generate)
+	# Remove everything in manifests except CSV which contains manually filled
+	# fields, like description, puslisher, ...
+	find ./manifests -type f -not -name 'web-terminal.clusterserviceversion.yaml' -delete
 
 	# Need to be in root of the controller in order to run operator-sdk
 	pushd devworkspace-dependencies > /dev/null
