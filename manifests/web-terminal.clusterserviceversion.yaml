@@ -218,6 +218,7 @@ spec:
           verbs:
           - get
           - list
+          - watch
           - create
           - patch
           - update
