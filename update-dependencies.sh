@@ -65,7 +65,7 @@ rm -rf "$COMBINED_DIR"
 mkdir -p "$COMBINED_DIR"
 cp -rn "${OPERATOR_DIR}/"* "${COMBINED_DIR}/"
 cp -rn "${CRDS_DIR}/"* "${COMBINED_DIR}/"
-# Aggregate cluster roles need to be added separately
+# OLM automatically provides users permissions for CRs which are brought by the operator
 rm -rf "${COMBINED_DIR}/deploy/edit-workspaces-cluster-role.yaml"
 rm -rf "${COMBINED_DIR}/deploy/view-workspaces-cluster-role.yaml"
 # Don't care about devworkspacetemplates for now

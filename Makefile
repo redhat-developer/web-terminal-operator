@@ -30,10 +30,6 @@ gen_terminal_csv : update_dependencies
 	operator-sdk generate csv --apis-dir ./pkg/apis --csv-version 1.0.0 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
 	popd > /dev/null
 
-	# Add in the edit workspaces and view workspaces cluster roles
-	cp devworkspace-operator/deploy/edit-workspaces-cluster-role.yaml manifests/
-	cp devworkspace-operator/deploy/view-workspaces-cluster-role.yaml manifests/
-
 ### build: build the terminal bundle and index and push them to a docker registry
 build: _print_vars _check_imgs_env _check_skopeo_installed
 	rm -rf ./generated
