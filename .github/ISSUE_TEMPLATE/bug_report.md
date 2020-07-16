@@ -1,3 +1,13 @@
+---
+name: Bug report 🐞
+about: Report a bug found in Web Terminal
+title: ''
+labels: 'kind/bug'
+assignees: ''
+
+---
+
+## Describe the bug
 <!--- Provide a summary of the issue -->
 
 ## Expected Behavior
@@ -19,5 +29,5 @@ Cloud:
    - [ ] GCP
    - [ ] other (please specify)
    
-Openshift Version:
+OpenShift Version:
 
