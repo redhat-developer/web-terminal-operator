@@ -118,15 +118,15 @@ spec:
 
             kubectl delete deployment/devworkspace-webhook-server -n openshift-operators
 
-    5. Remove mutating/validating webhooks configuration. _note:_ there may be a few seconds where you cannot exec into
-       a pod between steps 3 and 4. This is expected. Once you remove the webhooks you will be able to exec into pods again.
+    5. Remove lingering service and secrets
+
+            kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
+
+    6. Remove mutating/validating webhooks configuration. _note:_ there may be a few seconds where you cannot exec into
+       pods between steps 4 and 6. This is expected. Once you remove the webhooks you will be able to exec into pods again.
 
             kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
             kubectl delete validatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
-
-    6. Remove lingering service and secrets
-
-            kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
 
 
   displayName: Web Terminal
