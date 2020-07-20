@@ -119,8 +119,8 @@ spec:
     5. Remove lingering service, secrets, and configmaps
 
             kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
-            kubectl delete serviceaccounts devworkspace-webhook-server
-            kubectl delete configmap devworkspace-controller
+            kubectl delete serviceaccounts devworkspace-webhook-server -n openshift-operators
+            kubectl delete configmap devworkspace-controller -n openshift-operators
 
     6. Remove mutating/validating webhooks configuration. _note:_ there may be a few seconds where you cannot exec into
        pods between steps 4 and 6. This is expected. Once you remove the webhooks you will be able to exec into pods again.
