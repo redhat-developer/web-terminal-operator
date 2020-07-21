@@ -281,8 +281,6 @@ spec:
                   value: quay.io/eclipse/che-machine-exec:nightly
                 - name: RELATED_IMAGE_web_terminal_tooling
                   value: registry.redhat.io/codeready-workspaces/plugin-openshift-rhel8:2.1
-                - name: RELATED_IMAGE_openshift_oauth_proxy
-                  value: openshift/oauth-proxy:latest
                 - name: RELATED_IMAGE_devworkspace_webhook_server
                   value: quay.io/devfile/devworkspace-controller:next
                 image: quay.io/devfile/devworkspace-controller:next
