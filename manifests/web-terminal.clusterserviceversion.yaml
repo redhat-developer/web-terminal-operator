@@ -98,7 +98,7 @@ spec:
     Parts of the operator must be manually uninstalled for security purposes. It also allows you to save cluster resources,
     as terminals cannot be idled when the operator is uninstalled. In order to fully uninstall an admin must:
 
-    1. Ensure that all Devworkspace Custom Resources are removed along with their related k8s objects, like deployments.
+    1. Ensure that all DevWorkspace Custom Resources are removed along with their related k8s objects, like deployments.
        It is crucial that this is done first, otherwise finalizers might make it difficult to fully uninstall the operator.
 
             kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all
@@ -119,8 +119,10 @@ spec:
     5. Remove lingering service, secrets, and configmaps
 
             kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
-            kubectl delete serviceaccounts devworkspace-webhook-server -n openshift-operators
-            kubectl delete configmap devworkspace-controller -n openshift-operators
+            kubectl delete serviceaccounts devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
+            kubectl delete configmap devworkspace-controller -n openshift-operators --ignore-not-found=true
+            kubectl delete clusterole devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
+            kubectl delete clusterrolebinding devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
 
     6. Remove mutating/validating webhooks configuration. _note:_ there may be a few seconds where you cannot exec into
        pods between steps 4 and 6. This is expected. Once you remove the webhooks you will be able to exec into pods again.
