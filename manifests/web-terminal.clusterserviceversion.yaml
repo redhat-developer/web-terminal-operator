@@ -124,7 +124,7 @@ spec:
             kubectl delete clusterrole devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
             kubectl delete clusterrolebinding devworkspace-webhook-server --ignore-not-found=true
 
-    6. Remove mutating/validating webhooks configuration. _note:_ there may be a few seconds where you cannot exec into
+    6. Remove mutating/validating webhook configurations. _note:_ there may be a few seconds where you cannot exec into
        pods between steps 4 and 6. This is expected. Once you remove the webhooks you will be able to exec into pods again.
 
             kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
