@@ -70,8 +70,10 @@ install: _print_vars register_catalogsource
 ### uninstall: uninstalls the catalog source along with operator subscription
 uninstall:
 	# 1. Ensure that all DevWorkspace Custom Resources are removed to avoid issues with finalizers
-	kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all
+	kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait
+	# make sure depending objects are clean up as well
 	kubectl delete workspaceroutings.controller.devfile.io --all-namespaces --all --wait
+	kubectl delete components.controller.devfile.io --all-namespaces --all --wait
 	# 2. Uninstall the Operator
 	oc delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found=true
 	oc delete csv web-terminal.v1.0.0 -n openshift-operators --ignore-not-found=true
