@@ -69,9 +69,29 @@ install: _print_vars register_catalogsource
 
 ### uninstall: uninstalls the catalog source along with operator subscription
 uninstall:
+	# 1. Ensure that all DevWorkspace Custom Resources are removed to avoid issues with finalizers
+	kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait
+	# make sure depending objects are clean up as well
+	kubectl delete workspaceroutings.controller.devfile.io --all-namespaces --all --wait
+	kubectl delete components.controller.devfile.io --all-namespaces --all --wait
+	# 2. Uninstall the Operator
 	oc delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found=true
 	oc delete csv web-terminal.v1.0.0 -n openshift-operators --ignore-not-found=true
-	echo "Note additional steps required for a full uninstall -- clusterroles, services, and CRDs remain on the cluster"
+	# 3. Remove CRDs
+	kubectl delete customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io --ignore-not-found=true
+	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io --ignore-not-found=true
+	kubectl delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io --ignore-not-found=true
+	# 4. Remove DevWorkspace Webhook Server Deployment itself
+	kubectl delete deployment/devworkspace-webhook-server -n openshift-operators
+	# 5. Remove lingering service, secrets, and configmaps
+	kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
+	kubectl delete serviceaccounts devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
+	kubectl delete configmap devworkspace-controller -n openshift-operators --ignore-not-found=true
+	kubectl delete clusterrole devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
+	kubectl delete clusterrolebinding devworkspace-webhook-server --ignore-not-found=true
+	# 6. Remove mutating/validating webhooks configuration
+	kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
+	kubectl delete validatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
 
 _check_imgs_env:
 ifndef BUNDLE_IMG
