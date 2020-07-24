@@ -115,7 +115,7 @@ spec:
 
     4. Remove DevWorkspace Webhook Server Deployment itself
 
-            kubectl delete deployment/devworkspace-webhook-server -n openshift-operators
+            kubectl delete deployment/devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
 
     5. Remove lingering service, secrets, and configmaps
 

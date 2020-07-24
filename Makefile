@@ -82,7 +82,7 @@ uninstall:
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io --ignore-not-found=true
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io --ignore-not-found=true
 	# 4. Remove DevWorkspace Webhook Server Deployment itself
-	kubectl delete deployment/devworkspace-webhook-server -n openshift-operators
+	kubectl delete deployment/devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
 	# 5. Remove lingering service, secrets, and configmaps
 	kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
 	kubectl delete serviceaccounts devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
