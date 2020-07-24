@@ -87,7 +87,7 @@ uninstall:
 	kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
 	kubectl delete serviceaccounts devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
 	kubectl delete configmap devworkspace-controller -n openshift-operators --ignore-not-found=true
-	kubectl delete clusterrole devworkspace-webhook-server -n openshift-operators --ignore-not-found=true
+	kubectl delete clusterrole devworkspace-webhook-server --ignore-not-found=true
 	kubectl delete clusterrolebinding devworkspace-webhook-server --ignore-not-found=true
 	# 6. Remove mutating/validating webhooks configuration
 	kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found=true
