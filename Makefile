@@ -94,6 +94,42 @@ uninstall:
 	# Extra step that is not described in admin guide
 	kubectl delete csv web-terminal.v1.0.0 -n openshift-operators
 
+### purge: uninstalls the Web Terminal Operator in the safe way where every object is removed without failing when not found. Use it if uninstall fails because of no objects found
+purge:
+	# 1. Ensure that all DevWorkspace Custom Resources are removed to avoid issues with finalizers
+	# make sure depending objects are clean up as well
+	if [ ! -z $(kubectl get customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io --ignore-not-found) ]
+	then
+		kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait
+	fi
+	if [ ! -z $(kubectl get customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io --ignore-not-found) ]
+	then
+		kubectl delete workspaceroutings.controller.devfile.io --all-namespaces --all --wait
+	fi
+	if [ ! -z $(kubectl get customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io --ignore-not-found) ]
+	then
+		kubectl delete components.controller.devfile.io --all-namespaces --all --wait
+	fi
+	# 2. Uninstall the Operator
+	kubectl delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found
+	# 3. Remove CRDs
+	kubectl delete customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io --ignore-not-found
+	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io --ignore-not-found
+	kubectl delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io --ignore-not-found
+	# 4. Remove DevWorkspace Webhook Server Deployment itself
+	kubectl delete deployment/devworkspace-webhook-server -n openshift-operators --ignore-not-found
+	# 5. Remove lingering service, secrets, and configmaps
+	kubectl delete all --selector app.kubernetes.io/part-of=devworkspace-operator,app.kubernetes.io/name=devworkspace-webhook-server
+	kubectl delete serviceaccounts devworkspace-webhook-server -n openshift-operators --ignore-not-found
+	kubectl delete configmap devworkspace-controller -n openshift-operators --ignore-not-found
+	kubectl delete clusterrole devworkspace-webhook-server --ignore-not-found
+	kubectl delete clusterrolebinding devworkspace-webhook-server --ignore-not-found
+	# 6. Remove mutating/validating webhooks configuration
+	kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found
+	kubectl delete validatingwebhookconfigurations controller.devfile.io --ignore-not-found
+	# Extra step that is not described in admin guide
+	kubectl delete csv web-terminal.v1.0.0 -n openshift-operators --ignore-not-found
+
 _check_imgs_env:
 ifndef BUNDLE_IMG
 	$(error "BUNDLE_IMG not set")
