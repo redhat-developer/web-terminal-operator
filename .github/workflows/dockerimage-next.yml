@@ -17,7 +17,7 @@ jobs:
   build-next-imgs:
     runs-on: ubuntu-latest
     env:
-      BUNDLE_IMG: quay.io/wto/web-terminal-operator-bundle:next
+      BUNDLE_IMG: quay.io/wto/web-terminal-operator-metadata:next
       INDEX_IMG: quay.io/wto/web-terminal-operator-index:next
       OPM_VERSION: v1.13.1
     steps:
