@@ -3,7 +3,7 @@ SHELL := bash
 
 DEVWORKSPACE_API_VERSION ?= master
 DEVWORKSPACE_OPERATOR_VERSION ?= master
-BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-bundle:next
+BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 
 .ONESHELL:
