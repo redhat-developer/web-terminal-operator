@@ -37,8 +37,8 @@ metadata:
     certified: "false"
     containerImage: quay.io/che-incubator/che-workspace-controller:nightly
     createdAt: "2020-05-27T05:12:57Z"
-    description: Start a Web terminal in your browser with common CLI tools installed
-      to work with cluster
+    description: Start a Web Terminal in your browser with common CLI tools for interacting
+      with the cluster
     operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
     repository: https://github.com/devfile/devworkspace-operator
     support: Red Hat, Inc.
@@ -52,8 +52,8 @@ spec:
       kind: Component
       name: components.controller.devfile.io
       version: v1alpha1
-    - description: Start a Web terminal in your browser with common CLI tools installed
-        to work with cluster
+    - description: Start a Web Terminal in your browser with common CLI tools for
+        interacting with the cluster
       displayName: Workspace
       kind: DevWorkspace
       name: devworkspaces.workspace.devfile.io
@@ -85,7 +85,7 @@ spec:
       name: workspaceroutings.controller.devfile.io
       version: v1alpha1
   description: |
-    Start a Web Terminal in your browser with common CLI tools installed to work with cluster.
+    Start a Web Terminal in your browser with common CLI tools for interacting with the cluster.
 
     ## How to Install
     Press the **Install** button, choose the upgrade strategy, and wait for the **Installed** Operator status.
@@ -130,8 +130,6 @@ spec:
 
             kubectl delete mutatingwebhookconfigurations controller.devfile.io
             kubectl delete validatingwebhookconfigurations controller.devfile.io
-
-
   displayName: Web Terminal
   install:
     spec:
