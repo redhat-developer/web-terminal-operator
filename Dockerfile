@@ -17,7 +17,7 @@ ENV SUMMARY="Web Terminal operator-metadata container" \
     DESCRIPTION="Web Terminal operator-metadata container" \
     PRODNAME="web-terminal" \
     COMPNAME="operator-metadata"
- 
+
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
