@@ -3,7 +3,7 @@ SHELL := bash
 
 DEVWORKSPACE_API_VERSION ?= master
 DEVWORKSPACE_OPERATOR_VERSION ?= master
-BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-bundle:next
+BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 
 .ONESHELL:
@@ -32,12 +32,13 @@ gen_terminal_csv : update_dependencies
 
 ### build: build the terminal bundle and index and push them to a docker registry
 build: _print_vars _check_imgs_env _check_skopeo_installed
-	rm -rf ./generated
+	@rm -rf ./generated
 	# Create the bundle and push it to a docker registry
-	@operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
+	operator-sdk bundle create $(BUNDLE_IMG) --channels alpha --package web-terminal --directory ./manifests --overwrite --output-dir generated
 	docker push $(BUNDLE_IMG)
 
 	BUNDLE_DIGEST=$$(skopeo inspect docker://$(BUNDLE_IMG) | jq -r '.Digest')
+	BUNDLE_IMG=$(BUNDLE_IMG)
 	BUNDLE_IMG_DIGEST="$${BUNDLE_IMG%:*}@$${BUNDLE_DIGEST}"
 	# create / update and push an index that contains the bundle
 	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG)
@@ -45,17 +46,18 @@ build: _print_vars _check_imgs_env _check_skopeo_installed
 
 ### export: export the bundles stored in the index to the exported-manifests folder
 export: _print_vars _check_imgs_env
-	rm -rf ./exported-manifests
+	@rm -rf ./exported-manifests
 	# Export the bundles with the name web-terminal inside of $(INDEX_IMG)
 	# This command basic exports the index back into the old format
 	opm index export -c docker -f exported-manifests -i $(INDEX_IMG) -o web-terminal
 
 ### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
-	# replace references of catalogsource img with your image
 	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
+	INDEX_IMG=$(INDEX_IMG)
 	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
 
+	# replace references of catalogsource img with your image
 	sed -i.bak -e "s|quay.io/che-incubator/che-workspace-operator-index:latest|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
 	oc apply -f ./catalog-source.yaml
 	mv ./catalog-source.yaml.bak ./catalog-source.yaml

@@ -3,7 +3,11 @@
 Web Terminal Operator provides an ability for users to use terminal embedded into OpenShift Console.
 
 ### Deploying next operator from next images
-After every commit in master index and bundle images are built and pushed. To try them you can just do
+After every commit in master index and bundle images are built and pushed to:
+[quay.io/repository/wto/web-terminal-operator-index:next](https://quay.io/repository/wto/web-terminal-operator-index?tab=tags)
+[quay.io/repository/wto/web-terminal-operator-metadata:next](https://quay.io/repository/wto/web-terminal-operator-metadata?tab=tags)
+
+To try them you can just do
 ```
 make install
 ```
