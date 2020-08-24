@@ -6,3 +6,6 @@ operator_manifests:
   enable_repo_replacements: true
   enable_registry_replacements: true
 
+platforms:
+  only:
+  - x86_64
