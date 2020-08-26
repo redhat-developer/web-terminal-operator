@@ -130,6 +130,7 @@ spec:
 
             kubectl delete mutatingwebhookconfigurations controller.devfile.io
             kubectl delete validatingwebhookconfigurations controller.devfile.io
+
     ## Known Issues
     1. [Occasionally you will need to press enter to get a prompt inside of the web-terminal](https://issues.redhat.com/browse/WTO-43)
     2. [DevWorkspace is created but not opened after previous devworkspace is removed](https://issues.redhat.com/browse/WTO-44)
