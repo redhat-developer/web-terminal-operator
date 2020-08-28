@@ -47,10 +47,13 @@ function update_dep() {
   if git show-ref --verify "refs/tags/${version}" --quiet; then
     log 'Version is specified from tag'
 		git checkout "tags/${version}"
-	else
+	elif -z $(git ls-remote --heads origin ${branch}); then
 		log 'Version is specified from branch'
 		git checkout "$version" && git reset --hard "origin/${version}"
-	fi
+	else
+    log 'Version is specified from revision'
+    git checkout ${version}
+  fi
   popd > /dev/null
 }
 
