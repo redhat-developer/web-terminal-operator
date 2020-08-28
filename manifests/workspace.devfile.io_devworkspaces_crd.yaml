@@ -232,7 +232,12 @@ spec:
                               attributes
                             type: object
                           commandLine:
-                            description: The actual command-line string
+                            description: "The actual command-line string \n Special
+                              variables that can be used: \n  - `$PROJECTS_ROOT`:
+                              A path where projects sources are mounted \n  - `$PROJECT_SOURCE`:
+                              A path to a project source ($PROJECTS_ROOT/<project-name>).
+                              If there are multiple projects, this will point to the
+                              directory of the first one."
                             type: string
                           component:
                             description: Describes component to which given action
@@ -270,6 +275,12 @@ spec:
                             required:
                             - kind
                             type: object
+                          hotReloadCapable:
+                            description: "Whether the command is capable to reload
+                              itself when source code changes. If set to `true` the
+                              command won't be restarted and it is expected to handle
+                              file changes on its own. \n Default value is `false`"
+                            type: boolean
                           id:
                             description: Mandatory identifier that allows referencing
                               this command in composite commands, from a parent, or
@@ -280,8 +291,13 @@ spec:
                               this command to be used in Editor UI menus for example
                             type: string
                           workingDir:
-                            description: Working directory where the command should
-                              be executed
+                            description: "Working directory where the command should
+                              be executed \n Special variables that can be used: \n
+                              \ - `${PROJECTS_ROOT}`: A path where projects sources
+                              are mounted \n  - `${PROJECT_SOURCE}`: A path to a project
+                              source (${PROJECTS_ROOT}/<project-name>). If there are
+                              multiple projects, this will point to the directory
+                              of the first one."
                             type: string
                         required:
                         - id
@@ -763,8 +779,9 @@ spec:
                           Kubernetes Custom Resources"
                         properties:
                           commands:
-                            description: Overrides of commands encapsulated in a plugin.
-                              Overriding is done using a strategic merge
+                            description: Overrides of commands encapsulated in a parent
+                              devfile or a plugin. Overriding is done using a strategic
+                              merge patch
                             items:
                               properties:
                                 apply:
@@ -955,7 +972,13 @@ spec:
                                         command attributes
                                       type: object
                                     commandLine:
-                                      description: The actual command-line string
+                                      description: "The actual command-line string
+                                        \n Special variables that can be used: \n
+                                        \ - `$PROJECTS_ROOT`: A path where projects
+                                        sources are mounted \n  - `$PROJECT_SOURCE`:
+                                        A path to a project source ($PROJECTS_ROOT/<project-name>).
+                                        If there are multiple projects, this will
+                                        point to the directory of the first one."
                                       type: string
                                     component:
                                       description: Describes component to which given
@@ -995,6 +1018,13 @@ spec:
                                       required:
                                       - kind
                                       type: object
+                                    hotReloadCapable:
+                                      description: "Whether the command is capable
+                                        to reload itself when source code changes.
+                                        If set to `true` the command won't be restarted
+                                        and it is expected to handle file changes
+                                        on its own. \n Default value is `false`"
+                                      type: boolean
                                     id:
                                       description: Mandatory identifier that allows
                                         referencing this command in composite commands,
@@ -1006,8 +1036,13 @@ spec:
                                         UI menus for example
                                       type: string
                                     workingDir:
-                                      description: Working directory where the command
-                                        should be executed
+                                      description: "Working directory where the command
+                                        should be executed \n Special variables that
+                                        can be used: \n  - `${PROJECTS_ROOT}`: A path
+                                        where projects sources are mounted \n  - `${PROJECT_SOURCE}`:
+                                        A path to a project source (${PROJECTS_ROOT}/<project-name>).
+                                        If there are multiple projects, this will
+                                        point to the directory of the first one."
                                       type: string
                                   required:
                                   - id
@@ -1122,11 +1157,12 @@ spec:
                             type: array
                           components:
                             description: Overrides of components encapsulated in a
-                              plugin. Overriding is done using a strategic merge
+                              plugin. Overriding is done using a strategic merge patch.
+                              A plugin cannot override embedded plugin components.
                             items:
                               properties:
                                 componentType:
-                                  description: Type of component override
+                                  description: Type of component override for a plugin
                                   enum:
                                   - Container
                                   - Kubernetes
@@ -1135,7 +1171,7 @@ spec:
                                   type: string
                                 container:
                                   description: Configuration overriding for a Container
-                                    component
+                                    component in a plugin
                                   properties:
                                     args:
                                       description: "The arguments to supply to the
@@ -1294,7 +1330,7 @@ spec:
                                   type: object
                                 kubernetes:
                                   description: Configuration overriding for a Kubernetes
-                                    component
+                                    component in a plugin
                                   properties:
                                     endpoints:
                                       items:
@@ -1392,7 +1428,7 @@ spec:
                                   type: object
                                 openshift:
                                   description: Configuration overriding for an OpenShift
-                                    component
+                                    component in a plugin
                                   properties:
                                     endpoints:
                                       items:
@@ -1490,7 +1526,7 @@ spec:
                                   type: object
                                 volume:
                                   description: Configuration overriding for a Volume
-                                    component
+                                    component in a plugin
                                   properties:
                                     name:
                                       description: Mandatory name that allows referencing
@@ -1594,7 +1630,9 @@ spec:
                   description: Parent workspace template
                   properties:
                     commands:
-                      description: Predefined, ready-to-use, workspace-related commands
+                      description: Overrides of commands encapsulated in a parent
+                        devfile or a plugin. Overriding is done using a strategic
+                        merge patch
                       items:
                         properties:
                           apply:
@@ -1782,7 +1820,12 @@ spec:
                                   command attributes
                                 type: object
                               commandLine:
-                                description: The actual command-line string
+                                description: "The actual command-line string \n Special
+                                  variables that can be used: \n  - `$PROJECTS_ROOT`:
+                                  A path where projects sources are mounted \n  -
+                                  `$PROJECT_SOURCE`: A path to a project source ($PROJECTS_ROOT/<project-name>).
+                                  If there are multiple projects, this will point
+                                  to the directory of the first one."
                                 type: string
                               component:
                                 description: Describes component to which given action
@@ -1822,6 +1865,13 @@ spec:
                                 required:
                                 - kind
                                 type: object
+                              hotReloadCapable:
+                                description: "Whether the command is capable to reload
+                                  itself when source code changes. If set to `true`
+                                  the command won't be restarted and it is expected
+                                  to handle file changes on its own. \n Default value
+                                  is `false`"
+                                type: boolean
                               id:
                                 description: Mandatory identifier that allows referencing
                                   this command in composite commands, from a parent,
@@ -1833,8 +1883,13 @@ spec:
                                   example
                                 type: string
                               workingDir:
-                                description: Working directory where the command should
-                                  be executed
+                                description: "Working directory where the command
+                                  should be executed \n Special variables that can
+                                  be used: \n  - `${PROJECTS_ROOT}`: A path where
+                                  projects sources are mounted \n  - `${PROJECT_SOURCE}`:
+                                  A path to a project source (${PROJECTS_ROOT}/<project-name>).
+                                  If there are multiple projects, this will point
+                                  to the directory of the first one."
                                 type: string
                             required:
                             - id
@@ -1946,8 +2001,8 @@ spec:
                         type: object
                       type: array
                     components:
-                      description: List of the workspace components, such as editor
-                        and plugins, user-provided containers, or other types of components
+                      description: Overrides of components encapsulated in a parent
+                        devfile. Overriding is done using a strategic merge patch
                       items:
                         properties:
                           componentType:
@@ -2333,7 +2388,8 @@ spec:
                             properties:
                               commands:
                                 description: Overrides of commands encapsulated in
-                                  a plugin. Overriding is done using a strategic merge
+                                  a parent devfile or a plugin. Overriding is done
+                                  using a strategic merge patch
                                 items:
                                   properties:
                                     apply:
@@ -2526,7 +2582,13 @@ spec:
                                             command attributes
                                           type: object
                                         commandLine:
-                                          description: The actual command-line string
+                                          description: "The actual command-line string
+                                            \n Special variables that can be used:
+                                            \n  - `$PROJECTS_ROOT`: A path where projects
+                                            sources are mounted \n  - `$PROJECT_SOURCE`:
+                                            A path to a project source ($PROJECTS_ROOT/<project-name>).
+                                            If there are multiple projects, this will
+                                            point to the directory of the first one."
                                           type: string
                                         component:
                                           description: Describes component to which
@@ -2567,6 +2629,14 @@ spec:
                                           required:
                                           - kind
                                           type: object
+                                        hotReloadCapable:
+                                          description: "Whether the command is capable
+                                            to reload itself when source code changes.
+                                            If set to `true` the command won't be
+                                            restarted and it is expected to handle
+                                            file changes on its own. \n Default value
+                                            is `false`"
+                                          type: boolean
                                         id:
                                           description: Mandatory identifier that allows
                                             referencing this command in composite
@@ -2578,8 +2648,14 @@ spec:
                                             Editor UI menus for example
                                           type: string
                                         workingDir:
-                                          description: Working directory where the
-                                            command should be executed
+                                          description: "Working directory where the
+                                            command should be executed \n Special
+                                            variables that can be used: \n  - `${PROJECTS_ROOT}`:
+                                            A path where projects sources are mounted
+                                            \n  - `${PROJECT_SOURCE}`: A path to a
+                                            project source (${PROJECTS_ROOT}/<project-name>).
+                                            If there are multiple projects, this will
+                                            point to the directory of the first one."
                                           type: string
                                       required:
                                       - id
@@ -2697,11 +2773,13 @@ spec:
                               components:
                                 description: Overrides of components encapsulated
                                   in a plugin. Overriding is done using a strategic
-                                  merge
+                                  merge patch. A plugin cannot override embedded plugin
+                                  components.
                                 items:
                                   properties:
                                     componentType:
-                                      description: Type of component override
+                                      description: Type of component override for
+                                        a plugin
                                       enum:
                                       - Container
                                       - Kubernetes
@@ -2710,7 +2788,7 @@ spec:
                                       type: string
                                     container:
                                       description: Configuration overriding for a
-                                        Container component
+                                        Container component in a plugin
                                       properties:
                                         args:
                                           description: "The arguments to supply to
@@ -2878,7 +2956,7 @@ spec:
                                       type: object
                                     kubernetes:
                                       description: Configuration overriding for a
-                                        Kubernetes component
+                                        Kubernetes component in a plugin
                                       properties:
                                         endpoints:
                                           items:
@@ -2982,7 +3060,7 @@ spec:
                                       type: object
                                     openshift:
                                       description: Configuration overriding for an
-                                        OpenShift component
+                                        OpenShift component in a plugin
                                       properties:
                                         endpoints:
                                           items:
@@ -3086,7 +3164,7 @@ spec:
                                       type: object
                                     volume:
                                       description: Configuration overriding for a
-                                        Volume component
+                                        Volume component in a plugin
                                       properties:
                                         name:
                                           description: Mandatory name that allows
@@ -3153,41 +3231,6 @@ spec:
                             type: object
                         type: object
                       type: array
-                    events:
-                      description: Bindings of commands to events. Each command is
-                        referred-to by its name.
-                      properties:
-                        postStart:
-                          description: Names of commands that should be executed after
-                            the workspace is completely started. In the case of Che-Theia,
-                            these commands should be executed after all plugins and
-                            extensions have started, including project cloning. This
-                            means that those commands are not triggered until the
-                            user opens the IDE in his browser.
-                          items:
-                            type: string
-                          type: array
-                        postStop:
-                          description: Names of commands that should be executed after
-                            stopping the workspace.
-                          items:
-                            type: string
-                          type: array
-                        preStart:
-                          description: Names of commands that should be executed before
-                            the workspace start. Kubernetes-wise, these commands would
-                            typically be executed in init containers of the workspace
-                            POD.
-                          items:
-                            type: string
-                          type: array
-                        preStop:
-                          description: Names of commands that should be executed before
-                            stopping the workspace.
-                          items:
-                            type: string
-                          type: array
-                      type: object
                     id:
                       description: Id in a registry that contains a Devfile yaml file
                       type: string
@@ -3210,8 +3253,8 @@ spec:
                       - name
                       type: object
                     projects:
-                      description: Projects worked on in the workspace, containing
-                        names and sources locations
+                      description: Overrides of projects encapsulated in a parent
+                        devfile. Overriding is done using a strategic merge patch.
                       items:
                         properties:
                           clonePath:
@@ -3238,41 +3281,65 @@ spec:
                           git:
                             description: Project's Git source
                             properties:
-                              branch:
-                                description: The branch to check
-                                type: string
-                              location:
-                                description: Project's source location address. Should
-                                  be URL for git and github located projects, or;
-                                  file:// for zip
-                                type: string
+                              checkoutFrom:
+                                description: Defines from what the project should
+                                  be checked out. Required if there are more than
+                                  one remote configured
+                                properties:
+                                  remote:
+                                    description: The remote name should be used as
+                                      init. Required if there are more than one remote
+                                      configured
+                                    type: string
+                                  revision:
+                                    description: The revision to checkout from. Should
+                                      be branch name, tag or commit id. Default branch
+                                      is used if missing or specified revision is
+                                      not found.
+                                    type: string
+                                type: object
+                              remotes:
+                                additionalProperties:
+                                  type: string
+                                description: The remotes map which should be initialized
+                                  in the git project. Must have at least one remote
+                                  configured
+                                type: object
                               sparseCheckoutDir:
                                 description: Part of project to populate in the working
                                   directory.
-                                type: string
-                              startPoint:
-                                description: The tag or commit id to reset the checked
-                                  out branch to
                                 type: string
                             type: object
                           github:
                             description: Project's GitHub source
                             properties:
-                              branch:
-                                description: The branch to check
-                                type: string
-                              location:
-                                description: Project's source location address. Should
-                                  be URL for git and github located projects, or;
-                                  file:// for zip
-                                type: string
+                              checkoutFrom:
+                                description: Defines from what the project should
+                                  be checked out. Required if there are more than
+                                  one remote configured
+                                properties:
+                                  remote:
+                                    description: The remote name should be used as
+                                      init. Required if there are more than one remote
+                                      configured
+                                    type: string
+                                  revision:
+                                    description: The revision to checkout from. Should
+                                      be branch name, tag or commit id. Default branch
+                                      is used if missing or specified revision is
+                                      not found.
+                                    type: string
+                                type: object
+                              remotes:
+                                additionalProperties:
+                                  type: string
+                                description: The remotes map which should be initialized
+                                  in the git project. Must have at least one remote
+                                  configured
+                                type: object
                               sparseCheckoutDir:
                                 description: Part of project to populate in the working
                                   directory.
-                                type: string
-                              startPoint:
-                                description: The tag or commit id to reset the checked
-                                  out branch to
                                 type: string
                             type: object
                           name:
@@ -3290,9 +3357,8 @@ spec:
                             description: Project's Zip source
                             properties:
                               location:
-                                description: Project's source location address. Should
-                                  be URL for git and github located projects, or;
-                                  file:// for zip
+                                description: Zip project's source location address.
+                                  Should be file path of the archive, e.g. file://$FILE_PATH
                                 type: string
                               sparseCheckoutDir:
                                 description: Part of project to populate in the working
@@ -3305,103 +3371,6 @@ spec:
                       type: array
                     registryUrl:
                       type: string
-                    starterProjects:
-                      description: StarterProjects is a project that can be used as
-                        a starting point when bootstrapping new projects
-                      items:
-                        properties:
-                          clonePath:
-                            description: Path relative to the root of the projects
-                              to which this project should be cloned into. This is
-                              a unix-style relative path (i.e. uses forward slashes).
-                              The path is invalid if it is absolute or tries to escape
-                              the project root through the usage of '..'. If not specified,
-                              defaults to the project name.
-                            type: string
-                          custom:
-                            description: Project's Custom source
-                            properties:
-                              embeddedResource:
-                                type: object
-                                x-kubernetes-embedded-resource: true
-                                x-kubernetes-preserve-unknown-fields: true
-                              projectSourceClass:
-                                type: string
-                            required:
-                            - embeddedResource
-                            - projectSourceClass
-                            type: object
-                          description:
-                            description: Description of a starter project
-                            type: string
-                          git:
-                            description: Project's Git source
-                            properties:
-                              branch:
-                                description: The branch to check
-                                type: string
-                              location:
-                                description: Project's source location address. Should
-                                  be URL for git and github located projects, or;
-                                  file:// for zip
-                                type: string
-                              sparseCheckoutDir:
-                                description: Part of project to populate in the working
-                                  directory.
-                                type: string
-                              startPoint:
-                                description: The tag or commit id to reset the checked
-                                  out branch to
-                                type: string
-                            type: object
-                          github:
-                            description: Project's GitHub source
-                            properties:
-                              branch:
-                                description: The branch to check
-                                type: string
-                              location:
-                                description: Project's source location address. Should
-                                  be URL for git and github located projects, or;
-                                  file:// for zip
-                                type: string
-                              sparseCheckoutDir:
-                                description: Part of project to populate in the working
-                                  directory.
-                                type: string
-                              startPoint:
-                                description: The tag or commit id to reset the checked
-                                  out branch to
-                                type: string
-                            type: object
-                          name:
-                            description: Project name
-                            type: string
-                          sourceType:
-                            description: Type of project source
-                            enum:
-                            - Git
-                            - Github
-                            - Zip
-                            - Custom
-                            type: string
-                          zip:
-                            description: Project's Zip source
-                            properties:
-                              location:
-                                description: Project's source location address. Should
-                                  be URL for git and github located projects, or;
-                                  file:// for zip
-                                type: string
-                              sparseCheckoutDir:
-                                description: Part of project to populate in the working
-                                  directory.
-                                type: string
-                            type: object
-                        required:
-                        - name
-                        type: object
-                      type: array
                     uri:
                       description: Uri of a Devfile yaml file
                       type: string
@@ -3435,41 +3404,59 @@ spec:
                       git:
                         description: Project's Git source
                         properties:
-                          branch:
-                            description: The branch to check
-                            type: string
-                          location:
-                            description: Project's source location address. Should
-                              be URL for git and github located projects, or; file://
-                              for zip
-                            type: string
+                          checkoutFrom:
+                            description: Defines from what the project should be checked
+                              out. Required if there are more than one remote configured
+                            properties:
+                              remote:
+                                description: The remote name should be used as init.
+                                  Required if there are more than one remote configured
+                                type: string
+                              revision:
+                                description: The revision to checkout from. Should
+                                  be branch name, tag or commit id. Default branch
+                                  is used if missing or specified revision is not
+                                  found.
+                                type: string
+                            type: object
+                          remotes:
+                            additionalProperties:
+                              type: string
+                            description: The remotes map which should be initialized
+                              in the git project. Must have at least one remote configured
+                            type: object
                           sparseCheckoutDir:
                             description: Part of project to populate in the working
                               directory.
-                            type: string
-                          startPoint:
-                            description: The tag or commit id to reset the checked
-                              out branch to
                             type: string
                         type: object
                       github:
                         description: Project's GitHub source
                         properties:
-                          branch:
-                            description: The branch to check
-                            type: string
-                          location:
-                            description: Project's source location address. Should
-                              be URL for git and github located projects, or; file://
-                              for zip
-                            type: string
+                          checkoutFrom:
+                            description: Defines from what the project should be checked
+                              out. Required if there are more than one remote configured
+                            properties:
+                              remote:
+                                description: The remote name should be used as init.
+                                  Required if there are more than one remote configured
+                                type: string
+                              revision:
+                                description: The revision to checkout from. Should
+                                  be branch name, tag or commit id. Default branch
+                                  is used if missing or specified revision is not
+                                  found.
+                                type: string
+                            type: object
+                          remotes:
+                            additionalProperties:
+                              type: string
+                            description: The remotes map which should be initialized
+                              in the git project. Must have at least one remote configured
+                            type: object
                           sparseCheckoutDir:
                             description: Part of project to populate in the working
                               directory.
-                            type: string
-                          startPoint:
-                            description: The tag or commit id to reset the checked
-                              out branch to
                             type: string
                         type: object
                       name:
@@ -3487,9 +3474,8 @@ spec:
                         description: Project's Zip source
                         properties:
                           location:
-                            description: Project's source location address. Should
-                              be URL for git and github located projects, or; file://
-                              for zip
+                            description: Zip project's source location address. Should
+                              be file path of the archive, e.g. file://$FILE_PATH
                             type: string
                           sparseCheckoutDir:
                             description: Part of project to populate in the working
@@ -3532,41 +3518,59 @@ spec:
                       git:
                         description: Project's Git source
                         properties:
-                          branch:
-                            description: The branch to check
-                            type: string
-                          location:
-                            description: Project's source location address. Should
-                              be URL for git and github located projects, or; file://
-                              for zip
-                            type: string
+                          checkoutFrom:
+                            description: Defines from what the project should be checked
+                              out. Required if there are more than one remote configured
+                            properties:
+                              remote:
+                                description: The remote name should be used as init.
+                                  Required if there are more than one remote configured
+                                type: string
+                              revision:
+                                description: The revision to checkout from. Should
+                                  be branch name, tag or commit id. Default branch
+                                  is used if missing or specified revision is not
+                                  found.
+                                type: string
+                            type: object
+                          remotes:
+                            additionalProperties:
+                              type: string
+                            description: The remotes map which should be initialized
+                              in the git project. Must have at least one remote configured
+                            type: object
                           sparseCheckoutDir:
                             description: Part of project to populate in the working
                               directory.
-                            type: string
-                          startPoint:
-                            description: The tag or commit id to reset the checked
-                              out branch to
                             type: string
                         type: object
                       github:
                         description: Project's GitHub source
                         properties:
-                          branch:
-                            description: The branch to check
-                            type: string
-                          location:
-                            description: Project's source location address. Should
-                              be URL for git and github located projects, or; file://
-                              for zip
-                            type: string
+                          checkoutFrom:
+                            description: Defines from what the project should be checked
+                              out. Required if there are more than one remote configured
+                            properties:
+                              remote:
+                                description: The remote name should be used as init.
+                                  Required if there are more than one remote configured
+                                type: string
+                              revision:
+                                description: The revision to checkout from. Should
+                                  be branch name, tag or commit id. Default branch
+                                  is used if missing or specified revision is not
+                                  found.
+                                type: string
+                            type: object
+                          remotes:
+                            additionalProperties:
+                              type: string
+                            description: The remotes map which should be initialized
+                              in the git project. Must have at least one remote configured
+                            type: object
                           sparseCheckoutDir:
                             description: Part of project to populate in the working
                               directory.
-                            type: string
-                          startPoint:
-                            description: The tag or commit id to reset the checked
-                              out branch to
                             type: string
                         type: object
                       name:
@@ -3584,9 +3588,8 @@ spec:
                         description: Project's Zip source
                         properties:
                           location:
-                            description: Project's source location address. Should
-                              be URL for git and github located projects, or; file://
-                              for zip
+                            description: Zip project's source location address. Should
+                              be file path of the archive, e.g. file://$FILE_PATH
                             type: string
                           sparseCheckoutDir:
                             description: Part of project to populate in the working
