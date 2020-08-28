@@ -1,8 +1,6 @@
 SHELL := bash
 .SHELLFLAGS = -ec
 
-DEVWORKSPACE_API_VERSION ?= master
-DEVWORKSPACE_OPERATOR_VERSION ?= master
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 
@@ -11,8 +9,6 @@ all: help
 
 _print_vars:
 	@echo "Current env vars:"
-	echo "    DEVWORKSPACE_API_VERSION=$(DEVWORKSPACE_API_VERSION)"
-	echo "    DEVWORKSPACE_OPERATOR_VERSION=$(DEVWORKSPACE_OPERATOR_VERSION)"
 	echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	echo "    INDEX_IMG=$(INDEX_IMG)"
 ### update_dependencies: updates files from DevWorkspace API and Operators
@@ -152,7 +148,7 @@ help: Makefile
 	sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-32s -%s\n", $$1, $$2 }'
 	echo ''
 	echo 'Supported environment variables:'
-	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on. Set to $(DEVWORKSPACE_API_VERSION)'
-	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests. Set to $(DEVWORKSPACE_OPERATOR_VERSION)'
+	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
+	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'

@@ -10,8 +10,10 @@ OPERATOR_DIR="${SCRIPT_DIR}/devworkspace-operator"
 CRDS_REPO="https://github.com/devfile/kubernetes-api.git"
 OPERATOR_REPO="https://github.com/devfile/devworkspace-operator.git"
 
-DEVWORKSPACE_API_VERSION=${DEVWORKSPACE_API_VERSION:-"master"}
-DEVWORKSPACE_OPERATOR_VERSION=${DEVWORKSPACE_OPERATOR_VERSION:-"master"}
+DEVWORKSPACE_API_VERSION=${DEVWORKSPACE_API_VERSION:-"v1alpha1"}
+# 400b4b7 is the https://github.com/devfile/devworkspace-operator/pull/146
+# but it's going to be replaced with master or even eventually with v1alpha1 devworkspace operator branch or tag
+DEVWORKSPACE_OPERATOR_VERSION=${DEVWORKSPACE_OPERATOR_VERSION:-"400b4b7"}
 
 COMBINED_DIR="${SCRIPT_DIR}/devworkspace-dependencies"
 
@@ -46,11 +48,14 @@ function update_dep() {
   git fetch --tags -p origin
   if git show-ref --verify "refs/tags/${version}" --quiet; then
     log 'Version is specified from tag'
-		git checkout "tags/${version}"
-	else
-		log 'Version is specified from branch'
-		git checkout "$version" && git reset --hard "origin/${version}"
-	fi
+    git checkout "tags/${version}"
+  elif -z $(git ls-remote --heads origin ${branch}); then
+    log 'Version is specified from branch'
+    git checkout "$version" && git reset --hard "origin/${version}"
+  else
+    log 'Version is specified from revision'
+    git checkout ${version}
+  fi
   popd > /dev/null
 }
 
