@@ -5,7 +5,6 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  # This image will need to be replaced when we create the first release
-  image: quay.io/che-incubator/che-workspace-operator-index:latest
+  image: quay.io/wto/web-terminal-operator-index:next
   publisher: Red Hat
   displayName: Web Terminal Operator Catalog
