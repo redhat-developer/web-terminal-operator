@@ -1,11 +1,10 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: web-terminal-crd-registry
+  name: custom-web-terminal-catalog
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  # This image will need to be replaced when we create the first release
   image: quay.io/che-incubator/che-workspace-operator-index:latest
   publisher: Red Hat
   displayName: Web Terminal Operator Catalog
