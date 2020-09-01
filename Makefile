@@ -60,6 +60,10 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 
 	oc apply -f ./mirror-index-manifests/imagecontentsourcepolicy.yaml
 
+unregister_catalogsource:
+	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
+	oc delete imagecontentsourcepolicy lib --ignore-not-found
+
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
 build_install: _print_vars build install
 
