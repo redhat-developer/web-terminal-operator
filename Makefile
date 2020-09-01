@@ -58,7 +58,7 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	oc apply -f ./catalog-source.yaml
 	mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
-	oc apply -f ./mirror-index-manifests/imagecontentsourcepolicy.yaml
+	oc apply -f ./mirror-index-manifests/imageContentSourcePolicy.yaml
 
 unregister_catalogsource:
 	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
