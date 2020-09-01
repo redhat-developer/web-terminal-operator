@@ -1,0 +1,4 @@
+registry.redhat.io/web-terminal-tech-preview/web-terminal-tooling-rhel8@sha256:f39741bb6542a23bc4a0a255fe37436b81062d334c6c9bfd998f0bee4fe03471=quay.io/wto/web-terminal-tech-preview-web-terminal-tooling-rhel8:867ecebe
+registry.redhat.io/web-terminal-tech-preview/web-terminal-rhel8-operator@sha256:0ceb1721050b176e26491e4b5d1798233f2f5e687fb3abf6ae308063dc8b9ef3=quay.io/wto/web-terminal-tech-preview-web-terminal-rhel8-operator:1339c90b
+registry.redhat.io/web-terminal-tech-preview/web-terminal-exec-rhel8@sha256:e00fe46d0950150da9f8bb2448d53d1f9519839592a1224991932628828f42da=quay.io/wto/web-terminal-tech-preview-web-terminal-exec-rhel8:aa121f8c
+registry-proxy.engineering.redhat.com/rh-osbs/web-terminal-operator-metadata@sha256:76078f1b807bf6d512e1197e89566659946f0941e3fd4c997d303cca04e37369=quay.io/wto/rh-osbs-web-terminal-operator-metadata:a0ff2017

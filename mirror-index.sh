@@ -4,6 +4,7 @@ set -e
 
 INDEX_IMG=""
 INDEX_MIRROR=""
+MIRROR_MANIFEST_FLD="./mirror-index-manifests/"
 function parse_arguments() {
     if [[ $# -lt 1 ]]; then print_usage; exit; fi
 
@@ -55,14 +56,14 @@ parse_arguments "$@"
 
 echo "Preparing $INDEX_IMG to test from $INDEX_MIRROR"
 
-rm -rf iib-manifests/
+rm -rf $MIRROR_MANIFEST_FLD/
 
 # Go through $INDEX_IMG and grab all the mappings
 docker pull $INDEX_IMG
 
-oc adm catalog mirror --insecure=true --manifests-only $INDEX_IMG quay.io/wto
+oc adm catalog mirror --insecure=true --manifests-only --to-manifests=$MIRROR_MANIFEST_FLD $INDEX_IMG quay.io/wto
 
-cd iib-manifests
+cd $MIRROR_MANIFEST_FLD
 
 # Create the new mapped-images.txt that contains only the web-terminal mappings
 grep web-terminal mapping.txt > mapped-images.txt
