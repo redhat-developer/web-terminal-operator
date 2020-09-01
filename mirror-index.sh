@@ -3,7 +3,7 @@
 set -e
 
 INDEX_IMG=""
-INDEX_LOCATION=""
+INDEX_MIRROR=""
 function parse_arguments() {
     if [[ $# -lt 1 ]]; then print_usage; exit; fi
 
@@ -15,7 +15,7 @@ function parse_arguments() {
             shift 2
             ;;
             -t|--target)
-            INDEX_LOCATION=$2
+            INDEX_MIRROR=$2
             shift 2
             ;;
             -v|--verbose)
@@ -53,7 +53,7 @@ print_usage () {
 
 parse_arguments "$@"
 
-echo "Preparing $INDEX_IMG to test from $INDEX_LOCATION"
+echo "Preparing $INDEX_IMG to test from $INDEX_MIRROR"
 
 rm -rf iib-manifests/
 
@@ -68,10 +68,10 @@ cd iib-manifests
 grep web-terminal mapping.txt > mapped-images.txt
 
 # Add the actual index into the mapping
-echo "$( docker inspect --format='{{index .RepoDigests 0}}' $INDEX_IMG )=$INDEX_LOCATION" >> mapped-images.txt
+echo "$( docker inspect --format='{{index .RepoDigests 0}}' $INDEX_IMG )=$INDEX_MIRROR" >> mapped-images.txt
 
-docker tag $INDEX_IMG $INDEX_LOCATION
-docker push $INDEX_LOCATION
+docker tag $INDEX_IMG $INDEX_MIRROR
+docker push $INDEX_MIRROR
 
 # Fix the right side of mapped-images.txt. Replace images with their proper upstream counterparts
 sed -i 's/web-terminal-tech-preview-web-terminal-tooling-rhel8/web-terminal-tooling/g' mapped-images.txt
@@ -105,6 +105,6 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  image: $INDEX_LOCATION
+  image: $INDEX_MIRROR
   publisher: Red Hat
   displayName: Web Terminal Operator Catalog" | oc apply -f -
