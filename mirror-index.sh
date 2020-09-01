@@ -67,8 +67,12 @@ cd iib-manifests
 # Create the new mapped-images.txt that contains only the web-terminal mappings
 grep web-terminal mapping.txt > mapped-images.txt
 
+# cut chars after : to evaluate index repo
+INDEX_REPO=$(echo $INDEX_IMG | sed -e 's/^\(.*\):.*$/\1/')
 # Add the actual index into the mapping
-echo "$( docker inspect --format='{{index .RepoDigests 0}}' $INDEX_IMG )=$INDEX_MIRROR" >> mapped-images.txt
+INDEX_DIGEST=$( docker inspect $INDEX_IMG | jq -r ".[].RepoDigests | .[] | select(contains(\"${INDEX_REPO}\"))")
+
+echo $INDEX_DIGEST=$INDEX_MIRROR >> mapped-images.txt
 
 docker tag $INDEX_IMG $INDEX_MIRROR
 docker push $INDEX_MIRROR
