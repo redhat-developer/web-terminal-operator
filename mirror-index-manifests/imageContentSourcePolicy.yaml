@@ -1,7 +1,7 @@
 apiVersion: operator.openshift.io/v1alpha1
 kind: ImageContentSourcePolicy
 metadata:
-  name: iib
+  name: web-terminal-index-mirror
 spec:
   repositoryDigestMirrors:
     - mirrors:

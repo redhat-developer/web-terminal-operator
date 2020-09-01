@@ -90,6 +90,8 @@ sed -i 's/registry.redhat.io\/web-terminal-tech-preview\/web-terminal-tooling-rh
 
 rm -f mapping.txt
 
+yq -yi '.metadata.name = "web-terminal-index-mirror"' imageContentSourcePolicy.yaml
+
 # Remove all unneed content source policies
 yq -yi '. | del(.spec.repositoryDigestMirrors[] | select(.source | contains("web-terminal") | not ))' imageContentSourcePolicy.yaml
 
