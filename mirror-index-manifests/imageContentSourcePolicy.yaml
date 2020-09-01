@@ -5,14 +5,14 @@ metadata:
 spec:
   repositoryDigestMirrors:
     - mirrors:
+        - quay.io/wto/web-terminal-operator
+      source: registry.redhat.io/web-terminal-tech-preview/web-terminal-rhel8-operator
+    - mirrors:
         - quay.io/wto/web-terminal-operator-metadata
       source: registry-proxy.engineering.redhat.com/rh-osbs/web-terminal-operator-metadata
     - mirrors:
         - quay.io/wto/web-terminal-exec
       source: registry.redhat.io/web-terminal-tech-preview/web-terminal-exec-rhel8
-    - mirrors:
-        - quay.io/wto/web-terminal-operator
-      source: registry.redhat.io/web-terminal-tech-preview/web-terminal-rhel8-operator
     - mirrors:
         - quay.io/wto/web-terminal-tooling
       source: registry.redhat.io/web-terminal-tech-preview/web-terminal-tooling-rhel8
