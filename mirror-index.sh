@@ -36,7 +36,6 @@ function parse_arguments() {
 }
 
 print_usage () {
-  echo "Help to mirror wto index image"
   echo "Usage:   $0 -i [ORIGINAL_INDEX] -t [TARGET_INDEX]"
   echo "Options:
   --index,  -i     the index which should be tested
@@ -54,7 +53,7 @@ print_usage () {
 
 parse_arguments "$@"
 
-echo "Preparing $INDEX_IMG to test from $INDEX_MIRROR"
+echo "Preparing mirrored index $INDEX_MIRROR for $INDEX_IMG"
 
 rm -rf $MIRROR_MANIFEST_FLD/
 
@@ -101,15 +100,6 @@ sed -i 's/web-terminal-tech-preview-web-terminal-rhel8-operator/web-terminal-ope
 sed -i 's/rh-osbs-web-terminal-operator-metadata/web-terminal-operator-metadata/g' imageContentSourcePolicy.yaml
 
 oc image mirror --insecure=true --filter-by-os=".*" -f mapped-images.txt
-oc apply -f imageContentSourcePolicy.yaml
 
-echo "apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: custom-web-terminal-catalog
-  namespace: openshift-marketplace
-spec:
-  sourceType: grpc
-  image: $INDEX_MIRROR
-  publisher: Red Hat
-  displayName: Web Terminal Operator Catalog" | oc apply -f -
+echo "Mirrored index for $INDEX_IMG is prepared and pushed to $INDEX_MIRROR"
+echo "Note: you should apply imagecontentsourcepolicy.yaml on the cluster before using that index"
