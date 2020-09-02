@@ -71,7 +71,7 @@ grep web-terminal mapping.txt > mapped-images.txt
 DIGEST=$(skopeo inspect "docker://${INDEX_IMG}" | jq -r '.Digest')
 INDEX_DIGEST="${INDEX_IMG%:*}@${DIGEST}"
 
-echo "$INDEX_DIGEST"="$INDEX_MIRROR" >> mapped-images.txt
+echo "$INDEX_DIGEST=$INDEX_MIRROR" >> mapped-images.txt
 
 docker tag "$INDEX_IMG" "$INDEX_MIRROR"
 docker push "$INDEX_MIRROR"
