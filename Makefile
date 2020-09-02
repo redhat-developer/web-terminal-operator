@@ -2,7 +2,7 @@ SHELL := bash
 .SHELLFLAGS = -ec
 
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
-INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
+INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.0.0-11
 
 .ONESHELL:
 all: help
@@ -57,6 +57,13 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	sed -i.bak -e "s|quay.io/che-incubator/che-workspace-operator-index:latest|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
 	oc apply -f ./catalog-source.yaml
 	mv ./catalog-source.yaml.bak ./catalog-source.yaml
+
+	oc apply -f ./mirror-index-manifests/imageContentSourcePolicy.yaml
+
+### unregister_catalogsource: unregister the catalogsource and delete the imageContentSourcePolicy
+unregister_catalogsource:
+	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
+	oc delete imagecontentsourcepolicy web-terminal-index-mirror --ignore-not-found
 
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
 build_install: _print_vars build install

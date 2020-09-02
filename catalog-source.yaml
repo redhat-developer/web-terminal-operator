@@ -1,11 +1,12 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: web-terminal-crd-registry
+  name: custom-web-terminal-catalog
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  # This image will need to be replaced when we create the first release
-  image: quay.io/che-incubator/che-workspace-operator-index:latest
+  # it's the mirror for v1.0.0-11 wto containers and is generated with
+  # ./mirror-index.sh -i registry-proxy.engineering.redhat.com/rh-osbs/iib:5432 -t quay.io/wto/web-terminal-operator-index:v1.0.0-11
+  image: quay.io/wto/web-terminal-operator-index:v1.0.0-11
   publisher: Red Hat
   displayName: Web Terminal Operator Catalog
