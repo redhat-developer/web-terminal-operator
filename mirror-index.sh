@@ -55,6 +55,8 @@ parse_arguments "$@"
 
 echo "Preparing mirrored index $INDEX_MIRROR for $INDEX_IMG"
 
+rm -rf "${MIRROR_MANIFEST_DIR:?}/"
+
 # Go through $INDEX_IMG and grab all the mappings
 docker pull "$INDEX_IMG"
 
