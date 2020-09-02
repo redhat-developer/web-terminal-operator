@@ -55,8 +55,6 @@ parse_arguments "$@"
 
 echo "Preparing mirrored index $INDEX_MIRROR for $INDEX_IMG"
 
-rm -rf "${MIRROR_MANIFEST_DIR:?}/"
-
 # Go through $INDEX_IMG and grab all the mappings
 docker pull "$INDEX_IMG"
 
@@ -97,10 +95,11 @@ yq -yi '.metadata.name = "web-terminal-index-mirror"' imageContentSourcePolicy.y
 yq -yi '. | del(.spec.repositoryDigestMirrors[] | select(.source | contains("web-terminal") | not ))' imageContentSourcePolicy.yaml
 
 # Fix the imageContentSourcePolicy to point to the correct images on quay
-sed -i 's/web-terminal-tech-preview-web-terminal-tooling-rhel8/web-terminal-tooling/g' imageContentSourcePolicy.yaml
-sed -i 's/web-terminal-tech-preview-web-terminal-exec-rhel8/web-terminal-exec/g' imageContentSourcePolicy.yaml
-sed -i 's/web-terminal-tech-preview-web-terminal-rhel8-operator/web-terminal-operator/g' imageContentSourcePolicy.yaml
-sed -i 's/rh-osbs-web-terminal-operator-metadata/web-terminal-operator-metadata/g' imageContentSourcePolicy.yaml
+sed -i -e 's/web-terminal-tech-preview-web-terminal-tooling-rhel8/web-terminal-tooling/g' \
+       -e 's/web-terminal-tech-preview-web-terminal-exec-rhel8/web-terminal-exec/g' \
+       -e 's/web-terminal-tech-preview-web-terminal-rhel8-operator/web-terminal-operator/g' \
+       -e 's/rh-osbs-web-terminal-operator-metadata/web-terminal-operator-metadata/g' \
+       imageContentSourcePolicy.yaml
 
 oc image mirror --insecure=true --filter-by-os=".*" -f mapped-images.txt
 
