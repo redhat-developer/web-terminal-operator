@@ -3,4 +3,3 @@ devworkspace-operator
 devworkspace-dependencies
 generated
 exported-manifests
-iib-manifests/mapping.txt
