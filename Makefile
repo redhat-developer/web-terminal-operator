@@ -144,7 +144,7 @@ ifndef INDEX_IMG
 endif
 
 _check_skopeo_installed:
-ifeq ($(shell command -v kubectl 2> /dev/null),)
+ifeq ($(shell command -v skopeo 2> /dev/null),)
 	$(error "skopeo is required for building and deploying bundle, but is not installed")
 endif
 
