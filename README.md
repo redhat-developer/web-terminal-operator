@@ -41,5 +41,11 @@ To remove the WebTerminal Operator and the CatalogSource use
 make uninstall unregister_catalogsource
 ```
 
-## Related Projects
-- The Web Terminal Operator is powered by the [devworkspace-operator](https://github.com/devfile/devworkspace-operator).
+### Related Projects
+- The Web Terminal Operator is powered by the [devworkspace-operator](https://github.com/devfile/devworkspace-operator)
+
+### Source Syncing
+| source | destination | sync job |
+| --- | --- | --- |
+| [devworkspace-controller](https://github.com/devfile/devworkspace-operator/) | [web-terminal](http://pkgs.devel.redhat.com/cgit/containers/web-terminal) | [Jenkins job](https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/web-terminal-sync-web-terminal-operator/) |
+| [web-terminal-operator](https://github.com/redhat-developer/web-terminal-operator) | [web-terminal-dev-operator-metadata](http://pkgs.devel.redhat.com/cgit/containers/web-terminal-dev-operator-metadata) | [Jenkins job](https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/web-terminal-sync-web-terminal-operator-metadata/)
