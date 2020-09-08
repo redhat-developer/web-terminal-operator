@@ -12,7 +12,8 @@ This repo includes a `Makefile` to simplify deploying the Operator to a cluster:
 | Makefile rule | Purpose |
 |---|---|
 | `make install` | Register the CatalogSource and install the operator on the cluster. |
-| `make regsiter_catalogsource` | Register the CatalogSource but do not install the operator. This enables the operator to be installed manually through OperatorHub. |
+| `make register_catalogsource` | Register the CatalogSource but do not install the operator. This enables the operator to be installed manually through OperatorHub. |
+| `make unregister_catalogsource` | Remove the CatalogSource from the cluster. |
 | `make uninstall` | Remove the installed operator from the cluster |
 | `make purge` | Like `make uninstall`, but do not fail if an error is encountered |
 
@@ -33,9 +34,9 @@ If you already have the index image pushed to your registry, then you can use th
 
 ## Removing the operator from a cluster
 
-To remove the WebTerminal Operator along with the CatalogSource use
+To remove the WebTerminal Operator and the CatalogSource use
 ```bash
-make uninstall
+make uninstall unregister_catalogsource
 ```
 
 ## Related Projects

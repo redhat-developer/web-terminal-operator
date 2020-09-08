@@ -51,7 +51,7 @@ export: _print_vars _check_imgs_env
 	# This command basic exports the index back into the old format
 	opm index export -c docker -f exported-manifests -i $(INDEX_IMG) -o web-terminal
 
-### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
+### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Image referenced by INDEX_IMG must be pushed and publicly available
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
 	INDEX_IMG=$(INDEX_IMG)
@@ -59,8 +59,13 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 
 	# replace references of catalogsource img with your image
 	sed -i.bak -e "s|quay.io/che-incubator/che-workspace-operator-index:latest|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
-	oc apply -f ./catalog-source.yaml
+	# use || to make sure we undo changes to catalog-source.yaml even if command fails.
+	oc apply -f ./catalog-source.yaml ||\
 	mv ./catalog-source.yaml.bak ./catalog-source.yaml
+
+### unregister_catalogsource: remove the catalogsource from the cluster.
+unregister_catalogsource: _print_vars
+	@oc delete -f ./catalog-source.yaml
 
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
 build_install: _print_vars build install
@@ -149,10 +154,10 @@ endif
 ### help: print this message
 help: Makefile
 	@echo 'Available rules:'
-	sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-32s -%s\n", $$1, $$2 }'
+	sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-34s -%s\n", $$1, $$2 }'
 	echo ''
 	echo 'Supported environment variables:'
-	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on. Set to $(DEVWORKSPACE_API_VERSION)'
-	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests. Set to $(DEVWORKSPACE_OPERATOR_VERSION)'
-	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
-	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
+	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image.                             Current value: $(BUNDLE_IMG)'
+	echo '    INDEX_IMG                      - The name of the olm registry index image.                              Current value: $(INDEX_IMG)'
+	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.   Current value: $(DEVWORKSPACE_API_VERSION)'
+	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.                              Current value: $(DEVWORKSPACE_OPERATOR_VERSION)'
