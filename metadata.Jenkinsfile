@@ -8,11 +8,11 @@ def DWNSTM_BRANCH = "web-terminal-1.0-rhel-8" // target branch in dist-git repo,
 
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
-	node("${buildNode}"){
+  node("${buildNode}"){
     stage "Sync repos"
     wrap([$class: 'TimestamperBuildWrapper']) {
       cleanWs()
-	    withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
+      withCredentials([string(credentialsId:'devstudio-release.token', variable: 'GITHUB_TOKEN'), 
       file(credentialsId: 'crw-build.keytab', variable: 'CRW_KEYTAB')]) {
         checkout([$class: 'GitSCM',
           branches: [[name: "${SOURCE_BRANCH}"]],
