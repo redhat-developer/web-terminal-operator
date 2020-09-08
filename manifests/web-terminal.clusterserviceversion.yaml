@@ -87,12 +87,17 @@ spec:
   description: |
     Start a Web Terminal in your browser with common CLI tools for interacting with the cluster.
 
+    **Note:** The OpenShift console integration that allows easily creating web terminal instances
+    and logging in automatically is available in OpenShift 4.5.3 and higher. In previous versions of
+    OpenShift, the operator can be installed but web terminals will have to be created and accessed
+    manually.
+
     ## How to Install
     Press the **Install** button, choose the upgrade strategy, and wait for the **Installed** Operator status.
 
     When the operator is installed, you will see a terminal button appear on the top right of the console.
 
-    Note: The Web Terminal does not work with kubeadmin at this point in time
+    **Note:** The Web Terminal does not work with cluster-admin users at this point in time.
 
     ## How to Uninstall
     Parts of the operator must be manually uninstalled for security purposes. It also allows you to save cluster resources,
