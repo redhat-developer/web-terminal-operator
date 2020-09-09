@@ -54,7 +54,6 @@ LABEL summary="$SUMMARY" \
       license="EPLv2" \
       maintainer="Joshua Pinkney <jpinkney@redhat.com>" \
       io.openshift.expose-services="" \
-      com.redhat.delivery.appregistry="false" \
       com.redhat.delivery.operator.bundle=true \
       com.redhat.openshift.versions="v4.5" \
       usage=""
