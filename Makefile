@@ -55,9 +55,9 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 
 	# replace references of catalogsource img with your image
 	sed -i.bak -e "s|quay.io/che-incubator/che-workspace-operator-index:latest|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
-	# use || to make sure we undo changes to catalog-source.yaml even if command fails.
-	oc apply -f ./catalog-source.yaml ||\
-	mv ./catalog-source.yaml.bak ./catalog-source.yaml
+	# use ';' to make sure we undo changes to catalog-source.yaml even if command fails.
+	oc apply -f ./catalog-source.yaml ; \
+	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
 ### unregister_catalogsource: remove the catalogsource from the cluster.
 unregister_catalogsource: _print_vars
