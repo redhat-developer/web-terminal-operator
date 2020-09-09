@@ -61,7 +61,7 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 
 ### unregister_catalogsource: remove the catalogsource from the cluster.
 unregister_catalogsource: _print_vars
-	@oc delete -f ./catalog-source.yaml
+	@oc delete -f ./catalog-source.yaml --ignore-not-found=true
 
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
 build_install: _print_vars build install
