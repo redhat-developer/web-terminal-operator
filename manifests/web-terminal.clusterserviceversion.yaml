@@ -42,7 +42,7 @@ metadata:
     operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
     repository: https://github.com/devfile/devworkspace-operator
     support: Red Hat, Inc.
-  name: web-terminal.v1.0.0
+  name: web-terminal.v1.0.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -360,4 +360,5 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-  version: 1.0.0
+  replaces: web-terminal.v1.0.0
+  version: 1.0.1
