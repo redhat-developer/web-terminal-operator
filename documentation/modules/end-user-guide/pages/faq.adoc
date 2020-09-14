@@ -1,0 +1,4 @@
+== FAQ
+[qanda]
+Can you use the web terminal with cluster admin::
+The Web Terminal does not work with cluster admin at this point in time

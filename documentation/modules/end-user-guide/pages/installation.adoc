@@ -1,0 +1,9 @@
+== Installation
+
+The Web Terminal can be installed via OperatorHub on Openshift Clusters. To install, press the **Install** button, choose the upgrade strategy, and wait for the **Installed** Operator status.
+
+When the operator is installed, and you refresh your page, you will see a terminal button appear on the top right of the console.
+
+image::../images/terminal.png[]
+
+**Note**: The Web Terminal does not work with cluster admin at this point in time
