@@ -1,4 +1,4 @@
-## Table of Contents
+# Table of Contents
 
 - [Introduction](#Introduction)
 - [How to use](#how-to-use)
@@ -6,7 +6,7 @@
 - [Uninstalling](#Uninstalling)
 - [FAQ](#FAQ)
 
-## Introduction
+# Introduction
 
 The Web Terminal Operator allows you to start a terminal inside of your browser with common CLI tools for interacting with the cluster.
 
@@ -17,7 +17,7 @@ manually.
 
 ![image](./images/introduction.png)
 
-## <a id="how-to-use"></a>How to use
+# <a id="how-to-use"></a>How to use
 
 After installing the Web Terminal operator, you can use the web terminal by first clicking on the terminal button in the top right of the OpenShift console
 
@@ -27,7 +27,7 @@ This will open up a web terminal at the bottom of your screen. This terminal wil
 
 ![image](./images/initialization.gif)
 
-## Installation
+# Installation
 
 The Web Terminal can be installed via OperatorHub on Openshift Clusters. To install, press the **Install** button, choose the upgrade strategy, and wait for the **Installed** Operator status.
 
@@ -39,7 +39,7 @@ When the operator is installed, and you refresh your page, you will see a termin
 
 **Note**: The Web Terminal does not work with cluster admin at this point in time
 
-## Uninstalling
+# Uninstalling
 
 Parts of the operator must be manually uninstalled for security purposes. It also allows you to save cluster resources,
     as terminals cannot be idled when the operator is uninstalled. In order to fully uninstall an admin must:
@@ -76,7 +76,7 @@ Parts of the operator must be manually uninstalled for security purposes. It als
     kubectl delete mutatingwebhookconfigurations controller.devfile.io
     kubectl delete validatingwebhookconfigurations controller.devfile.io
 
-## FAQ
+# FAQ
 1. Can you use the web terminal with cluster admin:
 
     The Web Terminal does not work with cluster admin at this point in time
