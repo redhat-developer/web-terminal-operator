@@ -1,10 +1,10 @@
 # Table of Contents
 
-- [Introduction](#Introduction)
+- [Introduction](#introduction)
 - [How to use](#how-to-use)
-- [Installation](#Installation)
-- [Uninstalling](#Uninstalling)
-- [FAQ](#FAQ)
+- [Installation](#installation)
+- [Uninstalling](#uninstalling)
+- [FAQ](#faq)
 
 # Introduction
 
