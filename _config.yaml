@@ -5,3 +5,4 @@ relative_links:
   collections: true
 include:
   - index.md
+title: Web Terminal Operator Documentation
