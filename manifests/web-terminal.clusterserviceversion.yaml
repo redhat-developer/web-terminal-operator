@@ -360,5 +360,4 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-  replaces: web-terminal.v1.0.0
   version: 1.0.1
