@@ -35,7 +35,7 @@ metadata:
     capabilities: Basic Install
     categories: Developer Tools
     certified: "false"
-    containerImage: quay.io/wto/web-terminal-operator:1.0.0
+    containerImage: quay.io/wto/web-terminal-operator:1.0.1
     createdAt: "2020-05-27T05:12:57Z"
     description: Start a Web Terminal in your browser with common CLI tools for interacting
       with the cluster
@@ -323,12 +323,12 @@ spec:
                     fieldRef:
                       fieldPath: spec.serviceAccountName
                 - name: RELATED_IMAGE_plugin_redhat_developer_web_terminal_4_5_0
-                  value: quay.io/wto/web-terminal-exec:1.0.0
+                  value: quay.io/wto/web-terminal-exec:1.0.1
                 - name: RELATED_IMAGE_web_terminal_tooling
-                  value: quay.io/wto/web-terminal-tooling:1.0.0
+                  value: quay.io/wto/web-terminal-tooling:1.0.1
                 - name: RELATED_IMAGE_devworkspace_webhook_server
-                  value: quay.io/wto/web-terminal-operator:1.0.0
-                image: quay.io/wto/web-terminal-operator:1.0.0
+                  value: quay.io/wto/web-terminal-operator:1.0.1
+                image: quay.io/wto/web-terminal-operator:1.0.1
                 imagePullPolicy: Always
                 name: devworkspace-controller
                 resources: {}
