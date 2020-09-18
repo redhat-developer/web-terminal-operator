@@ -4,6 +4,17 @@ The Web Terminal Operator provides users with the ability to create a terminal i
 
 **Note:** The OpenShift console integration that allows easily creating web terminal instances and logging in automatically is available in OpenShift 4.5.3 and higher. In previous versions of OpenShift, the operator can be installed but web terminals will have to be created and accessed manually.
 
+### Deploying next operator from next images
+After every commit in master index and bundle images are built and pushed to:
+[quay.io/repository/wto/web-terminal-operator-index:next](https://quay.io/repository/wto/web-terminal-operator-index?tab=tags)
+[quay.io/repository/wto/web-terminal-operator-metadata:next](https://quay.io/repository/wto/web-terminal-operator-metadata?tab=tags)
+
+To try them you can just do
+```
+make install
+```
+and wait until Operator is installed on the cluster.
+
 ## Deploying the operator from `next` images
 After every commit in master, the index and bundle images are built and pushed to
 [quay.io/repository/wto/web-terminal-operator-index:next](https://quay.io/repository/wto/web-terminal-operator-index?tab=tags) and

@@ -1,0 +1,11 @@
+# new for 4.5
+# https://osbs.readthedocs.io/en/latest/users.html#replacing-pullspecs
+operator_manifests:
+  manifests_dir: manifests
+  enable_digest_pinning: true
+  enable_repo_replacements: true
+  enable_registry_replacements: true
+
+platforms:
+  only:
+  - x86_64
