@@ -23,10 +23,7 @@ User crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDH
 " > ~/.ssh/config
 chmod 600 ~/.ssh/config
 
-# initialize kerberos
-export KRB5CCNAME=/var/tmp/crw-build_ccache
-kinit "crw-build/codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com@REDHAT.COM" -kt "${CRW_KEYTAB}"
-klist # verify working
+sudo yum install skopeo podman -y
 
 #########################################################################
 #
