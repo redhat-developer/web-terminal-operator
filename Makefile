@@ -43,7 +43,7 @@ gen_terminal_csv : update_dependencies
 
 	# Need to be in root of the controller in order to run operator-sdk
 	pushd devworkspace-dependencies > /dev/null
-	operator-sdk generate csv --apis-dir ./pkg/apis --csv-version 1.0.0 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
+	operator-sdk generate csv --apis-dir ./pkg/apis --csv-version 1.0.2 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
 	popd > /dev/null
 
 ### build: build the terminal bundle and index and push them to a docker registry
