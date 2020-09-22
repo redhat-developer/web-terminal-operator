@@ -3,8 +3,8 @@ SHELL := bash
 
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
-PRODUCTION_ENABLED ?= false
 LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.0.1
+PRODUCTION_ENABLED ?= false
 
 .ONESHELL:
 all: help
@@ -180,3 +180,4 @@ help: Makefile
 	echo '    PRODUCTION_ENABLED             - If you want to use production images. Set to $(PRODUCTION_ENABLED)'
 	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
 	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
+
