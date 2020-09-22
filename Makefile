@@ -3,6 +3,7 @@ SHELL := bash
 
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
+LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.0.1
 
 .ONESHELL:
 all: help
@@ -11,6 +12,8 @@ _print_vars:
 	@echo "Current env vars:"
 	echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	echo "    INDEX_IMG=$(INDEX_IMG)"
+	echo "    LATEST_INDEX_IMG=$(LATEST_INDEX_IMG)"
+
 ### update_dependencies: updates files from DevWorkspace API and Operators
 update_dependencies:
 	./update-dependencies.sh
@@ -37,7 +40,7 @@ build: _print_vars _check_imgs_env _check_skopeo_installed
 	BUNDLE_IMG=$(BUNDLE_IMG)
 	BUNDLE_IMG_DIGEST="$${BUNDLE_IMG%:*}@$${BUNDLE_DIGEST}"
 	# create / update and push an index that contains the bundle
-	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG)
+	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG) --from-index $(LATEST_INDEX_IMG)
 	docker push $(INDEX_IMG)
 
 ### export: export the bundles stored in the index to the exported-manifests folder
@@ -162,5 +165,6 @@ help: Makefile
 	echo 'Supported environment variables:'
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
+	echo '    LATEST_INDEX_IMG               - The name of the last versions index. Set to $(LATEST_INDEX_IMG)'
 	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
 	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
