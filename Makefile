@@ -101,8 +101,9 @@ uninstall:
 	kubectl delete workspaceroutings.controller.devfile.io --all-namespaces --all --wait
 	kubectl delete components.controller.devfile.io --all-namespaces --all --wait
 	# 2. Uninstall the Operator
-	kubectl delete subscriptions.operators.coreos.com web-terminal -n openshift-operators
-	kubectl delete csv web-terminal.v1.0.2 -n openshift-operators
+	kubectl delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found
+	$(eval WTO_CSV := $(shell kubectl get csv -o=json | jq -r '[.items[] | select (.metadata.name | contains("web-terminal.v1"))][0].metadata.name'))
+	kubectl delete csv ${WTO_CSV} -n openshift-operators
 	# 3. Remove CRDs
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io
@@ -137,7 +138,8 @@ purge:
 	fi
 	# 2. Uninstall the Operator
 	kubectl delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found
-	kubectl delete csv web-terminal.v1.0.2 -n openshift-operators
+	$(eval WTO_CSV := $(shell kubectl get csv -o=json | jq -r '[.items[] | select (.metadata.name | contains("web-terminal.v1"))][0].metadata.name'))
+	kubectl delete csv ${WTO_CSV} -n openshift-operators || true
 	# 3. Remove CRDs
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io --ignore-not-found
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io --ignore-not-found
