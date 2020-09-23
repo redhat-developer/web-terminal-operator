@@ -15,21 +15,19 @@ _print_vars:
 	echo "    INDEX_IMG=$(INDEX_IMG)"
 	echo "    LATEST_INDEX_IMG=$(LATEST_INDEX_IMG)"
 
-### _select_devworkspace_image: applies production images to the manifest if $(PRODUCTION_ENABLED) is true
-_select_devworkspace_image:
+_select_controller_image:
 ifeq ($(PRODUCTION_ENABLED),true)
 	sed -i.bak \
-			-e "s|quay.io/devfile/devworkspace-controller:next|quay.io/wto/web-terminal-operator:latest|g" \
-			./manifests/web-terminal.clusterserviceversion.yaml
-		rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
+	  -e "s|quay.io/devfile/devworkspace-controller:next|quay.io/wto/web-terminal-operator:latest|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
+	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 endif
 
-### _reset_devworkspace_image: resets the devworkspace image to the default
-_reset_devworkspace_image:
+_reset_controller_image:
 ifeq ($(PRODUCTION_ENABLED),true)
 	sed -i.bak \
-			-e "s|quay.io/wto/web-terminal-operator:latest|quay.io/devfile/devworkspace-controller:next|g" \
-			./manifests/web-terminal.clusterserviceversion.yaml
+	  -e "s|quay.io/wto/web-terminal-operator:latest|quay.io/devfile/devworkspace-controller:next|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 endif
 
@@ -81,13 +79,15 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	oc apply -f ./catalog-source.yaml ; \
 	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
+	oc apply -f ./imageContentSourcePolicy.yaml
+
 ### unregister_catalogsource: unregister the catalogsource and delete the imageContentSourcePolicy
 unregister_catalogsource:
 	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
 	oc delete imagecontentsourcepolicy web-terminal-index-mirror --ignore-not-found
 
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
-build_install: _print_vars _select_devworkspace_image build _reset_devworkspace_image install
+build_install: _print_vars _select_controller_image build _reset_controller_image install
 
 ### install: creates catalog source along with operator subscription on the cluster
 install: _print_vars register_catalogsource
@@ -179,5 +179,6 @@ help: Makefile
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
 	echo '    LATEST_INDEX_IMG               - The name of the last versions index. Set to $(LATEST_INDEX_IMG)'
+	echo '    PRODUCTION_ENABLED             - If you want to use production images. Set to $(PRODUCTION_ENABLED)'
 	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
 	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
