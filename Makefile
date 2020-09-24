@@ -102,6 +102,7 @@ uninstall:
 	kubectl delete components.controller.devfile.io --all-namespaces --all --wait
 	# 2. Uninstall the Operator
 	kubectl delete subscriptions.operators.coreos.com web-terminal -n openshift-operators
+	kubectl delete csv web-terminal.v1.0.2 -n openshift-operators
 	# 3. Remove CRDs
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io
@@ -117,8 +118,6 @@ uninstall:
 	# 6. Remove mutating/validating webhooks configuration
 	kubectl delete mutatingwebhookconfigurations controller.devfile.io
 	kubectl delete validatingwebhookconfigurations controller.devfile.io
-	# Extra step that is not described in admin guide
-	kubectl delete csv web-terminal.v1.0.0 -n openshift-operators
 
 ### purge: uninstalls the Web Terminal Operator in the safe way where every object is removed without failing when not found. Use it if uninstall fails because of no objects found
 purge:
@@ -138,6 +137,7 @@ purge:
 	fi
 	# 2. Uninstall the Operator
 	kubectl delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found
+	kubectl delete csv web-terminal.v1.0.2 -n openshift-operators
 	# 3. Remove CRDs
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io --ignore-not-found
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io --ignore-not-found
@@ -153,8 +153,6 @@ purge:
 	# 6. Remove mutating/validating webhooks configuration
 	kubectl delete mutatingwebhookconfigurations controller.devfile.io --ignore-not-found
 	kubectl delete validatingwebhookconfigurations controller.devfile.io --ignore-not-found
-	# Extra step that is not described in admin guide
-	kubectl delete csv web-terminal.v1.0.0 -n openshift-operators --ignore-not-found
 
 _check_imgs_env:
 ifndef BUNDLE_IMG
