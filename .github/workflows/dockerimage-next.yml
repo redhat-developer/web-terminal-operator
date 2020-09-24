@@ -10,7 +10,7 @@ name: Next Dockerimages
 
 on:
   push:
-    branches: [ master ]
+    branches: [ v1.0.x ]
 
 jobs:
 

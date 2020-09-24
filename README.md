@@ -1,6 +1,6 @@
 # Web Terminal Operator
 
-Web Terminal Operator provides an ability for users to use terminal embedded into OpenShift Console.
+The Web Terminal Operator provides users with the ability to create a terminal instance embedded in the OpenShift Console.
 
 **Note:** The OpenShift console integration that allows easily creating web terminal instances and logging in automatically is available in OpenShift 4.5.3 and higher. In previous versions of OpenShift, the operator can be installed but web terminals will have to be created and accessed manually.
 
@@ -15,30 +15,48 @@ make install
 ```
 and wait until Operator is installed on the cluster.
 
-There is also an ability to register CatalogSource with WebTerminal Operator without installing it, to do it:
-```bash
-make register_catalogsource
-```
-After that admins are able to set WebTerminal Operator on OperatorHub and install it when needed.
+## Deploying the operator from `next` images
+After every commit in master, the index and bundle images are built and pushed to
+[quay.io/repository/wto/web-terminal-operator-index:next](https://quay.io/repository/wto/web-terminal-operator-index?tab=tags) and
+[quay.io/repository/wto/web-terminal-operator-metadata:next](https://quay.io/repository/wto/web-terminal-operator-metadata?tab=tags)
 
-### Deploying the operator from local sources
-In order to deploy the operator you need to first create the olm bundle, olm index, push that to a docker registry then create catalog source with and install WebTerminal Operator on your cluster.
-You can do this by using the Makefile build_install rule:
+This repo includes a `Makefile` to simplify deploying the Operator to a cluster:
+
+| Makefile rule | Purpose |
+|---|---|
+| `make install` | Register the CatalogSource and install the operator on the cluster. |
+| `make register_catalogsource` | Register the CatalogSource but do not install the operator. This enables the operator to be installed manually through OperatorHub. |
+| `make unregister_catalogsource` | Remove the CatalogSource from the cluster. |
+| `make uninstall` | Remove the installed operator from the cluster |
+| `make purge` | Like `make uninstall`, but do not fail if an error is encountered |
+
+The commands above require being logged in to the cluster as a `cluster-admin`. See `make help` for a full list of supported environment variables and rules available.
+
+## Deploying the operator from local sources
+In order to deploy the operator from this repo directly, you need to first create the olm bundle and index, push that to a docker registry, and then create a CatalogSource referencing those images.
+
+This can be done in one step using the Makefile `build_install` rule:
 ```bash
+BUNDLE_IMG=#<your bundle image>
+INDEX_IMG=#<your index image>
 make build_install
 ```
-Before doing this you need to set environment variables BUNDLE_IMG, INDEX_IMG
+This will build and push images defined by the environment variables `BUNDLE_IMG` and `INDEX_IMG`, and register a CatalogSource on the cluster. You may need to set the repos used for the index and bundle to be public to ensure they can be accessed from the cluster.
 
-When this is done running you'll need to go to your docker registry and make the created repos public (they are private by default)
+If you already have the index image pushed to your registry, then you can use the `make install` or `make register_catalogsource` rules with the environment variables defined above to install those images on the cluster.
 
-If you already have the index image on your docker registry then you can use `make install` or `make register_catalogsource` makefile rules.
+## Removing the operator from a cluster
 
-### Removing operator
-
-To remove the WebTerminal Operator along with CatalogSource use
+To remove the WebTerminal Operator and the CatalogSource use
 ```bash
-make uninstall
+make uninstall unregister_catalogsource
 ```
 
 ### Related Projects
 - The Web Terminal Operator is powered by the [devworkspace-operator](https://github.com/devfile/devworkspace-operator)
+
+### Source Syncing
+| source | destination | sync job |
+| --- | --- | --- |
+| [devworkspace-controller](https://github.com/devfile/devworkspace-operator/) | [web-terminal](http://pkgs.devel.redhat.com/cgit/containers/web-terminal) | [Jenkins job](https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/web-terminal-sync-web-terminal-operator/) |
+| [web-terminal-operator](https://github.com/redhat-developer/web-terminal-operator) | [web-terminal-dev-operator-metadata](http://pkgs.devel.redhat.com/cgit/containers/web-terminal-dev-operator-metadata) | [Jenkins job](https://codeready-workspaces-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/web-terminal-sync-web-terminal-operator-metadata/)

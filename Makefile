@@ -2,7 +2,9 @@ SHELL := bash
 .SHELLFLAGS = -ec
 
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
-INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.0.0-11
+INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
+PRODUCTION_ENABLED ?= false
+LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.0.1
 
 .ONESHELL:
 all: help
@@ -11,6 +13,24 @@ _print_vars:
 	@echo "Current env vars:"
 	echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	echo "    INDEX_IMG=$(INDEX_IMG)"
+	echo "    LATEST_INDEX_IMG=$(LATEST_INDEX_IMG)"
+
+_select_controller_image:
+ifeq ($(PRODUCTION_ENABLED),true)
+	sed -i.bak \
+	  -e "s|quay.io/devfile/devworkspace-controller:next|quay.io/wto/web-terminal-operator:latest|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
+	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
+endif
+
+_reset_controller_image:
+ifeq ($(PRODUCTION_ENABLED),true)
+	sed -i.bak \
+	  -e "s|quay.io/wto/web-terminal-operator:latest|quay.io/devfile/devworkspace-controller:next|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
+	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
+endif
+
 ### update_dependencies: updates files from DevWorkspace API and Operators
 update_dependencies:
 	./update-dependencies.sh
@@ -23,7 +43,7 @@ gen_terminal_csv : update_dependencies
 
 	# Need to be in root of the controller in order to run operator-sdk
 	pushd devworkspace-dependencies > /dev/null
-	operator-sdk generate csv --apis-dir ./pkg/apis --csv-version 1.0.0 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
+	operator-sdk generate csv --apis-dir ./pkg/apis --csv-version 1.0.2 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
 	popd > /dev/null
 
 ### build: build the terminal bundle and index and push them to a docker registry
@@ -37,7 +57,7 @@ build: _print_vars _check_imgs_env _check_skopeo_installed
 	BUNDLE_IMG=$(BUNDLE_IMG)
 	BUNDLE_IMG_DIGEST="$${BUNDLE_IMG%:*}@$${BUNDLE_DIGEST}"
 	# create / update and push an index that contains the bundle
-	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG)
+	opm index add -c docker --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG) --from-index $(LATEST_INDEX_IMG)
 	docker push $(INDEX_IMG)
 
 ### export: export the bundles stored in the index to the exported-manifests folder
@@ -47,7 +67,7 @@ export: _print_vars _check_imgs_env
 	# This command basic exports the index back into the old format
 	opm index export -c docker -f exported-manifests -i $(INDEX_IMG) -o web-terminal
 
-### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Must have $(INDEX_IMG) available on docker registry already and have it set to public
+### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Image referenced by INDEX_IMG must be pushed and publicly available
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
 	INDEX_IMG=$(INDEX_IMG)
@@ -55,10 +75,11 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 
 	# replace references of catalogsource img with your image
 	sed -i.bak -e "s|quay.io/che-incubator/che-workspace-operator-index:latest|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
-	oc apply -f ./catalog-source.yaml
-	mv ./catalog-source.yaml.bak ./catalog-source.yaml
+	# use ';' to make sure we undo changes to catalog-source.yaml even if command fails.
+	oc apply -f ./catalog-source.yaml ; \
+	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
-	oc apply -f ./mirror-index-manifests/imageContentSourcePolicy.yaml
+	oc apply -f ./imageContentSourcePolicy.yaml
 
 ### unregister_catalogsource: unregister the catalogsource and delete the imageContentSourcePolicy
 unregister_catalogsource:
@@ -66,7 +87,7 @@ unregister_catalogsource:
 	oc delete imagecontentsourcepolicy web-terminal-index-mirror --ignore-not-found
 
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
-build_install: _print_vars build install
+build_install: _print_vars _select_controller_image build _reset_controller_image install
 
 ### install: creates catalog source along with operator subscription on the cluster
 install: _print_vars register_catalogsource
@@ -152,10 +173,12 @@ endif
 ### help: print this message
 help: Makefile
 	@echo 'Available rules:'
-	sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-32s -%s\n", $$1, $$2 }'
+	sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-34s -%s\n", $$1, $$2 }'
 	echo ''
 	echo 'Supported environment variables:'
-	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
-	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
+	echo '    LATEST_INDEX_IMG               - The name of the last versions index. Set to $(LATEST_INDEX_IMG)'
+	echo '    PRODUCTION_ENABLED             - If you want to use production images. Set to $(PRODUCTION_ENABLED)'
+	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
+	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'

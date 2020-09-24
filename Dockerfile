@@ -10,8 +10,8 @@
 #
 
 FROM scratch
-ADD manifests /manifests
-ADD metadata /metadata
+COPY manifests /manifests
+COPY metadata /metadata
 
 # These are three labels needed to control how the pipeline should handle this container image
 # This first label tells the pipeline that this is a bundle image and should be
