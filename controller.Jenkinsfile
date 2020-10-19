@@ -33,7 +33,7 @@ timeout(120) {
           export DWNSTM_BRANCH=''' + DWNSTM_BRANCH + '''
           export CRW_KEYTAB=''' + CRW_KEYTAB + '''
           export USER=''' + USER + '''
-          curl -L -s -S https://raw.githubusercontent.com/redhat-developer/web-terminal-operator/master/bootstrap-sync.sh -o ./sync.sh
+          curl -L -s -S https://raw.githubusercontent.com/redhat-developer/web-terminal-operator/v1.0.x/bootstrap-sync.sh -o ./sync.sh
           chmod +x ./sync.sh
           ./sync.sh
           '''
