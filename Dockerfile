@@ -20,7 +20,7 @@ LABEL com.redhat.delivery.operator.bundle=true
 
 # This second label tells the pipeline which versions of OpenShift the operator supports (4.5+).
 # This is used to control which index images should include this operator.
-LABEL com.redhat.openshift.versions="v4.5"
+LABEL com.redhat.openshift.versions="v4.6"
 
 # This third label tells the pipeline that this operator should *also* be supported on OCP 4.4 and
 # earlier.  It is used to control whether or not the pipeline should attempt to automatically
@@ -50,10 +50,8 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
       com.redhat.component="$PRODNAME-$COMPNAME-container" \
       name="$PRODNAME/$COMPNAME" \
-      version="1.0.2" \
+      version="1.1.0" \
       license="EPLv2" \
       maintainer="Joshua Pinkney <jpinkney@redhat.com>" \
       io.openshift.expose-services="" \
-      com.redhat.delivery.operator.bundle=true \
-      com.redhat.openshift.versions="v4.5" \
       usage=""
