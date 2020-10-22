@@ -38,8 +38,8 @@ LABEL operators.operatorframework.io.bundle.channels.v1=alpha
 LABEL operators.operatorframework.io.bundle.channel.default.v1=alpha
 
 # append Brew metadata here
-ENV SUMMARY="Web Terminal operator-metadata container" \
-    DESCRIPTION="Web Terminal operator-metadata container" \
+ENV SUMMARY="Web Terminal - Operator Metadata container" \
+    DESCRIPTION="Web Terminal - Operator Metadata container" \
     PRODNAME="web-terminal" \
     COMPNAME="operator-metadata"
  
