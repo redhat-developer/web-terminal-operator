@@ -22,12 +22,6 @@ LABEL com.redhat.delivery.operator.bundle=true
 # This is used to control which index images should include this operator.
 LABEL com.redhat.openshift.versions="v4.6"
 
-# This third label tells the pipeline that this operator should *also* be supported on OCP 4.4 and
-# earlier.  It is used to control whether or not the pipeline should attempt to automatically
-# backport this content into the old appregistry format and upload it to the quay.io application
-# registry endpoints.
-LABEL com.redhat.delivery.backport=true
-
 # The rest of these labels are copies of the same content in annotations.yaml and are needed by OLM
 # Note the package name and channels which are very important!
 LABEL operators.operatorframework.io.bundle.mediatype.v1=registry+v1
