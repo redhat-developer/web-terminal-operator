@@ -1,10 +1,11 @@
 #!/usr/bin/env groovy
 
+// PARAMETERS for this pipeline:
+// SOURCE_BRANCH = "v1.0.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
+// DWNSTM_BRANCH = 'web-terminal-1.0-rhel-8' // target branch in dist-git repo, eg., web-terminal-1.0-rhel-8
+
 def SOURCE_REPO = "redhat-developer/web-terminal-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/web-terminal-dev-operator-metadata" // dist-git repo to use as target for everything
-
-def SOURCE_BRANCH = "v1.0.x"         // target branch in GH repo, eg., master or v1.0.x
-def DWNSTM_BRANCH = "web-terminal-1.0-rhel-8" // target branch in dist-git repo, eg., web-terminal-1.0-rhel-8
 
 def buildNode = "rhel7-releng" // slave label
 timeout(120) {
