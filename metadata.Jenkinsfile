@@ -3,7 +3,7 @@
 // PARAMETERS for this pipeline:
 // SOURCE_BRANCH = "v1.0.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
 // DWNSTM_BRANCH = 'web-terminal-1.0-rhel-8' // target branch in dist-git repo, eg., web-terminal-1.0-rhel-8
-// VERSION = "1.1.0" // The downstream version
+// VERSION = "1.1" // The downstream version
 
 def SOURCE_REPO = "redhat-developer/web-terminal-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/web-terminal-dev-operator-metadata" // dist-git repo to use as target for everything
@@ -67,7 +67,7 @@ timeout(120) {
           # Change all references of quay.io/wto to registry-proxy.engineering.redhat.com/rh-osbs
           sed -i -e 's|quay.io/wto|registry-proxy.engineering.redhat.com/rh-osbs|g' \
                   -e 's|quay.io/devfile/devworkspace-controller:next|registry-proxy.engineering.redhat.com/rh-osbs/web-terminal-operator:''' + VERSION + '''|g' \
-                  -e 's|:latest|:''' + VERSION + '''|g'
+                  -e 's|:latest|:''' + VERSION + '''|g' \
                   manifests/web-terminal.clusterserviceversion.yaml
 
           if [[ $(git diff --name-only) ]]; then # file changed
