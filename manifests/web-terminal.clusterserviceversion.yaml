@@ -36,13 +36,13 @@ metadata:
     categories: Developer Tools
     certified: "false"
     containerImage: quay.io/devfile/devworkspace-controller:next
-    createdAt: "2020-05-27T05:12:57Z"
+    createdAt: "2020-10-26T07:24:32Z"
     description: Start a Web Terminal in your browser with common CLI tools for interacting
       with the cluster
     operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
     repository: https://github.com/devfile/devworkspace-operator
     support: Red Hat, Inc.
-  name: web-terminal.v1.0.2
+  name: web-terminal.v1.1.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -371,4 +371,4 @@ spec:
   provider:
     name: Red Hat
   replaces: web-terminal.v1.0.1
-  version: 1.0.2
+  version: 1.1.0
