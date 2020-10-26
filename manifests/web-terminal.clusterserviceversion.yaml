@@ -40,7 +40,7 @@ metadata:
     description: Start a Web Terminal in your browser with common CLI tools for interacting
       with the cluster
     operators.operatorframework.io/internal-objects: '["workspaceroutings.controller.devfile.io","components.controller.devfile.io"]'
-    repository: https://github.com/devfile/devworkspace-operator
+    repository: https://github.com/redhat-developer/web-terminal-operator/
     support: Red Hat, Inc.
   name: web-terminal.v1.1.0
   namespace: placeholder
