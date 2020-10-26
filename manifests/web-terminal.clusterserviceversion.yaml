@@ -54,7 +54,7 @@ spec:
       version: v1alpha1
     - description: Start a Web Terminal in your browser with common CLI tools for
         interacting with the cluster
-      displayName: Workspace
+      displayName: DevWorkspace
       kind: DevWorkspace
       name: devworkspaces.workspace.devfile.io
       specDescriptors:
@@ -64,7 +64,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       statusDescriptors:
-      - description: Workspace status
+      - description: DevWorkspace status
         displayName: Status
         path: phase
         x-descriptors:
