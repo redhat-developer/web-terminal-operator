@@ -3,6 +3,7 @@
 // PARAMETERS for this pipeline:
 // SOURCE_BRANCH = "v1.0.x" // branch of source repo from which to find and sync commits to pkgs.devel repo
 // DWNSTM_BRANCH = 'web-terminal-1.0-rhel-8' // target branch in dist-git repo, eg., web-terminal-1.0-rhel-8
+// VERSION = "1.1" // The downstream version
 
 def SOURCE_REPO = "redhat-developer/web-terminal-operator" //source repo from which to find and sync commits to pkgs.devel repo
 def DWNSTM_REPO = "containers/web-terminal-dev-operator-metadata" // dist-git repo to use as target for everything
@@ -54,10 +55,21 @@ timeout(120) {
           chmod +x /tmp/updateBaseImages.sh
           /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
 
+          # Remove all the env variables that we should not publish
+          yq -yi '. | del(.spec.install.spec.deployments[0].spec.template.spec.containers[0].env[] |
+            select(any(
+              index("RELATED_IMAGE_plugin_redhat_developer_web_terminal_nightly"),
+              index("RELATED_IMAGE_plugin_redhat_developer_web_terminal_dev_4_5_0"),
+              index("RELATED_IMAGE_plugin_redhat_developer_web_terminal_dev_nightly"),
+              index("RELATED_IMAGE_plugin_eclipse_cloud_shell_nightly"),
+              index("RELATED_IMAGE_openshift_oauth_proxy"))))' manifests/web-terminal.clusterserviceversion.yaml
+
           # Change all references of quay.io/wto to registry-proxy.engineering.redhat.com/rh-osbs
-          sed -i -e 's/quay.io/registry-proxy.engineering.redhat.com/g' \
-                  -e 's/wto/rh-osbs/g' \
+          sed -i -e 's|quay.io/wto|registry-proxy.engineering.redhat.com/rh-osbs|g' \
+                  -e 's|quay.io/devfile/devworkspace-controller:next|registry-proxy.engineering.redhat.com/rh-osbs/web-terminal-operator:''' + VERSION + '''|g' \
+                  -e 's|:latest|:''' + VERSION + '''|g' \
                   manifests/web-terminal.clusterserviceversion.yaml
+
           if [[ $(git diff --name-only) ]]; then # file changed
             git add .
             git commit -s -m "[sync] Updated from ${SOURCE_REPO} @ ${SOURCE_SHA:0:8} " || true

@@ -20,13 +20,7 @@ LABEL com.redhat.delivery.operator.bundle=true
 
 # This second label tells the pipeline which versions of OpenShift the operator supports (4.5+).
 # This is used to control which index images should include this operator.
-LABEL com.redhat.openshift.versions="v4.5"
-
-# This third label tells the pipeline that this operator should *also* be supported on OCP 4.4 and
-# earlier.  It is used to control whether or not the pipeline should attempt to automatically
-# backport this content into the old appregistry format and upload it to the quay.io application
-# registry endpoints.
-LABEL com.redhat.delivery.backport=true
+LABEL com.redhat.openshift.versions="v4.6"
 
 # The rest of these labels are copies of the same content in annotations.yaml and are needed by OLM
 # Note the package name and channels which are very important!
@@ -38,8 +32,8 @@ LABEL operators.operatorframework.io.bundle.channels.v1=alpha
 LABEL operators.operatorframework.io.bundle.channel.default.v1=alpha
 
 # append Brew metadata here
-ENV SUMMARY="Web Terminal operator-metadata container" \
-    DESCRIPTION="Web Terminal operator-metadata container" \
+ENV SUMMARY="Web Terminal - Operator Metadata container" \
+    DESCRIPTION="Web Terminal - Operator Metadata container" \
     PRODNAME="web-terminal" \
     COMPNAME="operator-metadata"
  
@@ -50,10 +44,8 @@ LABEL summary="$SUMMARY" \
       io.openshift.tags="$PRODNAME,$COMPNAME" \
       com.redhat.component="$PRODNAME-$COMPNAME-container" \
       name="$PRODNAME/$COMPNAME" \
-      version="1.0.2" \
+      version="1.1" \
       license="EPLv2" \
       maintainer="Joshua Pinkney <jpinkney@redhat.com>" \
       io.openshift.expose-services="" \
-      com.redhat.delivery.operator.bundle=true \
-      com.redhat.openshift.versions="v4.5" \
       usage=""
