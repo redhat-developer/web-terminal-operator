@@ -51,6 +51,7 @@ build: _print_vars _check_imgs_env _check_skopeo_installed
 	@rm -rf ./generated
 	# Create the bundle and push it to a docker registry
 	docker build -f Dockerfile -t $(BUNDLE_IMG) .
+	docker push $(BUNDLE_IMG)
 
 	BUNDLE_DIGEST=$$(skopeo inspect docker://$(BUNDLE_IMG) | jq -r '.Digest')
 	BUNDLE_IMG=$(BUNDLE_IMG)
