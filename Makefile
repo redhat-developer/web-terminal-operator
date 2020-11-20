@@ -4,7 +4,7 @@ SHELL := bash
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 PRODUCTION_ENABLED ?= false
-LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.0.1
+LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.1.0
 
 .ONESHELL:
 all: help
