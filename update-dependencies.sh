@@ -4,8 +4,10 @@ set -e
 
 SCRIPT_DIR=${PROJECT_ROOT:-$(cd "$(dirname "$0")" || exit; pwd)}
 
-CRDS_DIR="${SCRIPT_DIR}/devworkspace-crds"
-OPERATOR_DIR="${SCRIPT_DIR}/devworkspace-operator"
+DEPENDENCIES_DIR="${SCRIPT_DIR}/dependencies"
+
+CRDS_DIR="${DEPENDENCIES_DIR}/devworkspace-crds"
+OPERATOR_DIR="${DEPENDENCIES_DIR}/devworkspace-operator"
 
 CRDS_REPO="https://github.com/devfile/kubernetes-api.git"
 OPERATOR_REPO="https://github.com/devfile/devworkspace-operator.git"
@@ -15,7 +17,7 @@ DEVWORKSPACE_API_VERSION=${DEVWORKSPACE_API_VERSION:-"v1alpha1"}
 # but it's going to be replaced with master or even eventually with v1alpha1 devworkspace operator branch or tag
 DEVWORKSPACE_OPERATOR_VERSION=${DEVWORKSPACE_OPERATOR_VERSION:-"400b4b7"}
 
-COMBINED_DIR="${SCRIPT_DIR}/devworkspace-dependencies"
+COMBINED_DIR="${DEPENDENCIES_DIR}/devworkspace-dependencies"
 
 function log() {
   if [ -t 1 ]; then

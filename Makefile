@@ -42,7 +42,7 @@ gen_terminal_csv : update_dependencies
 	find ./manifests -type f -not -name 'web-terminal.clusterserviceversion.yaml' -delete
 
 	# Need to be in root of the controller in order to run operator-sdk
-	pushd devworkspace-dependencies > /dev/null
+	pushd dependencies/devworkspace-dependencies > /dev/null
 	operator-sdk generate csv --apis-dir ./pkg/apis --csv-version 1.0.2 --make-manifests --update-crds --operator-name "web-terminal" --output-dir ../
 	popd > /dev/null
 
@@ -64,7 +64,7 @@ export: _print_vars _check_imgs_env
 	@rm -rf ./generated/exported-manifests
 	# Export the bundles with the name web-terminal inside of $(INDEX_IMG)
 	# This command basic exports the index back into the old format
-	opm index export -c docker -f exported-manifests -i $(INDEX_IMG) -o web-terminal
+	opm index export -c docker -f ./generated/exported-manifests -i $(INDEX_IMG) -o web-terminal
 
 ### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Image referenced by INDEX_IMG must be pushed and publicly available
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
