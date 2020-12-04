@@ -1,5 +1,2 @@
-devworkspace-crds
-devworkspace-operator
-devworkspace-dependencies
+dependencies
 generated
-exported-manifests
