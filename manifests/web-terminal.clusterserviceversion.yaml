@@ -35,7 +35,7 @@ metadata:
     capabilities: Basic Install
     categories: Developer Tools
     certified: "false"
-    containerImage: quay.io/devfile/devworkspace-controller:next
+    containerImage: quay.io/devfile/devworkspace-controller:v1.0.0-alphax
     createdAt: "2020-10-26T07:24:32Z"
     description: Start a Web Terminal in your browser with common CLI tools for interacting
       with the cluster
@@ -337,8 +337,8 @@ spec:
                 - name: RELATED_IMAGE_openshift_oauth_proxy
                   value: openshift/oauth-proxy:latest
                 - name: RELATED_IMAGE_devworkspace_webhook_server
-                  value: quay.io/devfile/devworkspace-controller:next
-                image: quay.io/devfile/devworkspace-controller:next
+                  value: quay.io/devfile/devworkspace-controller:v1.0.0-alphax
+                image: quay.io/devfile/devworkspace-controller:v1.0.0-alphax
                 imagePullPolicy: Always
                 name: devworkspace-controller
                 resources: {}

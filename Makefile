@@ -18,7 +18,7 @@ _print_vars:
 _select_controller_image:
 ifeq ($(PRODUCTION_ENABLED),true)
 	sed -i.bak \
-	  -e "s|quay.io/devfile/devworkspace-controller:next|quay.io/wto/web-terminal-operator:latest|g" \
+	  -e "s|quay.io/devfile/devworkspace-controller:v1.0.0-alphax|quay.io/wto/web-terminal-operator:latest|g" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 endif
@@ -26,7 +26,7 @@ endif
 _reset_controller_image:
 ifeq ($(PRODUCTION_ENABLED),true)
 	sed -i.bak \
-	  -e "s|quay.io/wto/web-terminal-operator:latest|quay.io/devfile/devworkspace-controller:next|g" \
+	  -e "s|quay.io/wto/web-terminal-operator:latest|quay.io/devfile/devworkspace-controller:v1.0.0-alphax|g" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 endif
