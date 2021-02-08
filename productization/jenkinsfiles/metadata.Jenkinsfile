@@ -66,7 +66,7 @@ timeout(120) {
 
           # Change all references of quay.io/wto to registry-proxy.engineering.redhat.com/rh-osbs
           sed -i -e 's|quay.io/wto|registry-proxy.engineering.redhat.com/rh-osbs|g' \
-                  -e 's|quay.io/devfile/devworkspace-controller:next|registry-proxy.engineering.redhat.com/rh-osbs/web-terminal-operator:''' + VERSION + '''|g' \
+                  -e 's|quay.io/devfile/devworkspace-controller:v1.0.0-alphax|registry-proxy.engineering.redhat.com/rh-osbs/web-terminal-operator:''' + VERSION + '''|g' \
                   -e 's|:latest|:''' + VERSION + '''|g' \
                   manifests/web-terminal.clusterserviceversion.yaml
 
