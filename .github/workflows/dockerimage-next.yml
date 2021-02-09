@@ -40,7 +40,7 @@ jobs:
       run: |
         mkdir -p ~/bin
         cp ~/cache/operator-sdk-${OPERATOR_SDK_VERSION} ~/bin/operator-sdk
-        echo "::add-path::$HOME/bin"
+        echo "$HOME/bin" >> $GITHUB_PATH
 
     - name: Cache OPM ${{ env.OPM_VERSION }}
       uses: actions/cache@v2
@@ -60,7 +60,7 @@ jobs:
       run: |
         mkdir -p ~/bin
         cp ~/cache/opm${OPM_VERSION} ~/bin/opm
-        echo "::add-path::$HOME/bin"
+        echo "$HOME/bin" >> $GITHUB_PATH
 
     - name: Checkout web-terminal-operator source code
       uses: actions/checkout@v2
