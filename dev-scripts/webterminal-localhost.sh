@@ -21,6 +21,7 @@ function parseArgs() {
         --all) DO_EMULATE_IN_CLUSTER="true"; DO_FRONTEND="true"; DO_BACKEND="true"; DO_RUN="true";;
         --install) DO_INSTALL="true";;
         --uninstall) DO_UNINSTALL="true";;
+        --setup-oauth) DO_SETUP_OAUTH="true";;
         -h|--help) help; exit 0 ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
@@ -44,6 +45,9 @@ function help() {
                  The symlink is propagated into
                  \$(systemd-path user-binaries) -> $(systemd-path user-binaries)
       --uninstall: removing the installed symlink.
+
+      --setup-oauth: prepare the cluster and openshift-console folder to run bridge with OAuth
+            More see: https://github.com/openshift/console#openshift-with-authentication
 
       --help: get this info message
 
@@ -143,6 +147,16 @@ function patch_frontend() {
   git --no-pager diff $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
 }
 
+function set_up_oauth() {
+  echo "Creating OAuth client"
+  oc process -f examples/console-oauth-client.yaml | oc apply -f -
+  oc get oauthclient console-oauth-client -o jsonpath='{.secret}' > examples/console-client-secret
+
+  echo "Fetching CA"
+  oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
+  jq '.items[0].data."ca.crt"' -r | python -m base64 -d > examples/ca.crt
+}
+
 parseArgs $@
 
 scriptdir=$(dirname "$0")
@@ -158,6 +172,8 @@ scriptdir=$(dirname "$0")
 [ ! -z "$DO_FRONTEND_PATCH" ] && patch_frontend
 
 [ ! -z "$DO_FRONTEND" ] && update_frontend
+
+[ ! -z "$DO_SETUP_OAUTH" ] && set_up_oauth
 
 if [[ ! -z "$DO_RUN" ]]; then
   echo "Launching $PWD/examples/run-bridge.sh"
