@@ -73,7 +73,7 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
 
 	# replace references of catalogsource img with your image
-	sed -i.bak -e "s|quay.io/che-incubator/che-workspace-operator-index:latest|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
+	sed -i.bak -e "s|quay.io/wto/web-terminal-operator-index:next|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
 	# use ';' to make sure we undo changes to catalog-source.yaml even if command fails.
 	oc apply -f ./catalog-source.yaml ; \
 	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
