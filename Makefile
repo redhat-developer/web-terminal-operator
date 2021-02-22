@@ -49,7 +49,7 @@ gen_terminal_csv : update_dependencies
 ### build: build the terminal bundle and index and push them to a docker registry
 build: _print_vars _check_imgs_env _check_skopeo_installed
 	# Create the bundle and push it to a docker registry
-	docker build -f ./build/Dockerfile -t $(BUNDLE_IMG) .
+	docker build -f ./build/dockerfiles/Dockerfile -t $(BUNDLE_IMG) .
 	docker push $(BUNDLE_IMG)
 
 	BUNDLE_DIGEST=$$(skopeo inspect docker://$(BUNDLE_IMG) | jq -r '.Digest')
