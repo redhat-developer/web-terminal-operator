@@ -50,15 +50,6 @@ timeout(120) {
           SOURCE_SHA=$(git rev-parse HEAD)
           cd ${WORKSPACE}/targetdwn
 
-          # Remove all the env variables that we should not publish
-          yq -yi '. | del(.spec.install.spec.deployments[0].spec.template.spec.containers[0].env[] |
-            select(any(
-              index("RELATED_IMAGE_plugin_redhat_developer_web_terminal_nightly"),
-              index("RELATED_IMAGE_plugin_redhat_developer_web_terminal_dev_4_5_0"),
-              index("RELATED_IMAGE_plugin_redhat_developer_web_terminal_dev_nightly"),
-              index("RELATED_IMAGE_plugin_eclipse_cloud_shell_nightly"),
-              index("RELATED_IMAGE_openshift_oauth_proxy"))))' manifests/web-terminal.clusterserviceversion.yaml
-
           # Change all references of quay.io/wto to registry-proxy.engineering.redhat.com/rh-osbs
           sed -i -e 's|quay.io/wto|registry-proxy.engineering.redhat.com/rh-osbs|g' \
                   -e 's|quay.io/devfile/devworkspace-controller:v1.0.0-alphax|registry-proxy.engineering.redhat.com/rh-osbs/web-terminal-operator:''' + VERSION + '''|g' \
