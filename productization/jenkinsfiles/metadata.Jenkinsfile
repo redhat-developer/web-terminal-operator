@@ -50,11 +50,6 @@ timeout(120) {
           SOURCE_SHA=$(git rev-parse HEAD)
           cd ${WORKSPACE}/targetdwn
 
-          # Update the base image
-          curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
-          chmod +x /tmp/updateBaseImages.sh
-          /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
-
           # Remove all the env variables that we should not publish
           yq -yi '. | del(.spec.install.spec.deployments[0].spec.template.spec.containers[0].env[] |
             select(any(

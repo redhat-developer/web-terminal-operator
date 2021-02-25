@@ -58,11 +58,6 @@ timeout(120) {
 
           cd ${WORKSPACE}/targetdwn
 
-          # Update the base image
-          curl -L -s -S https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/master/product/updateBaseImages.sh -o /tmp/updateBaseImages.sh
-          chmod +x /tmp/updateBaseImages.sh
-          /tmp/updateBaseImages.sh -b ''' + DWNSTM_BRANCH + ''' --nocommit
-
           go mod vendor
           if [[ $(git diff --name-only) ]]; then # file changed
             git add . -A
