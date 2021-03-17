@@ -4,7 +4,7 @@ SHELL := bash
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 PRODUCTION_ENABLED ?= false
-LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:v1.1.0
+LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:latest
 
 .ONESHELL:
 all: help
@@ -177,7 +177,7 @@ help: Makefile
 	echo 'Supported environment variables:'
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
-	echo '    LATEST_INDEX_IMG               - The name of the last versions index. Set to $(LATEST_INDEX_IMG)'
+	echo '    LATEST_INDEX_IMG               - The name of the latest released index. Set to $(LATEST_INDEX_IMG)'
 	echo '    PRODUCTION_ENABLED             - If you want to use production images. Set to $(PRODUCTION_ENABLED)'
 	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
 	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
