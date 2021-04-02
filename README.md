@@ -91,6 +91,16 @@ To remove the WebTerminal Operator and the CatalogSource use
 make uninstall unregister_catalogsource
 ```
 
+## Manifests generation
+
+Prereq:
+The latest compatible operator sdk https://github.com/operator-framework/operator-sdk/releases/tag/v0.17.2
+
+Execute
+```
+  make gen_terminal_csv
+```
+
 ### Related Projects
 - The Web Terminal Operator is powered by the [devworkspace-operator](https://github.com/devfile/devworkspace-operator)
 
