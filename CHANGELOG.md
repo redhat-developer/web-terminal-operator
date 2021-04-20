@@ -1,3 +1,13 @@
+#### 1.2.1
+
+- Support a mounted $HOME directory in the web terminal tooling image [WTO-82](https://issues.redhat.com/browse/WTO-82)
+- Embedded plugin registry now includes latest web terminal plugin version [WTO-65](https://issues.redhat.com/browse/WTO-65)
+- Fix for unable to open a terminal when K8s component needs to update terminal's pod [WTO-75](https://issues.redhat.com/browse/WTO-75)
+- Default tooling versions have been updated:
+  - oc 4.7.0 -> 4.7.7
+  - odo v2.0.4 -> v2.0.7
+  - kubectx & kubectx v0.9.2 -> v0.9.3
+
 #### 1.2
 
 - Cluster administrators can now access the terminal on OpenShift 4.7 and up
