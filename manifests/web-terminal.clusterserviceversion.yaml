@@ -324,6 +324,8 @@ spec:
                       fieldPath: spec.serviceAccountName
                 - name: RELATED_IMAGE_plugin_redhat_developer_web_terminal_4_5_0
                   value: quay.io/wto/web-terminal-exec:latest
+                - name: RELATED_IMAGE_plugin_redhat_developer_web_terminal_latest
+                  value: quay.io/wto/web-terminal-exec:latest
                 - name: RELATED_IMAGE_web_terminal_tooling
                   value: quay.io/wto/web-terminal-tooling:latest
                 - name: RELATED_IMAGE_devworkspace_webhook_server
