@@ -7,6 +7,7 @@
   - oc 4.7.0 -> 4.7.7
   - odo v2.0.4 -> v2.0.7
   - kubectx & kubectx v0.9.2 -> v0.9.3
+- rhoas version 0.24.1 has been added
 
 #### 1.2
 
