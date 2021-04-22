@@ -133,7 +133,7 @@ function update_frontend() {
   $PWD/build-frontend.sh
   echo "Reverting patch"
   sed -i.bak -e "s|routingClass: 'basic'|routingClass: 'web-terminal'|" \
-             -e "s|id: 'redhat-developer/web-terminal-dev/4.5.0'|id: 'redhat-developer/web-terminal/4.5.0'|" \
+             -e "s|id: 'redhat-developer/web-terminal-dev/latest'|id: 'redhat-developer/web-terminal/latest'|" \
       $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
   rm $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
 }
@@ -141,7 +141,7 @@ function update_frontend() {
 function patch_frontend() {
   echo "Patching frontend"
   sed -i.bak -e "s|routingClass: 'web-terminal'|routingClass: 'basic'|" \
-             -e "s|id: 'redhat-developer/web-terminal/4.5.0'|id: 'redhat-developer/web-terminal-dev/4.5.0'|" \
+             -e "s|id: 'redhat-developer/web-terminal/latest'|id: 'redhat-developer/web-terminal-dev/latest'|" \
       $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
   rm $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
   git --no-pager diff $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts

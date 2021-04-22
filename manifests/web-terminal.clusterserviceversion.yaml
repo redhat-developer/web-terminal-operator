@@ -23,7 +23,7 @@ metadata:
               "components": [
                 {
                   "plugin": {
-                    "id": "redhat-developer/web-terminal/4.5.0",
+                    "id": "redhat-developer/web-terminal/latest",
                     "name": "web-terminal"
                   }
                 }
