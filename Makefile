@@ -79,8 +79,8 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
 	oc apply -f ./imageContentSourcePolicy.yaml
-### Register_catalogsource for e2e tests with pullinng an image and getting Didgest with docker inspect and jq. It allow avoid long delays. 
-### Sometimes scopeo inspect command try to obtains all layers from a registry ant it take a lof of time 30-40 min. 
+### Register_catalogsource for e2e tests with pulling an image and getting Didest with docker inspect and jq. It allow you to avoid long delays. 
+### Sometimes skopeo inspect command try to obtains all layers from a registry and it take up to 30-40 min. 
 register_catalogsource_for_cpaas:
 	podman pull $(INDEX_IMG)
 	IMAGE=$$(podman inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
