@@ -79,6 +79,22 @@ register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
 
 	oc apply -f ./imageContentSourcePolicy.yaml
+### Register_catalogsource for e2e tests with pullinng an image and getting Didgest with docker inspect and jq. It allow avoid long delays. 
+### Sometimes scopeo inspect command try to obtains all layers from a registry ant it take a lof of time 30-40 min. 
+register_catalogsource_for_cpaas:
+	podman pull $(INDEX_IMG)
+	IMAGE=$$(podman inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
+	
+	# replace references of catalogsource img with your image
+	sed -i.bak -e "s|quay.io/wto/web-terminal-operator-index:next|$${IMAGE}|g" ./catalog-source.yaml
+	echo ">>>>>>>catalogsource content:>>>>>>>"
+	cat ./catalog-source.yaml
+	echo ">>>>>>>end of content:>>>>>>>"
+	# use ';' to make sure we undo changes to catalog-source.yaml even if command fails.
+	oc apply -f ./catalog-source.yaml ; \
+	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
+
+	oc apply -f ./imageContentSourcePolicy.yaml
 
 ### unregister_catalogsource: unregister the catalogsource and delete the imageContentSourcePolicy
 unregister_catalogsource:
