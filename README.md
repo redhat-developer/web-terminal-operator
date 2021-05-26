@@ -1,6 +1,6 @@
 # Web Terminal Operator
 
-The Web Terminal Operator provides users with the ability to create a terminal instance embedded in the OpenShift Console.
+The Web Terminal Operator provides users with the ability to create a terminal instance embedded in the OpenShift Console. Mine
 
 **Note:** The OpenShift console integration that allows easily creating web terminal instances and logging in automatically is available in OpenShift 4.5.3 and higher. In previous versions of OpenShift, the operator can be installed but web terminals will have to be created and accessed manually.
 
