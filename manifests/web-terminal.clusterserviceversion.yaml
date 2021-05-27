@@ -107,7 +107,14 @@ metadata:
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
-  customresourcedefinitions: {}
+  customresourcedefinitions:
+    required:
+      - kind: DevWorkspaceRouting
+        name: devworkspaceroutings.controller.devfile.io
+        version: v1alpha1
+      - kind: DevWorkspace
+        name: devworkspaces.workspace.devfile.io
+        version: v1alpha1
   description: |
     Start a Web Terminal in your browser with common CLI tools for interacting with the cluster.
 
@@ -191,7 +198,7 @@ spec:
     name: David Festal
   - email: jpinkney@redhat.com
     name: Josh Pinkney
-  - email: amisevsk@redhat.com 
+  - email: amisevsk@redhat.com
     name: Angel Misevski
   maturity: alpha
   provider:
