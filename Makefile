@@ -1,6 +1,7 @@
 SHELL := bash
 .SHELLFLAGS = -ec
 
+WTO_IMG ?= quay.io/wto/web-terminal-operator:latest
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 PRODUCTION_ENABLED ?= false
@@ -14,10 +15,14 @@ ifndef VERBOSE
 MAKEFLAGS += --silent
 endif
 
+include build/makefiles/deployment.mk
+include build/makefiles/version.mk
+
 all: help
 
 _print_vars:
 	echo "Current env vars:"
+	echo "    WTO_IMG=$(WTO_IMG)"
 	echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	echo "    INDEX_IMG=$(INDEX_IMG)"
 	echo "    LATEST_INDEX_IMG=$(LATEST_INDEX_IMG)"
