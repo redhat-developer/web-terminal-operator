@@ -5,6 +5,7 @@ BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 PRODUCTION_ENABLED ?= false
 LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:latest
+GET_DIGEST_WITH ?= skopeo
 
 .ONESHELL:
 all: help
@@ -67,33 +68,36 @@ export: _print_vars _check_imgs_env
 	opm index export -c docker -f ./generated/exported-manifests -i $(INDEX_IMG) -o web-terminal
 
 ### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Image referenced by INDEX_IMG must be pushed and publicly available
+### the DIGEST of the image for the catalogsource can be obtained with 3 tools: skopeo, docker and podman. The tool is set in the GET_DIGEST_WITH env. variable. Sopeo is used by default.
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
-	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
+
+ifeq ($(GET_DIGEST_WITH),skopeo)
+	echo ">>>>> getting Didgest with skopeo >>>>>"
+	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) --debug | jq -r '.Digest')
 	INDEX_IMG=$(INDEX_IMG)
 	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
+endif
+
+ifeq ($(GET_DIGEST_WITH),podman)
+	echo ">>>>> getting Didgest with podman >>>>>"
+	podman pull $(INDEX_IMG)
+	INDEX_IMG_DIGEST=$$(podman inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
+endif
+
+ifeq ($(GET_DIGEST_WITH),docker)
+	echo ">>>>> getting Didgest with docker >>>>>"
+	docker pull $(INDEX_IMG)
+	INDEX_IMG_DIGEST=$$(podman inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
+endif
 
 	# replace references of catalogsource img with your image
 	sed -i.bak -e "s|quay.io/wto/web-terminal-operator-index:next|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
-	# use ';' to make sure we undo changes to catalog-source.yaml even if command fails.
-	oc apply -f ./catalog-source.yaml ; \
-	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
-
-	oc apply -f ./imageContentSourcePolicy.yaml
-### Register_catalogsource for e2e tests with pulling an image and getting Didest with docker inspect and jq. It allow you to avoid long delays. 
-### Sometimes skopeo inspect command try to obtains all layers from a registry and it take up to 30-40 min. 
-register_catalogsource_for_cpaas:
-	podman pull $(INDEX_IMG)
-	IMAGE=$$(podman inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
-	
-	# replace references of catalogsource img with your image
-	sed -i.bak -e "s|quay.io/wto/web-terminal-operator-index:next|$${IMAGE}|g" ./catalog-source.yaml
 	echo ">>>>>>>catalogsource content:>>>>>>>"
 	cat ./catalog-source.yaml
 	echo ">>>>>>>end of content:>>>>>>>"
 	# use ';' to make sure we undo changes to catalog-source.yaml even if command fails.
 	oc apply -f ./catalog-source.yaml ; \
 	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
-
 	oc apply -f ./imageContentSourcePolicy.yaml
 
 ### unregister_catalogsource: unregister the catalogsource and delete the imageContentSourcePolicy
