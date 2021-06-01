@@ -68,26 +68,18 @@ export: _print_vars _check_imgs_env
 	opm index export -c docker -f ./generated/exported-manifests -i $(INDEX_IMG) -o web-terminal
 
 ### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Image referenced by INDEX_IMG must be pushed and publicly available
-### the DIGEST of the image for the catalogsource can be obtained with 3 tools: skopeo, docker and podman. The tool is set in the GET_DIGEST_WITH env. variable. Sopeo is used by default.
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
 
 ifeq ($(GET_DIGEST_WITH),skopeo)
-	echo ">>>>> getting Didgest with skopeo >>>>>"
-	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) --debug | jq -r '.Digest')
+	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
 	INDEX_IMG=$(INDEX_IMG)
 	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
-endif
-
-ifeq ($(GET_DIGEST_WITH),podman)
-	echo ">>>>> getting Didgest with podman >>>>>"
-	podman pull $(INDEX_IMG)
-	INDEX_IMG_DIGEST=$$(podman inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
-endif
-
-ifeq ($(GET_DIGEST_WITH),docker)
-	echo ">>>>> getting Didgest with docker >>>>>"
-	docker pull $(INDEX_IMG)
-	INDEX_IMG_DIGEST=$$(podman inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
+else ifeq ($(GET_DIGEST_WITH),$(filter $(GET_DIGEST_WITH),podman docker))   
+	$(GET_DIGEST_WITH) pull $(INDEX_IMG)
+	INDEX_IMG_DIGEST=$$($(GET_DIGEST_WITH) inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
+else
+	echo "unsupported GET_DIGEST_WITH is configured"
+	exit 1
 endif
 
 	# replace references of catalogsource img with your image
@@ -201,3 +193,4 @@ help: Makefile
 	echo '    PRODUCTION_ENABLED             - If you want to use production images. Set to $(PRODUCTION_ENABLED)'
 	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
 	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
+	echo '    GET_DIGEST_WITH                - The tool name for obtaining an image didgest. Supported tools: skopeo, podman, docker'
