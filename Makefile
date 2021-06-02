@@ -5,6 +5,7 @@ BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 PRODUCTION_ENABLED ?= false
 LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:latest
+GET_DIGEST_WITH ?= skopeo
 
 .ONESHELL:
 all: help
@@ -68,16 +69,27 @@ export: _print_vars _check_imgs_env
 
 ### register_catalogsource: creates the catalogsource to make the operator be available on the marketplace. Image referenced by INDEX_IMG must be pushed and publicly available
 register_catalogsource: _print_vars _check_imgs_env _check_skopeo_installed
+
+ifeq ($(GET_DIGEST_WITH),skopeo)
 	@INDEX_DIGEST=$$(skopeo inspect docker://$(INDEX_IMG) | jq -r '.Digest')
 	INDEX_IMG=$(INDEX_IMG)
 	INDEX_IMG_DIGEST="$${INDEX_IMG%:*}@$${INDEX_DIGEST}"
+else ifeq ($(GET_DIGEST_WITH),$(filter $(GET_DIGEST_WITH),podman docker))   
+	$(GET_DIGEST_WITH) pull $(INDEX_IMG)
+	INDEX_IMG_DIGEST=$$($(GET_DIGEST_WITH) inspect $(INDEX_IMG) | jq ".[].RepoDigests[0]" -r) 
+else
+	echo "unsupported GET_DIGEST_WITH is configured"
+	exit 1
+endif
 
 	# replace references of catalogsource img with your image
 	sed -i.bak -e "s|quay.io/wto/web-terminal-operator-index:next|$${INDEX_IMG_DIGEST}|g" ./catalog-source.yaml
+	echo ">>>>>>>catalogsource content:>>>>>>>"
+	cat ./catalog-source.yaml
+	echo ">>>>>>>end of content:>>>>>>>"
 	# use ';' to make sure we undo changes to catalog-source.yaml even if command fails.
 	oc apply -f ./catalog-source.yaml ; \
 	  mv ./catalog-source.yaml.bak ./catalog-source.yaml
-
 	oc apply -f ./imageContentSourcePolicy.yaml
 
 ### unregister_catalogsource: unregister the catalogsource and delete the imageContentSourcePolicy
@@ -181,3 +193,4 @@ help: Makefile
 	echo '    PRODUCTION_ENABLED             - If you want to use production images. Set to $(PRODUCTION_ENABLED)'
 	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
 	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
+	echo '    GET_DIGEST_WITH                - The tool name for obtaining an image didgest. Supported tools: skopeo, podman, docker'
