@@ -5,26 +5,38 @@ metadata:
     alm-examples: |-
       [
         {
-          "apiVersion": "workspace.devfile.io/v1alpha1",
           "kind": "DevWorkspace",
+          "apiVersion": "workspace.devfile.io/v1alpha2",
           "metadata": {
+            "name": "web-terminal",
             "annotations": {
               "controller.devfile.io/restricted-access": "true"
             },
             "labels": {
               "console.openshift.io/terminal": "true"
-            },
-            "name": "web-terminal"
+            }
           },
           "spec": {
-            "routingClass": "web-terminal",
             "started": true,
+            "routingClass": "web-terminal",
             "template": {
               "components": [
                 {
+                  "name": "web-terminal-exec",
                   "plugin": {
-                    "id": "redhat-developer/web-terminal/latest",
-                    "name": "web-terminal"
+                    "kubernetes": {
+                      "name": "web-terminal-exec",
+                      "namespace": "openshift-operators"
+                    }
+                  }
+                },
+                {
+                  "name": "web-terminal-tooling",
+                  "plugin": {
+                    "kubernetes": {
+                      "name": "web-terminal-tooling",
+                      "namespace": "openshift-operators"
+                    }
                   }
                 }
               ]
