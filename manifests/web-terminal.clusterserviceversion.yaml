@@ -154,7 +154,7 @@ spec:
                   value: quay.io/eclipse/che-machine-exec:nightly
                 image: quay.io/wto/web-terminal-operator:next
                 imagePullPolicy: Always
-                name: devworkspace-controller
+                name: web-terminal-controller
                 resources: {}
               serviceAccountName: web-terminal-controller
       permissions:
