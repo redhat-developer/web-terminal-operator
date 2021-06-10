@@ -15,7 +15,7 @@ ifndef VERBOSE
 MAKEFLAGS += --silent
 endif
 
-include build/makefiles/deployment.mk
+include build/makefiles/controller.mk
 include build/makefiles/version.mk
 
 all: help
