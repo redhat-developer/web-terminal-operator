@@ -4,7 +4,7 @@ metadata:
   name: web-terminal
   namespace: openshift-operators
 spec:
-  channel: alpha
+  channel: fast
   installPlanApproval: Automatic
   name: web-terminal
   source: custom-web-terminal-catalog
