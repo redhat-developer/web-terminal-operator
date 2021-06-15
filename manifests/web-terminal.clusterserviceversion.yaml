@@ -51,7 +51,6 @@ metadata:
     description: Start a Web Terminal in your browser with common CLI tools for interacting
       with the cluster
     containerImage: quay.io/wto/web-terminal-operator:next
-    operatorframework.io/suggested-namespace: openshift-operators
     repository: https://github.com/redhat-developer/web-terminal-operator/
     support: Red Hat, Inc.
   name: web-terminal.v1.3.0
@@ -171,7 +170,7 @@ spec:
   installModes:
   - supported: false
     type: OwnNamespace
-  - supported: true
+  - supported: false
     type: SingleNamespace
   - supported: false
     type: MultiNamespace
