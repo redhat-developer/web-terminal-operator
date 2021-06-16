@@ -4,45 +4,6 @@ metadata:
   annotations:
     alm-examples: |-
       [
-        {
-          "kind": "DevWorkspace",
-          "apiVersion": "workspace.devfile.io/v1alpha2",
-          "metadata": {
-            "name": "web-terminal",
-            "annotations": {
-              "controller.devfile.io/restricted-access": "true"
-            },
-            "labels": {
-              "console.openshift.io/terminal": "true"
-            }
-          },
-          "spec": {
-            "started": true,
-            "routingClass": "web-terminal",
-            "template": {
-              "components": [
-                {
-                  "name": "web-terminal-exec",
-                  "plugin": {
-                    "kubernetes": {
-                      "name": "web-terminal-exec",
-                      "namespace": "openshift-operators"
-                    }
-                  }
-                },
-                {
-                  "name": "web-terminal-tooling",
-                  "plugin": {
-                    "kubernetes": {
-                      "name": "web-terminal-tooling",
-                      "namespace": "openshift-operators"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
       ]
     capabilities: Basic Install
     categories: Developer Tools
