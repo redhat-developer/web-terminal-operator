@@ -13,6 +13,8 @@
 package config
 
 const (
+	PermittedNamespacesAnnotation = "controller.devfile.io/allow-import-from"
+
 	ToolingTemplateName       = "web-terminal-tooling"
 	ExecTemplateName          = "web-terminal-exec"
 	DefaultTemplatesNamespace = "openshift-operators"

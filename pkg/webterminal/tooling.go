@@ -55,6 +55,9 @@ func getSpecToolingTemplate() (*dw.DevWorkspaceTemplate, error) {
 		ObjectMeta: v1.ObjectMeta{
 			Name:      config.ToolingTemplateName,
 			Namespace: config.DefaultTemplatesNamespace,
+			Annotations: map[string]string{
+				config.PermittedNamespacesAnnotation: "*",
+			},
 		},
 		Spec: dw.DevWorkspaceTemplateSpec{
 			DevWorkspaceTemplateSpecContent: dw.DevWorkspaceTemplateSpecContent{
