@@ -57,6 +57,9 @@ func getSpecExecTemplate() (*dw.DevWorkspaceTemplate, error) {
 		ObjectMeta: v1.ObjectMeta{
 			Name:      config.ExecTemplateName,
 			Namespace: config.DefaultTemplatesNamespace,
+			Annotations: map[string]string{
+				config.PermittedNamespacesAnnotation: "*",
+			},
 		},
 		Spec: dw.DevWorkspaceTemplateSpec{
 			DevWorkspaceTemplateSpecContent: dw.DevWorkspaceTemplateSpecContent{
