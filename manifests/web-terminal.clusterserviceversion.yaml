@@ -56,7 +56,8 @@ spec:
     cluster, Web Terminal instances store user credentials. To avoid exposing these
     credentials to unwanted parties, the operator deploys webhooks and finalizers
     that aren't removed when the operator is uninstalled. See the
-    [uninstall guide](TODO) for more details.
+    [uninstall guide](https://docs.openshift.com/container-platform/latest/web_console/odc-about-web-terminal.html) 
+    for more details.
 
     ## Known Issues
     1. [Occasionally you will need to press enter to get a prompt inside of the web-terminal](https://issues.redhat.com/browse/WTO-43)
