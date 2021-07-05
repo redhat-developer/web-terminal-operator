@@ -60,6 +60,7 @@ func getSpecExecTemplate() (*dw.DevWorkspaceTemplate, error) {
 			Annotations: map[string]string{
 				config.PermittedNamespacesAnnotation: "*",
 			},
+			Labels: config.DefaultTemplatesLabels,
 		},
 		Spec: dw.DevWorkspaceTemplateSpec{
 			DevWorkspaceTemplateSpecContent: dw.DevWorkspaceTemplateSpecContent{

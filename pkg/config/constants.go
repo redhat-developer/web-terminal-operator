@@ -29,3 +29,9 @@ const (
 	ExecCPURequest    = "100m"
 	ExecCPULimit      = "400m"
 )
+
+var (
+	DefaultTemplatesLabels = map[string]string{
+		"console.openshift.io/terminal": "true",
+	}
+)
