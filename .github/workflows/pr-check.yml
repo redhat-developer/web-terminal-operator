@@ -62,6 +62,16 @@ jobs:
           git --no-pager diff
           exit 1
         fi
+    -
+      name: Check deploy files
+      run: |
+        make parse_deploy_yaml
+        if [[ ! -z $(git status -s) ]]
+        then
+          echo "Templates in deploy/ dir are not up to date -- run 'make parse_deploy_yaml':"
+          git --no-pager diff
+          exit 1
+        fi
 
   check-wto-controller:
     name: Check WTO controller image

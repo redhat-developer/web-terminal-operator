@@ -117,6 +117,10 @@ uninstall_v1_2:
 	kubectl delete mutatingwebhookconfigurations controller.devfile.io
 	kubectl delete validatingwebhookconfigurations controller.devfile.io
 
+### parse_deploy_yaml: extracts the kubernetes objects (deployment, clusterrole, etc.) from manifests so that they can be applied directly to the cluster
+parse_deploy_yaml:
+	deploy/extract_objs.sh
+
 _check_imgs_env:
 ifndef BUNDLE_IMG
 	$(error "BUNDLE_IMG not set")
