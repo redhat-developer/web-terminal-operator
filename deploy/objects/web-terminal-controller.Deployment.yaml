@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-terminal-controller
+  namespace: openshift-operators
+  labels:
+    app.kubernetes.io/name: web-terminal-controller
+    app.kubernetes.io/part-of: web-terminal-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web-terminal-controller
+      app.kubernetes.io/part-of: web-terminal-operator
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: ''
+      labels:
+        app.kubernetes.io/name: web-terminal-controller
+        app.kubernetes.io/part-of: web-terminal-operator
+    spec:
+      containers:
+        - env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: web-terminal-operator
+            - name: RELATED_IMAGE_web_terminal_tooling
+              value: quay.io/wto/web-terminal-tooling:latest
+            - name: RELATED_IMAGE_web_terminal_exec
+              value: quay.io/eclipse/che-machine-exec:nightly
+          image: quay.io/wto/web-terminal-operator:next
+          imagePullPolicy: Always
+          name: web-terminal-controller
+          resources: {}
+      serviceAccountName: web-terminal-controller

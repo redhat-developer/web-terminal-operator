@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: web-terminal-controller-rolebinding
+  labels:
+    app.kubernetes.io/name: web-terminal-controller
+    app.kubernetes.io/part-of: web-terminal-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: web-terminal-controller-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: web-terminal-controller
+  namespace: openshift-operators
