@@ -17,6 +17,7 @@ endif
 
 include build/makefiles/controller.mk
 include build/makefiles/version.mk
+include build/makefiles/deploy.mk
 
 all: help
 
@@ -78,7 +79,7 @@ unregister_catalogsource:
 	oc delete imagecontentsourcepolicy web-terminal-brew-registry-mirror --ignore-not-found
 
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
-build_install: _print_vars _select_controller_image build _reset_controller_image install
+build_install: _print_vars build install
 
 ### install: creates catalog source along with operator subscription on the cluster
 install: _print_vars register_catalogsource
