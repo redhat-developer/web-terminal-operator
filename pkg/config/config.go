@@ -14,6 +14,7 @@ package config
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 )
 
@@ -37,3 +38,12 @@ func GetDefaultExecImage() (string, error) {
 	}
 	return val, nil
 }
+
+func GetNamespace() (string, error) {
+	namespace, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+	if err != nil {
+		return "", err
+	}
+	return string(namespace), err
+}
+

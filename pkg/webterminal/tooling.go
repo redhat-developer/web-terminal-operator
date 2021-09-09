@@ -24,12 +24,12 @@ import (
 	"github.com/redhat-developer/web-terminal-operator/pkg/config"
 )
 
-func syncToolingTemplate(ctx context.Context, client crclient.Client) error {
-	clusterDWT, err := getClusterToolingTemplate(ctx, client)
+func syncToolingTemplate(ctx context.Context, client crclient.Client, namespace string) error {
+	clusterDWT, err := getClusterToolingTemplate(ctx, client, namespace)
 	if err != nil {
 		return err
 	}
-	specDWT, err := getSpecToolingTemplate()
+	specDWT, err := getSpecToolingTemplate(namespace)
 	if err != nil {
 		return nil
 	}
@@ -44,7 +44,7 @@ func syncToolingTemplate(ctx context.Context, client crclient.Client) error {
 	return nil
 }
 
-func getSpecToolingTemplate() (*dw.DevWorkspaceTemplate, error) {
+func getSpecToolingTemplate(namespace string) (*dw.DevWorkspaceTemplate, error) {
 	image, err := config.GetDefaultToolingImage()
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func getSpecToolingTemplate() (*dw.DevWorkspaceTemplate, error) {
 	dwt := &dw.DevWorkspaceTemplate{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      config.ToolingTemplateName,
-			Namespace: config.DefaultTemplatesNamespace,
+			Namespace: namespace,
 			Annotations: map[string]string{
 				config.PermittedNamespacesAnnotation: "*",
 			},
@@ -87,11 +87,11 @@ func getSpecToolingTemplate() (*dw.DevWorkspaceTemplate, error) {
 	return dwt, nil
 }
 
-func getClusterToolingTemplate(ctx context.Context, client crclient.Client) (*dw.DevWorkspaceTemplate, error) {
+func getClusterToolingTemplate(ctx context.Context, client crclient.Client, namespace string) (*dw.DevWorkspaceTemplate, error) {
 	toolingTemplate := &dw.DevWorkspaceTemplate{}
 	toolingRef := types.NamespacedName{
 		Name:      config.ToolingTemplateName,
-		Namespace: config.DefaultTemplatesNamespace,
+		Namespace: namespace,
 	}
 	err := client.Get(ctx, toolingRef, toolingTemplate)
 	if err != nil {
