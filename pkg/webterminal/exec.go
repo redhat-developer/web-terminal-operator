@@ -25,12 +25,12 @@ import (
 	"github.com/redhat-developer/web-terminal-operator/pkg/config"
 )
 
-func syncExecTemplate(ctx context.Context, client crclient.Client) error {
-	clusterDWT, err := getClusterExecTemplate(ctx, client)
+func syncExecTemplate(ctx context.Context, client crclient.Client, namespace string) error {
+	clusterDWT, err := getClusterExecTemplate(ctx, client, namespace)
 	if err != nil {
 		return err
 	}
-	specDWT, err := getSpecExecTemplate()
+	specDWT, err := getSpecExecTemplate(namespace)
 	if err != nil {
 		return nil
 	}
@@ -44,7 +44,7 @@ func syncExecTemplate(ctx context.Context, client crclient.Client) error {
 	return nil
 }
 
-func getSpecExecTemplate() (*dw.DevWorkspaceTemplate, error) {
+func getSpecExecTemplate(namespace string) (*dw.DevWorkspaceTemplate, error) {
 	image, err := config.GetDefaultExecImage()
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func getSpecExecTemplate() (*dw.DevWorkspaceTemplate, error) {
 	dwt := &dw.DevWorkspaceTemplate{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      config.ExecTemplateName,
-			Namespace: config.DefaultTemplatesNamespace,
+			Namespace: namespace,
 			Annotations: map[string]string{
 				config.PermittedNamespacesAnnotation: "*",
 			},
@@ -104,11 +104,11 @@ func getSpecExecTemplate() (*dw.DevWorkspaceTemplate, error) {
 	return dwt, nil
 }
 
-func getClusterExecTemplate(ctx context.Context, client crclient.Client) (*dw.DevWorkspaceTemplate, error) {
+func getClusterExecTemplate(ctx context.Context, client crclient.Client, namespace string) (*dw.DevWorkspaceTemplate, error) {
 	execTemplate := &dw.DevWorkspaceTemplate{}
 	execRef := types.NamespacedName{
 		Name:      config.ExecTemplateName,
-		Namespace: config.DefaultTemplatesNamespace,
+		Namespace: namespace,
 	}
 	err := client.Get(ctx, execRef, execTemplate)
 	if err != nil {
