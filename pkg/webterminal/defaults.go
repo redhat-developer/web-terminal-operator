@@ -14,6 +14,7 @@ package webterminal
 
 import (
 	"context"
+
 	"github.com/redhat-developer/web-terminal-operator/pkg/config"
 
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -25,13 +26,12 @@ var (
 )
 
 func SetupDefaultWebTerminalTemplates(ctx context.Context, client crclient.Client) error {
-	log.Info("Syncing DevWorkspaceTemplate for Web Terminal Tooling")
-
 	namespace, err := config.GetNamespace()
 	if err != nil {
 		return err
 	}
 
+	log.Info("Syncing DevWorkspaceTemplate for Web Terminal Tooling")
 	if err := syncToolingTemplate(ctx, client, namespace); err != nil {
 		return err
 	}

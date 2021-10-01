@@ -14,6 +14,7 @@ package webterminal
 
 import (
 	"context"
+	"fmt"
 
 	dw "github.com/devfile/api/v2/pkg/apis/workspaces/v1alpha2"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -39,8 +40,17 @@ func syncToolingTemplate(ctx context.Context, client crclient.Client, namespace 
 		return client.Create(ctx, specDWT)
 	}
 
-	// TODO: Figure out way to sync DWTs for updates to WTO.
-	log.Info("Web Terminal Tooling template already exists; skipping.")
+	if clusterDWT.Annotations != nil && clusterDWT.Annotations[config.UnmanagedStateAnnotation] == "true" {
+		log.Info("Found unmanaged template for Web Terminal Tooling; skipping.")
+		return nil
+	}
+
+	specDWT.ResourceVersion = clusterDWT.ResourceVersion
+	err = client.Update(ctx, specDWT)
+	if err != nil {
+		return fmt.Errorf("error updating Web Terminal Tooling template: %w", err)
+	}
+	log.Info("Web Terminal Tooling template updated.")
 	return nil
 }
 
