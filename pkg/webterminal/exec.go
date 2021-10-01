@@ -14,6 +14,7 @@ package webterminal
 
 import (
 	"context"
+	"fmt"
 
 	dw "github.com/devfile/api/v2/pkg/apis/workspaces/v1alpha2"
 	"github.com/devfile/api/v2/pkg/attributes"
@@ -39,8 +40,18 @@ func syncExecTemplate(ctx context.Context, client crclient.Client, namespace str
 		log.Info("DevWorkspaceTemplate for Web Terminal Exec does not exist; creating.")
 		return client.Create(ctx, specDWT)
 	}
-	// TODO: Figure out way to sync DWTs for updates to WTO.
-	log.Info("Web Terminal Exec template already exists; skipping.")
+
+	if clusterDWT.Annotations != nil && clusterDWT.Annotations[config.UnmanagedStateAnnotation] == "true" {
+		log.Info("Found unmanaged template for Web Terminal Exec; skipping.")
+		return nil
+	}
+
+	specDWT.ResourceVersion = clusterDWT.ResourceVersion
+	err = client.Update(ctx, specDWT)
+	if err != nil {
+		return fmt.Errorf("error updating Web Terminal Exec template: %w", err)
+	}
+	log.Info("Web Terminal Exec template updated.")
 	return nil
 }
 

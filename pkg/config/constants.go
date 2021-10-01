@@ -13,10 +13,11 @@
 package config
 
 const (
+	UnmanagedStateAnnotation      = "web-terminal.redhat.com/unmanaged-state"
 	PermittedNamespacesAnnotation = "controller.devfile.io/allow-import-from"
 
-	ToolingTemplateName       = "web-terminal-tooling"
-	ExecTemplateName          = "web-terminal-exec"
+	ToolingTemplateName = "web-terminal-tooling"
+	ExecTemplateName    = "web-terminal-exec"
 
 	ToolingMemoryRequest = "128Mi"
 	ToolingMemoryLimit   = "256Mi"
