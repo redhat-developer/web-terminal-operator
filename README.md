@@ -51,42 +51,19 @@ If you already have the index image pushed to your registry, then you can use th
 
 ## Configuring the custom default container
 
-As cluster admin you're able to configure the default container that is used in terminal's devworkspaces with the following entry in configmap:
+Upon startup, the Web Terminal Operator creates two `DevWorkspaceTemplate` custom resources in its namespace, named `web-terminal-tooling` and `web-terminal-exec`. These templates are referenced by Web Terminals in the cluster, and define the images used to run the DevWorkspaceTemplate:
 
-```bash
-oc patch configmap devworkspace-controller -n openshift-operators --patch "
-data:
-  devworkspace.default_dockerimage.redhat-developer.web-terminal: |
-      name: dev
-      image: quay.io/wto/web-terminal-tooling:latest
-      memoryLimit: 128Mi
-      command: ['tail']
-      args: ['-f', '/dev/null']
-      env:
-      - name: PS1
-        value: '\[\e[34m\]>\[\e[m\]\[\e[33m\]>\[\e[m\]'
-"
+* `web-terminal-tooling` defines the container that contains cluster tooling (e.g. kubectl, oc, etc.) and is where the shell will be opened when creating a web terminal
+* `web-terminal-exec` is a sidecar container that allows the OpenShift cluster to communicate with the Web Terminal, allowing for the requesting user to be automatically logged into the cluster, etc.
+
+To customize Web Terminal Operator functionality, these DevWorkspaceTemplates can be modified, and these changes will be propagated to all Web Terminals on the cluster the next time that terminal is started. To change the image used for the tooling container, for example, it's sufficient to edit the image field in the `web-terminal-tooling` DevWorkspaceTemplate on the cluster.
+
+By default, the Web Terminal Operator will overwrite any modifications to its DevWorkspaceTemplates when it starts. In order to persist custom changes between Web Terminal Operator versions, the Kubernetes annotation
+```yaml
+web-terminal.redhat.com/unmanaged-state: "true"
 ```
+should be added to the DevWorkspaceTemplate.
 
-<details>
-<summary>The format is different for WTO 1.2 and earlier</summary>
-
-```bash
-oc patch configmap devworkspace-controller -n openshift-operators --patch "
-data:
-  devworkspace.default_dockerimage.redhat-developer.web-terminal: |
-    memoryLimit: 128Mi
-    container:
-      name: dev
-      image: quay.io/wto/web-terminal-tooling:latest
-      command: ['tail']
-      args: ['-f', '/dev/null']
-      env:
-      - name: PS1
-        value: '\[\e[34m\]>\[\e[m\]\[\e[33m\]>\[\e[m\]'
-"
-```
-</details>
 
 ## Removing the operator from a cluster
 
