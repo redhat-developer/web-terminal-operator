@@ -29,6 +29,7 @@ import (
 	dwv1 "github.com/devfile/api/v2/pkg/apis/workspaces/v1alpha1"
 	dwv2 "github.com/devfile/api/v2/pkg/apis/workspaces/v1alpha2"
 
+	"github.com/redhat-developer/web-terminal-operator/pkg/versioning"
 	"github.com/redhat-developer/web-terminal-operator/pkg/webterminal"
 )
 
@@ -45,6 +46,12 @@ func init() {
 
 func main() {
 	ctrl.SetLogger(zap.New())
+
+	err := versioning.InitVersioning()
+	if err != nil {
+		setupLog.Error(err, "Failed to detect cluster version")
+		os.Exit(1)
+	}
 
 	cfg, err := ctrlconfig.GetConfig()
 	if err != nil {
