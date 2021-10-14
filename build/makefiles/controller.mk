@@ -38,3 +38,11 @@ ifeq ($(WTO_IMG),quay.io/wto/web-terminal-operator:next)
 endif
 endif
 	$(DOCKER) push $(WTO_IMG)
+
+### parse_deploy_yaml: extracts the kubernetes objects (deployment, clusterrole, etc.) from manifests so that they can be applied directly to the cluster
+parse_deploy_yaml:
+	deploy/extract_objs.sh
+
+### test_controller: applies controller deployment and related resources directly to the cluster (i.e. without OLM) for testing
+test_controller: parse_deploy_yaml
+	cat generated/internal/combined.yaml | envsubst | kubectl apply -f -

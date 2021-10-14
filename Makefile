@@ -1,9 +1,11 @@
 SHELL := bash
 .SHELLFLAGS = -ec
 
-WTO_IMG ?= quay.io/wto/web-terminal-operator:next
-BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
-INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
+export WTO_IMG ?= quay.io/wto/web-terminal-operator:next
+export BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
+export INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
+export NAMESPACE ?= openshift-operators
+
 PRODUCTION_ENABLED ?= false
 LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:latest
 GET_DIGEST_WITH ?= skopeo
@@ -26,6 +28,7 @@ _print_vars:
 	echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	echo "    INDEX_IMG=$(INDEX_IMG)"
 	echo "    LATEST_INDEX_IMG=$(LATEST_INDEX_IMG)"
+	echo "    NAMESPACE=$(NAMESPACE)"
 
 ### build: build the terminal bundle and index and push them to a docker registry
 build: _print_vars _check_imgs_env _check_skopeo_installed
