@@ -8,14 +8,14 @@ metadata:
     capabilities: Basic Install
     categories: Developer Tools
     certified: "false"
-    createdAt: "2021-07-29T07:24:32Z"
+    createdAt: "2021-10-26T07:24:32Z"
     description: Start a Web Terminal in your browser with common CLI tools for interacting
       with the cluster
     containerImage: quay.io/wto/web-terminal-operator:next
     operatorframework.io/suggested-namespace: openshift-operators
     repository: https://github.com/redhat-developer/web-terminal-operator/
     support: Red Hat, Inc.
-  name: web-terminal.v1.3.0
+  name: web-terminal.v1.4.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -137,5 +137,5 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-  replaces: web-terminal.v1.2.1
-  version: 1.3.0
+  replaces: web-terminal.v1.3.0
+  version: 1.4.0
