@@ -4,8 +4,6 @@ SHELL := bash
 WTO_IMG ?= quay.io/wto/web-terminal-operator:next
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
-PRODUCTION_ENABLED ?= false
-LATEST_INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:latest
 GET_DIGEST_WITH ?= skopeo
 
 DOCKER ?= docker
@@ -25,20 +23,13 @@ _print_vars:
 	echo "    WTO_IMG=$(WTO_IMG)"
 	echo "    BUNDLE_IMG=$(BUNDLE_IMG)"
 	echo "    INDEX_IMG=$(INDEX_IMG)"
-	echo "    LATEST_INDEX_IMG=$(LATEST_INDEX_IMG)"
 
 ### build: build the terminal bundle and index and push them to a docker registry
 build: _print_vars _check_imgs_env _check_skopeo_installed
-	# Create the bundle and push it to a docker registry
-	$(DOCKER) build -f ./build/dockerfiles/Dockerfile -t $(BUNDLE_IMG) .
-	$(DOCKER) push $(BUNDLE_IMG)
-
-	BUNDLE_DIGEST=$$(skopeo inspect docker://$(BUNDLE_IMG) | jq -r '.Digest')
-	BUNDLE_IMG=$(BUNDLE_IMG)
-	BUNDLE_IMG_DIGEST="$${BUNDLE_IMG%:*}@$${BUNDLE_DIGEST}"
-	# create / update and push an index that contains the bundle
-	opm index add -c $(DOCKER) --bundles $${BUNDLE_IMG_DIGEST} --tag $(INDEX_IMG) --from-index $(LATEST_INDEX_IMG)
-	$(DOCKER) push $(INDEX_IMG)
+	build/scripts/build_index_image.sh \
+		--bundle-image $(BUNDLE_IMG) \
+		--index-image $(INDEX_IMG) \
+		--container-tool $(DOCKER)
 
 ### export: export the bundles stored in the index to the exported-manifests folder
 export: _print_vars _check_imgs_env
@@ -139,8 +130,6 @@ help: Makefile
 	echo 'Supported environment variables:'
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
-	echo '    LATEST_INDEX_IMG               - The name of the latest released index. Set to $(LATEST_INDEX_IMG)'
-	echo '    PRODUCTION_ENABLED             - If you want to use production images. Set to $(PRODUCTION_ENABLED)'
 	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
 	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
 	echo '    GET_DIGEST_WITH                - The tool name for obtaining an image didgest. Supported tools: skopeo, podman, docker'
