@@ -37,6 +37,7 @@ jobs:
         mkdir -p ~/cache
         wget https://github.com/operator-framework/operator-sdk/releases/download/v0.17.2/operator-sdk-${OPERATOR_SDK_VERSION}-x86_64-linux-gnu -O ~/cache/operator-sdk-${OPERATOR_SDK_VERSION} > /dev/null
         chmod +x ~/cache/operator-sdk-${OPERATOR_SDK_VERSION}
+
     - name: Install Operator SDK ${{ env.OPERATOR_SDK_VERSION }}
       run: |
         mkdir -p ~/bin
@@ -57,6 +58,7 @@ jobs:
         wget https://github.com/operator-framework/operator-registry/releases/download/${OPM_VERSION}/linux-amd64-opm -O ~/cache/opm${OPM_VERSION} > /dev/null
         #${OPM_VERSION} is used in binary name to prevent caching after upgrading
         chmod +x ~/cache/opm${OPM_VERSION}
+
     - name: Install OPM ${{ env.OPM_VERSION }}
       run: |
         mkdir -p ~/bin
@@ -66,19 +68,24 @@ jobs:
     - name: Checkout web-terminal-operator source code
       uses: actions/checkout@v2
 
-    - name: "Docker Quay.io Login with WTO Robot"
-      env:
-        DOCKER_USERNAME: ${{ secrets.QUAY_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
-      run: |
-        echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin quay.io
+    - name: Login to quay.io
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.QUAY_USERNAME }}
+        password: ${{ secrets.QUAY_PASSWORD }}
+        registry: quay.io
 
-    - name: "Build Controller image "
-      run: make build_controller_image
+    - name: "Build Controller image and push to quay.io"
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./build/dockerfiles/controller.Dockerfile
+        push: true
+        tags: quay.io/wto/web-terminal-operator:next
 
     - name: "Build Bundle & Index images"
       run: |
-        # pip install yq
+        pip install yq
         ./build/scripts/build_index_image.sh \
           --bundle-image ${BUNDLE_IMG} \
           --index-image ${INDEX_IMG} \
