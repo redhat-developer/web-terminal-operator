@@ -81,8 +81,13 @@ func getSpecExecTemplate(namespace string) (*dw.DevWorkspaceTemplate, error) {
 						ComponentUnion: dw.ComponentUnion{
 							Container: &dw.ContainerComponent{
 								Container: dw.Container{
-									Image:         image,
-									Env:           nil,
+									Image: image,
+									Env: []dw.EnvVar{
+										{
+											Name:  "WEB_TERMINAL_IDLE_TIMEOUT",
+											Value: "15m",
+										},
+									},
 									MemoryLimit:   config.ExecMemoryLimit,
 									MemoryRequest: config.ExecMemoryRequest,
 									CpuLimit:      config.ExecCPULimit,
@@ -90,7 +95,7 @@ func getSpecExecTemplate(namespace string) (*dw.DevWorkspaceTemplate, error) {
 									Command: []string{
 										"/go/bin/che-machine-exec",
 										"--authenticated-user-id", "$(DEVWORKSPACE_CREATOR)",
-										"--idle-timeout", "$(DEVWORKSPACE_IDLE_TIMEOUT)",
+										"--idle-timeout", "$(WEB_TERMINAL_IDLE_TIMEOUT)",
 										"--pod-selector", "controller.devfile.io/devworkspace_id=$(DEVWORKSPACE_ID)",
 										"--use-tls",
 										"--use-bearer-token",
