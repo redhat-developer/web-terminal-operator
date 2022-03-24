@@ -46,6 +46,6 @@ LABEL summary="$SUMMARY" \
       name="$PRODNAME/$COMPNAME" \
       version="1.3" \
       license="EPLv2" \
-      maintainer="Joshua Pinkney <jpinkney@redhat.com>" \
+      maintainer="Angel Misevski <amisevsk@redhat.com>" \
       io.openshift.expose-services="" \
       usage=""
