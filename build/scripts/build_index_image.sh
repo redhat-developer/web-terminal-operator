@@ -40,8 +40,8 @@ restore_changes() {
 parse_args "$@"
 
 # Set defaults and warn if pushing to main repos in case of accident
-BUNDLE_IMAGE="${BUNDLE_IMAGE:-DEFAULT_BUNDLE_IMAGE}"
-INDEX_IMAGE="${INDEX_IMAGE:-DEFAULT_INDEX_IMAGE}"
+BUNDLE_IMAGE="${BUNDLE_IMAGE:-$DEFAULT_BUNDLE_IMAGE}"
+INDEX_IMAGE="${INDEX_IMAGE:-$DEFAULT_INDEX_IMAGE}"
 
 # Check we're not accidentally pushing to the WTO repos
 if [ "$BUNDLE_IMAGE" == "$DEFAULT_BUNDLE_IMAGE" ] && [ "$FORCE" != "true" ]; then
