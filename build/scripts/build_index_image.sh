@@ -65,7 +65,9 @@ $PODMAN push "$BUNDLE_IMAGE"
 BUNDLE_DIGEST=$($PODMAN inspect "$BUNDLE_IMAGE" | jq ".[].RepoDigests[0]" -r)
 echo "Using bundle $BUNDLE_DIGEST in index"
 
+set -x
+
 # Add bundle to index
 echo "Building index image $INDEX_IMAGE"
-opm index add -c "$PODMAN" --bundles "$BUNDLE" --tag "$INDEX_IMAGE"
+opm index add -c "$PODMAN" --bundles "$BUNDLE_DIGEST" --tag "$INDEX_IMAGE"
 $PODMAN push "$INDEX_IMAGE"
