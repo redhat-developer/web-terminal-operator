@@ -39,13 +39,14 @@ The commands above require being logged in to the cluster as a `cluster-admin`. 
 ## Deploying the operator from local sources
 In order to deploy the operator from this repo directly, you need to first create the olm bundle and index, push that to a docker registry, and then create a CatalogSource referencing those images.
 
-This can be done in one step using the Makefile `build_install` rule:
+This can be done in one step using the Makefile:
 ```bash
+WTO_IMG=#<your controller image>
 BUNDLE_IMG=#<your bundle image>
 INDEX_IMG=#<your index image>
-make build_install
+make build_controller_image build_install
 ```
-This will build and push images defined by the environment variables `BUNDLE_IMG` and `INDEX_IMG`, and register a CatalogSource on the cluster. You may need to set the repos used for the index and bundle to be public to ensure they can be accessed from the cluster.
+This will build and push images defined by the environment variables `WTO_IMG`, `BUNDLE_IMG` and `INDEX_IMG`, and register a CatalogSource on the cluster. You may need to set the repos used for the index and bundle to be public to ensure they can be accessed from the cluster.
 
 If you already have the index image pushed to your registry, then you can use the `make install` or `make register_catalogsource` rules with the environment variables defined above to install those images on the cluster.
 
