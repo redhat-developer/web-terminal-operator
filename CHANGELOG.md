@@ -1,3 +1,17 @@
+#### 1.5
+- Web Terminals now show a welcome message and have a "help" command
+- New `wtoctl` utility added to make configuring image and idle timeout in Web Terminal instance easier
+- Added icon for Web Terminal Operator in OperatorHub UI
+- Web Terminal idle timeout can now be customized more easily at the custom resource level.
+- Default tooling versions have been updated:
+  - oc 4.9.0 -> 4.10.6
+  - odo v2.3.1 -> v2.5.0
+  - helm v3.6.2 -> v3.7.1
+  - knative v0.23.0 -> v1.0.0
+  - tekton v0.19.1 -> v0.21.0
+  - rhoas 0.34.2 -> v0.39.0
+  - submariner v0.10.1 -> v0.10.1
+
 #### 1.4
 - Default tooling versions have been updated:
   - oc 4.8.2 -> 4.9.0 
