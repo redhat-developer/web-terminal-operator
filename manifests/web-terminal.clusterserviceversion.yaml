@@ -15,7 +15,7 @@ metadata:
     operatorframework.io/suggested-namespace: openshift-operators
     repository: https://github.com/redhat-developer/web-terminal-operator/
     support: Red Hat, Inc.
-  name: web-terminal.v1.4.0
+  name: web-terminal.v1.5.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -140,5 +140,5 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-  replaces: web-terminal.v1.3.0
-  version: 1.4.0
+  replaces: web-terminal.v1.4.0
+  version: 1.5.0
