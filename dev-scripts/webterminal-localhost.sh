@@ -138,7 +138,7 @@ function update_frontend() {
   $PWD/build-frontend.sh
   echo "Reverting patch"
   sed -i.bak -e "s|routingClass: 'basic'|routingClass: 'web-terminal'|" \
-             -e "s|id: 'redhat-developer/web-terminal-dev/latest'|id: 'redhat-developer/web-terminal/latest'|" \
+             -e "/components:.*web-terminal-exec/d" \
       $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
   rm $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
 }
@@ -146,7 +146,9 @@ function update_frontend() {
 function patch_frontend() {
   echo "Patching frontend"
   sed -i.bak -e "s|routingClass: 'web-terminal'|routingClass: 'basic'|" \
-             -e "s|id: 'redhat-developer/web-terminal/latest'|id: 'redhat-developer/web-terminal-dev/latest'|" \
+             -e '/       name: .web-terminal-exec./{n;n;
+                  a\      components: [{name: "web-terminal-exec",container: {command: ["/go/bin/che-machine-exec","--authenticated-user-id","$(DEVWORKSPACE_CREATOR)","--idle-timeout","$(WEB_TERMINAL_IDLE_TIMEOUT)","--pod-selector","controller.devfile.io/devworkspace_id=$(DEVWORKSPACE_ID)","--use-bearer-token",]}}],
+                }' \
       $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
   rm $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
   git --no-pager diff $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
