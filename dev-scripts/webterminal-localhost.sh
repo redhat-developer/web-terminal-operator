@@ -122,13 +122,19 @@ function emulate_in_cluster() {
 
 function update_backend() {
   echo "Patching backend"
-  sed -i.bak 's/if terminalHost.Scheme != "https"/if false/' ./pkg/terminal/proxy.go
+  sed -i.bak -e '/return terminalHost, nil/i\	terminalHost = terminalUrl' \
+             -e '/return terminalHost, nil/i\	terminalHost.Scheme = "https"' \
+             -e 's/terminalHost.Path = path/terminalHost.Path = terminalHost.Path + path/' \
+      ./pkg/terminal/proxy.go
   rm ./pkg/terminal/proxy.go.bak
   git --no-pager diff ./pkg/terminal/proxy.go
   echo "Compiling patched backend"
   ./build-backend.sh
   echo "Reverting patch"
-  sed -i.bak 's/if false/if terminalHost.Scheme != "https"/' ./pkg/terminal/proxy.go
+  sed -i.bak -e '/terminalHost = terminalUrl/d' \
+             -e '/terminalHost.Scheme = "https"/d' \
+             -e 's/terminalHost.Path = terminalHost.Path + path/terminalHost.Path = path/' \
+      ./pkg/terminal/proxy.go
   rm ./pkg/terminal/proxy.go.bak
 }
 
