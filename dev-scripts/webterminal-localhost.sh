@@ -81,14 +81,14 @@ function help() {
 }
 
 function install() {
-  rm -f $(systemd-path user-binaries)/webterminal-localhost.sh
-  ln -s $(dirname $(readlink -f $0))/webterminal-localhost.sh $(systemd-path user-binaries)/webterminal-localhost.sh
-  echo "Symlink $(systemd-path user-binaries)/webterminal-localhost.sh is created
-Open a new terminal to get it propagated into path"
+  rm -f "$(systemd-path user-binaries)/webterminal-localhost.sh"
+  ln -s "$(dirname "$(readlink -f "$0")")/webterminal-localhost.sh" "$(systemd-path user-binaries)/webterminal-localhost.sh"
+  echo "Symlink $(systemd-path user-binaries)/webterminal-localhost.sh is created"
+  echo "Open a new terminal to get it propagated into path"
 }
 
 function uninstall() {
-  rm -f $(systemd-path user-binaries)/webterminal-localhost.sh
+  rm -f "$(systemd-path user-binaries)/webterminal-localhost.sh"
 }
 
 function emulate_in_cluster() {
@@ -122,36 +122,37 @@ function emulate_in_cluster() {
 
 function update_backend() {
   echo "Patching backend"
-  sed -i.bak 's/if terminalHost.Scheme != "https"/if false/' $PWD/pkg/terminal/proxy.go
-  rm $PWD/pkg/terminal/proxy.go.bak
-  git --no-pager diff $PWD/pkg/terminal/proxy.go
+  sed -i.bak 's/if terminalHost.Scheme != "https"/if false/' ./pkg/terminal/proxy.go
+  rm ./pkg/terminal/proxy.go.bak
+  git --no-pager diff ./pkg/terminal/proxy.go
   echo "Compiling patched backend"
-  $PWD/build-backend.sh
+  ./build-backend.sh
   echo "Reverting patch"
-  sed -i.bak 's/if false/if terminalHost.Scheme != "https"/' $PWD/pkg/terminal/proxy.go
-  rm $PWD/pkg/terminal/proxy.go.bak
+  sed -i.bak 's/if false/if terminalHost.Scheme != "https"/' ./pkg/terminal/proxy.go
+  rm ./pkg/terminal/proxy.go.bak
 }
 
 function update_frontend() {
   patch_frontend
   echo "Compiling patched frontend"
-  $PWD/build-frontend.sh
+  ./build-frontend.sh
   echo "Reverting patch"
   sed -i.bak -e "s|routingClass: 'basic'|routingClass: 'web-terminal'|" \
              -e "/components:.*web-terminal-exec/d" \
-      $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
-  rm $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
+      ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
+  rm ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
 }
 
 function patch_frontend() {
   echo "Patching frontend"
+  # shellcheck disable=SC2016
   sed -i.bak -e "s|routingClass: 'web-terminal'|routingClass: 'basic'|" \
              -e '/       name: .web-terminal-exec./{n;n;
                   a\      components: [{name: "web-terminal-exec",container: {command: ["/go/bin/che-machine-exec","--authenticated-user-id","$(DEVWORKSPACE_CREATOR)","--idle-timeout","$(WEB_TERMINAL_IDLE_TIMEOUT)","--pod-selector","controller.devfile.io/devworkspace_id=$(DEVWORKSPACE_ID)","--use-bearer-token",]}}],
                 }' \
-      $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
-  rm $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
-  git --no-pager diff $PWD/frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
+      ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
+  rm ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
+  git --no-pager diff ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
 }
 
 function set_up_oauth() {
@@ -164,25 +165,23 @@ function set_up_oauth() {
   jq '.items[0].data."ca.crt"' -r | python -m base64 -d > examples/ca.crt
 }
 
-parseArgs $@
+parseArgs "$@"
 
-scriptdir=$(dirname "$0")
+[ -n "$DO_INSTALL" ] && install
 
-[ ! -z "$DO_INSTALL" ] && install
+[ -n "$DO_UNINSTALL" ] && uninstall
 
-[ ! -z "$DO_UNINSTALL" ] && uninstall
+[ -n "$DO_EMULATE_IN_CLUSTER" ] && emulate_in_cluster
 
-[ ! -z "$DO_EMULATE_IN_CLUSTER" ] && emulate_in_cluster
+[ -n "$DO_BACKEND" ] && update_backend
 
-[ ! -z "$DO_BACKEND" ] && update_backend
+[ -n "$DO_FRONTEND_PATCH" ] && patch_frontend
 
-[ ! -z "$DO_FRONTEND_PATCH" ] && patch_frontend
+[ -n "$DO_FRONTEND" ] && update_frontend
 
-[ ! -z "$DO_FRONTEND" ] && update_frontend
+[ -n "$DO_SETUP_OAUTH" ] && set_up_oauth
 
-[ ! -z "$DO_SETUP_OAUTH" ] && set_up_oauth
-
-if [[ ! -z "$DO_RUN" ]]; then
-  echo "Launching $PWD/examples/run-bridge.sh"
-  $PWD/examples/run-bridge.sh
+if [[ -n "$DO_RUN" ]]; then
+  echo "Launching ./examples/run-bridge.sh"
+  ./examples/run-bridge.sh
 fi
