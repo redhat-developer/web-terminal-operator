@@ -82,7 +82,7 @@ function help() {
 
 function install() {
   rm -f $(systemd-path user-binaries)/webterminal-localhost.sh
-  ln -s $(dirname $(readlink -f $0))/webterminal-localhost.sh $(systemd-path user-binaries)/webterminal-localhost.sh 
+  ln -s $(dirname $(readlink -f $0))/webterminal-localhost.sh $(systemd-path user-binaries)/webterminal-localhost.sh
   echo "Symlink $(systemd-path user-binaries)/webterminal-localhost.sh is created
 Open a new terminal to get it propagated into path"
 }
@@ -93,11 +93,16 @@ function uninstall() {
 
 function emulate_in_cluster() {
   mkdir -p /tmp/kube-in-cluster-emulation
-  SA_SECRET=$(oc get sa console -n openshift-console -o yaml | yq -r '.secrets[].name' | grep "console-token-.*")
-  oc get secret ${SA_SECRET} -n openshift-console -o json | jq -r '.data["ca.crt"]' | base64 -d > /tmp/kube-in-cluster-emulation/ca.crt
-  oc get secret ${SA_SECRET} -n openshift-console -o json | jq -r '.data["token"]'  | base64 -d > /tmp/kube-in-cluster-emulation/token
 
-  export KUBERNETES_SERVICE_PORT=6443                       
+  # How ca.crt and token are propagated to pods changed in Kubernetes 1.22 and values no longer stored
+  # in a secret. Instead we just read the token and ca.crt from a console pod.
+  POD_NAME=$(oc get po -l 'app=console,component=ui' -o json | jq -r '.items[0].metadata.name')
+  oc exec "${POD_NAME}" -- cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt > /tmp/kube-in-cluster-emulation/ca.crt
+  oc exec "${POD_NAME}" -- cat /var/run/secrets/kubernetes.io/serviceaccount/token > /tmp/kube-in-cluster-emulation/token
+  oc exec "${POD_NAME}" -- cat /var/run/secrets/kubernetes.io/serviceaccount/namespace > /tmp/kube-in-cluster-emulation/namespace
+  oc exec "${POD_NAME}" -- cat /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt > /tmp/kube-in-cluster-emulation/service-ca.crt
+
+  export KUBERNETES_SERVICE_PORT=6443
   API=$(oc whoami --show-server)
   API=${API##*://}
   API=${API%%:*}
