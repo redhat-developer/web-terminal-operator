@@ -122,8 +122,11 @@ function emulate_in_cluster() {
 
 function update_backend() {
   echo "Patching backend"
-  sed -i.bak -e '/return terminalHost, nil/i\	terminalHost = terminalUrl' \
-             -e '/return terminalHost, nil/i\	terminalHost.Scheme = "https"' \
+  # Workarounds for BSD sed in macOS -- newline required after i\
+  sed -i.bak -e '/return terminalHost, nil/i\
+	terminalHost = terminalUrl' \
+             -e '/return terminalHost, nil/i\
+	terminalHost.Scheme = "https"' \
              -e 's/terminalHost.Path = path/terminalHost.Path = terminalHost.Path + path/' \
       ./pkg/terminal/proxy.go
   rm ./pkg/terminal/proxy.go.bak
@@ -151,11 +154,12 @@ function update_frontend() {
 
 function patch_frontend() {
   echo "Patching frontend"
+  # Workaround for BSD sed in macOS -- newline required after a\
   # shellcheck disable=SC2016
   sed -i.bak -e "s|routingClass: 'web-terminal'|routingClass: 'basic'|" \
-             -e '/       name: .web-terminal-exec./{n;n;
-                  a\      components: [{name: "web-terminal-exec",container: {command: ["/go/bin/che-machine-exec","--authenticated-user-id","$(DEVWORKSPACE_CREATOR)","--idle-timeout","$(WEB_TERMINAL_IDLE_TIMEOUT)","--pod-selector","controller.devfile.io/devworkspace_id=$(DEVWORKSPACE_ID)","--use-bearer-token",]}}],
-                }' \
+             -e '/       name: .web-terminal-exec./{n;n;a\
+      components: [{name: "web-terminal-exec",container: {command: ["/go/bin/che-machine-exec","--authenticated-user-id","$(DEVWORKSPACE_CREATOR)","--idle-timeout","$(WEB_TERMINAL_IDLE_TIMEOUT)","--pod-selector","controller.devfile.io/devworkspace_id=$(DEVWORKSPACE_ID)","--use-bearer-token",]}}],
+      }' \
       ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
   rm ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
   git --no-pager diff ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
