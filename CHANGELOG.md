@@ -1,3 +1,8 @@
+#### 1.5.1
+- Base images for web terminal components have been updated:
+  - The builder image for the web-terminal-exec container was updated to use Go 1.17
+  - The Web Terminal controller now is built off of UBI 8.6
+
 #### 1.5
 - Web Terminals now show a welcome message and have a "help" command
 - New `wtoctl` utility added to make configuring image and idle timeout in Web Terminal instance easier
