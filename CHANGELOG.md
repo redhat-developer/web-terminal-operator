@@ -1,3 +1,16 @@
+#### 1.6
+- Two new CLIs are added to the default Web Terminal tooling image:
+  - Kubevirt-virtctl v0.55.1
+  - Kustomize v4.5.7
+- Default tooling versions have been updated:
+  - oc 4.10.6 -> v4.11.1
+  - odo v2.5.0 -> v2.5.1
+  - helm v3.7.1 -> v3.9.0
+  - knative v1.0.0 -> v1.3.1
+  - tekton v0.21.0 -> v0.24.0
+  - rhoas v0.39.0 -> v0.49.0
+  - submariner v0.10.1 -> v0.13.0
+
 #### 1.5.1
 - Base images for web terminal components have been updated:
   - The builder image for the web-terminal-exec container was updated to use Go 1.17
