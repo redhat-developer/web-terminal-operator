@@ -1,14 +1,16 @@
 #### 1.6
+- Web Terminal instances now save bash history between sessions as long as the terminal is running. History is lost when the terminal is stopped by inactivity.
 - Two new CLIs are added to the default Web Terminal tooling image:
-  - Kubevirt-virtctl v0.55.1
+  - Kubevirt-virtctl v0.56.0
   - Kustomize v4.5.7
 - Default tooling versions have been updated:
-  - oc 4.10.6 -> v4.11.1
+  - oc 4.10.6 -> v4.11.2
+  - kubectl v0.23.0 -> v0.24.0
   - odo v2.5.0 -> v2.5.1
   - helm v3.7.1 -> v3.9.0
   - knative v1.0.0 -> v1.3.1
   - tekton v0.21.0 -> v0.24.0
-  - rhoas v0.39.0 -> v0.49.0
+  - rhoas v0.39.0 -> v0.50.0
   - submariner v0.10.1 -> v0.13.0
 
 #### 1.5.1
