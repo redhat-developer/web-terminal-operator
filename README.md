@@ -8,16 +8,20 @@ The Web Terminal Operator provides users with the ability to create a terminal i
 
 If you face any issues with installing the Web Terminal Operator or using it, have any ideas about what could be done better, please let us know by creating a jira issue at [https://issues.redhat.com/browse/WTO](https://issues.redhat.com/browse/WTO)
 
-### Deploying next operator from next images
-After every commit in master index and bundle images are built and pushed to:
-[quay.io/repository/wto/web-terminal-operator-index:next](https://quay.io/repository/wto/web-terminal-operator-index?tab=tags)
-[quay.io/repository/wto/web-terminal-operator-metadata:next](https://quay.io/repository/wto/web-terminal-operator-metadata?tab=tags)
+## Configuring the containers used for Web Terminals
 
-To try them you can just do
+Upon startup, the Web Terminal Operator creates two `DevWorkspaceTemplate` custom resources in its installed namespace, named `web-terminal-tooling` and `web-terminal-exec`. These templates are referenced by Web Terminals in the cluster, and define the images used to run the DevWorkspaceTemplate:
+
+* `web-terminal-tooling` defines the container that contains CLI tooling (e.g. kubectl, oc, etc.) and is where the shell will be opened when creating a web terminal.
+* `web-terminal-exec` is a sidecar container that allows the OpenShift cluster to communicate with the Web Terminal, allowing for the requesting user to be automatically logged into the cluster, etc.
+
+To customize Web Terminal Operator functionality, these DevWorkspaceTemplates can be modified, and these changes will be propagated to all Web Terminals on the cluster the next time that terminal is started. To change the image used for the tooling container, for example, it's sufficient to edit the image field in the `web-terminal-tooling` DevWorkspaceTemplate on the cluster.
+
+By default, the Web Terminal Operator will overwrite any modifications to its DevWorkspaceTemplates when it starts. In order to persist custom changes between Web Terminal Operator versions, the Kubernetes annotation
+```yaml
+web-terminal.redhat.com/unmanaged-state: "true"
 ```
-make install
-```
-and wait until Operator is installed on the cluster.
+should be added to the DevWorkspaceTemplate. Note that if this annotation is used, the Web Terminal Operator will not automatically update the CLI tools used in the tooling image; it is recommended to remove the annotation when upgrading the Web Terminal Operator to get the latest changes, and reapply customizations after the upgrade is complete.
 
 ## Deploying the operator from `next` images
 After every commit in master, the index and bundle images are built and pushed to
@@ -49,22 +53,6 @@ make build_controller_image build_install
 This will build and push images defined by the environment variables `WTO_IMG`, `BUNDLE_IMG` and `INDEX_IMG`, and register a CatalogSource on the cluster. You may need to set the repos used for the index and bundle to be public to ensure they can be accessed from the cluster.
 
 If you already have the index image pushed to your registry, then you can use the `make install` or `make register_catalogsource` rules with the environment variables defined above to install those images on the cluster.
-
-## Configuring the custom default container
-
-Upon startup, the Web Terminal Operator creates two `DevWorkspaceTemplate` custom resources in its namespace, named `web-terminal-tooling` and `web-terminal-exec`. These templates are referenced by Web Terminals in the cluster, and define the images used to run the DevWorkspaceTemplate:
-
-* `web-terminal-tooling` defines the container that contains cluster tooling (e.g. kubectl, oc, etc.) and is where the shell will be opened when creating a web terminal
-* `web-terminal-exec` is a sidecar container that allows the OpenShift cluster to communicate with the Web Terminal, allowing for the requesting user to be automatically logged into the cluster, etc.
-
-To customize Web Terminal Operator functionality, these DevWorkspaceTemplates can be modified, and these changes will be propagated to all Web Terminals on the cluster the next time that terminal is started. To change the image used for the tooling container, for example, it's sufficient to edit the image field in the `web-terminal-tooling` DevWorkspaceTemplate on the cluster.
-
-By default, the Web Terminal Operator will overwrite any modifications to its DevWorkspaceTemplates when it starts. In order to persist custom changes between Web Terminal Operator versions, the Kubernetes annotation
-```yaml
-web-terminal.redhat.com/unmanaged-state: "true"
-```
-should be added to the DevWorkspaceTemplate.
-
 
 ## Removing the operator from a cluster
 
