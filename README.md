@@ -21,7 +21,7 @@ By default, the Web Terminal Operator will overwrite any modifications to its De
 ```yaml
 web-terminal.redhat.com/unmanaged-state: "true"
 ```
-should be added to the DevWorkspaceTemplate. Note that if this annotation is used, the Web Terminal Operator will not automatically update the CLI tools used in the tooling image; it is recommended to remove the annotation when upgrading the Web Terminal Operator to get the latest changes, and reapply customizations after upgrade is complete.
+should be added to the DevWorkspaceTemplate. Note that if this annotation is used, the Web Terminal Operator will not automatically update the CLI tools used in the tooling image; it is recommended to remove the annotation when upgrading the Web Terminal Operator to get the latest changes, and reapply customizations after the upgrade is complete.
 
 ## Deploying the operator from `next` images
 After every commit in master, the index and bundle images are built and pushed to
