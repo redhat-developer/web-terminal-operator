@@ -9,7 +9,7 @@ metadata:
     categories: Developer Tools
     certified: "false"
     createdAt: "2021-10-26T07:24:32Z"
-    description: Start a Web Terminal in your browser with common CLI tools for interacting
+    description: Start a web terminal in your browser with common CLI tools for interacting
       with the cluster
     containerImage: quay.io/wto/web-terminal-operator:next
     operatorframework.io/suggested-namespace: openshift-operators
@@ -28,13 +28,13 @@ spec:
         name: devworkspaces.workspace.devfile.io
         version: v1alpha1
   description: |
-    Start a Web Terminal in your browser with common CLI tools for interacting with
+    Start a web terminal in your browser with common CLI tools for interacting with
     the cluster.
 
     **Note:** The Web Terminal Operator integrates with the OpenShift Console in
-    OpenShift 4.5.3 and higher to simplify Web Terminal instance creation and
+    OpenShift 4.5.3 and higher to simplify web terminal instance creation and
     automate OpenShift login. In earlier versions of OpenShift, the operator can
-    be installed but Web Terminals will have to be created and accessed manually.
+    be installed but web terminals will have to be created and accessed manually.
 
     ## Description
     The Web Terminal Operator leverages the
@@ -53,7 +53,7 @@ spec:
     ## How to Uninstall
     The Web Terminal Operator requires manual steps to fully uninstall the operator.
     As the Web Terminal Operator is designed as a way to access the OpenShift
-    cluster, Web Terminal instances store user credentials. To avoid exposing these
+    cluster, web terminal instances store user credentials. To avoid exposing these
     credentials to unwanted parties, the operator deploys webhooks and finalizers
     that aren't removed when the operator is uninstalled. See the
     [uninstall guide](https://docs.openshift.com/container-platform/latest/web_console/odc-about-web-terminal.html) 
