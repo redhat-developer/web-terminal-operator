@@ -20,7 +20,7 @@ const (
 	ExecTemplateName    = "web-terminal-exec"
 
 	ToolingMemoryRequest = "128Mi"
-	ToolingMemoryLimit   = "256Mi"
+	ToolingMemoryLimit   = "512Mi"
 	ToolingCPURequest    = "100m"
 	ToolingCPULimit      = "400m"
 
