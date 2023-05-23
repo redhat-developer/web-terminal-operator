@@ -1,3 +1,17 @@
+#### 1.8
+- The wtoctl utility now supports switching between shells (see `wtoctl shell --help`). By default, the tooling image supports `bash` and `zsh`
+- Default tooling versions have been updated:
+  - oc v4.12.0 -> v4.13.0
+  - kubectl v1.24.1 -> v1.26.1
+  - kustomize v4.5.7 -> v5.0.3
+  - odo v3.5.0 -> v3.9.0
+  - helm v3.9.0 -> v3.11.1
+  - knative v1.5.0 -> v1.7.1
+  - tekton v0.24.1 -> v0.30.1
+  - rhoas v0.52.0 -> v0.53.0
+  - submariner v0.14.1 -> v0.14.4
+  - virtctl v0.58.0 -> v0.59.0
+
 #### 1.7
 - Default tooling versions have been updated:
   - oc v4.11.2 -> v4.12.0
@@ -47,11 +61,11 @@
 
 #### 1.4
 - Default tooling versions have been updated:
-  - oc 4.8.2 -> 4.9.0 
+  - oc 4.8.2 -> 4.9.0
   - odo v2.2.3 -> v2.3.1
   - helm v3.5.0 -> v3.6.2
   - knative v0.21.0 -> v0.23.0
-  - tekton v0.17.2 -> v0.19.1 
+  - tekton v0.17.2 -> v0.19.1
   - rhoas v0.25.0 -> 0.34.2
   - submariner v0.9.1 -> v0.10.1
 
