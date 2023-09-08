@@ -77,12 +77,6 @@ install: _print_vars register_catalogsource
 
 ### uninstall: uninstalls the Web Terminal Operator Subscription and related ClusterServiceVersion
 uninstall:
-	kubectl delete subscriptions.operators.coreos.com web-terminal -n openshift-operators --ignore-not-found
-	export WTO_CSV=$$(kubectl get csv -o=json | jq -r '[.items[] | select (.metadata.name | contains("web-terminal.v1"))][0].metadata.name') ;\
-		kubectl delete csv $${WTO_CSV} -n openshift-operators
-
-### uninstall_v1_2: uninstalls the Web Terminal Operator 1.2 in the proper way described in documentation
-uninstall_v1_2:
 	# 1. Ensure that all DevWorkspace Custom Resources are removed to avoid issues with finalizers
 	# make sure depending objects are clean up as well
 	kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait
@@ -125,11 +119,11 @@ endif
 ### help: print this message
 help: Makefile
 	echo 'Available rules:'
-	sed -n 's/^### /    /p' $< | awk 'BEGIN { FS=":" } { printf "%-34s -%s\n", $$1, $$2 }'
+	sed -n 's/^### /    /p' $(MAKEFILE_LIST) | awk 'BEGIN { FS=":" } { printf "%-34s -%s\n", $$1, $$2 }'
 	echo ''
 	echo 'Supported environment variables:'
+	echo '    WTO_IMG                        - The name of the controller image. Set to $(WTO_IMG)'
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
-	echo '    DEVWORKSPACE_API_VERSION       - Branch or tag of the github.com/devfile/kubernetes-api to depend on.'
-	echo '    DEVWORKSPACE_OPERATOR_VERSION  - The branch/tag of the terminal manifests.'
+	echo '    DOCKER                         - Container build tool to use for building containers (e.g. podman, docker). Set to $(DOCKER)'
 	echo '    GET_DIGEST_WITH                - The tool name for obtaining an image didgest. Supported tools: skopeo, podman, docker'
