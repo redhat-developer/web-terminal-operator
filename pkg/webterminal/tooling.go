@@ -15,6 +15,7 @@ package webterminal
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	dw "github.com/devfile/api/v2/pkg/apis/workspaces/v1alpha2"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -40,18 +41,64 @@ func syncToolingTemplate(ctx context.Context, client crclient.Client, namespace 
 		return client.Create(ctx, specDWT)
 	}
 
+	var updatedDWT *dw.DevWorkspaceTemplate
 	if clusterDWT.Annotations != nil && clusterDWT.Annotations[config.UnmanagedStateAnnotation] == "true" {
-		log.Info("Found unmanaged template for Web Terminal Tooling; skipping.")
-		return nil
+		log.Info("Found unmanaged template for Web Terminal Tooling.")
+		updatedDWT = handleUnmanagedToolingState(specDWT, clusterDWT)
+	} else {
+		specDWT.ResourceVersion = clusterDWT.ResourceVersion
+		updatedDWT = specDWT
 	}
 
-	specDWT.ResourceVersion = clusterDWT.ResourceVersion
-	err = client.Update(ctx, specDWT)
+	err = client.Update(ctx, updatedDWT)
 	if err != nil {
 		return fmt.Errorf("error updating Web Terminal Tooling template: %w", err)
 	}
 	log.Info("Web Terminal Tooling template updated.")
 	return nil
+}
+
+func handleUnmanagedToolingState(spec, cluster *dw.DevWorkspaceTemplate) *dw.DevWorkspaceTemplate {
+	result := cluster.DeepCopy()
+
+	// Even though the template is marked as unmanaged, still try to update the image used if the current
+	// image is a default image to ensure CVE fixes are propagated
+	specImage, err := config.GetDefaultToolingImage()
+	if err != nil {
+		// Should never happen, since getSpecToolingTemplate depends on the same function
+		log.Info("warning: Could not get default Web Terminal Tooling container image")
+		return cluster
+	}
+	var clusterImage string
+	for _, component := range cluster.Spec.Components {
+		if component.Name == config.ToolingTemplateName && component.Container != nil {
+			clusterImage = component.Container.Image
+		}
+	}
+	if specImage == clusterImage {
+		// No update needed
+		return cluster
+	}
+
+	if clusterImage == "" {
+		// The cluster template is potentially _very_ different from default; do the safe thing and make no changes
+		return cluster
+	}
+	// Strip digest or tag from images
+	specRepo := strings.Split(specImage, `@`)[0]
+	specRepo = strings.Split(specRepo, `:`)[0]
+	clusterRepo := strings.Split(clusterImage, `@`)[0]
+	clusterRepo = strings.Split(clusterRepo, `:`)[0]
+	if specRepo == clusterRepo {
+		log.Info(fmt.Sprintf("Found default image %s in Web Terminal Tooling template. Updating image to %s", clusterImage, specImage))
+		for idx, component := range result.Spec.Components {
+			if component.Name == config.ToolingTemplateName {
+				result.Spec.Components[idx].Container.Image = specImage
+			}
+		}
+	}
+
+	return result
 }
 
 func getSpecToolingTemplate(namespace string) (*dw.DevWorkspaceTemplate, error) {
