@@ -1,3 +1,19 @@
+#### 1.9
+- The wtoctl utility now supports adding persistent storage to existing Web Terminal instances (see `wtoctl storage --help`).
+- The Web Terminal operator will update images in DevWorkspaceTemplates (`web-terminal-tooling` and `web-terminal-exec`) if they are in an unmanaged state but the image has not been changed. This allows customizing Web Terminal defaults while still receiving updated images.
+- The Web Terminal tooling container now supports a wrapper for the knative CLI. If the OpenShift Serverless operator is installed in a cluster, this wrapper will prompt users to download the `kn` CLI from the Serverless operator to ensure the operator and CLI are the same version.
+- Default tooling versions have been updated:
+  - oc v4.13.0 -> v4.14.5
+  - kubectl v1.26.1 -> 1.27.4
+  - kustomize v5.0.3 -> v5.2.1
+  - odo v3.9.0 -> v3.15.0
+  - helm v3.11.1 -> v3.12.1
+  - knative v1.7.1 -> v1.9.2
+  - tekton v0.30.1 -> v0.33.0
+  - rhoas v0.53.0 -> v0.53.0
+  - submariner v0.14.4 -> v0.16.2
+  - virtctl v0.59.0 -> v1.1.0
+
 #### 1.8
 - The wtoctl utility now supports switching between shells (see `wtoctl shell --help`). By default, the tooling image supports `bash` and `zsh`
 - Default tooling versions have been updated:
