@@ -1,3 +1,16 @@
+#### 1.10
+- Default tooling versions have been updated:
+  - oc v4.14.5 -> v4.15.0
+  - kubectl v1.27.4 -> 1.28.2
+  - kustomize v5.2.1 -> v5.3.0
+  - odo v3.15.0 -> v3.15.0
+  - helm v3.12.1 -> v3.12.1
+  - knative v1.9.2 -> v1.10.0
+  - tekton v0.33.0 -> v0.35.1
+  - rhoas v0.53.0 -> v0.53.0
+  - submariner v0.16.2 -> v0.17.0
+  - virtctl v1.1.0 -> v1.2.0
+
 #### 1.9
 - The wtoctl utility now supports adding persistent storage to existing Web Terminal instances (see `wtoctl storage --help`).
 - The Web Terminal operator will update images in DevWorkspaceTemplates (`web-terminal-tooling` and `web-terminal-exec`) if they are in an unmanaged state but the image has not been changed. This allows customizing Web Terminal defaults while still receiving updated images.
