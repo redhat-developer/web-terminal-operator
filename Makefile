@@ -1,6 +1,6 @@
 SHELL := bash
 .SHELLFLAGS = -ec
-
+############
 WTO_IMG ?= quay.io/wto/web-terminal-operator:next
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
