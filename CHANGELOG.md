@@ -1,4 +1,6 @@
 #### 1.10
+- **Known issues:**
+  - There is a [known issue](https://github.com/redhat-developer/web-terminal-operator/issues/162) where users logged in to an OpenShift 4.15 (or higher) cluster as `kubeadmin` are unable to create web terminals. The error message shown is `"Error Loading OpenShift command line terminal: User is not a owner of the requested workspace"`. Regular OpenShift cluster users are unaffected.
 - Default tooling versions have been updated:
   - oc v4.14.5 -> v4.15.0
   - kubectl v1.27.4 -> 1.28.2
