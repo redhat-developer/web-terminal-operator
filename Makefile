@@ -68,6 +68,24 @@ unregister_catalogsource:
 	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
 	oc delete imagecontentsourcepolicy web-terminal-brew-registry-mirror --ignore-not-found
 
+### change the default controller on a custom image which has been set with env. variable in the ClusterServiceVersion file
+_select_controller_image:
+	sed -i.bak \
+	  -e "s|quay.io/wto/web-terminal-operator:next|$${WTO_IMG}|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
+	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
+
+### return the default controller image on the ClusterServiceVersion file
+_reset_controller_image:
+	sed -i.bak \
+	  -e "s|quay.io/.*web-terminal-operator:[^']*|quay.io/wto/web-terminal-operator:next|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
+	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
+
+### build controller using registry and tag from the WTO_IMG env. variable, chnage reference for the controller image in the ClusterServiceVersion
+### on the WTO_IMG, build the bundle and index and push them to a registry, reset the ClusterServiceVersion 
+build_custom_iib_image: build_controller_image _select_controller_image build _reset_controller_image 
+
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
 build_install: _print_vars _select_controller_image build _reset_controller_image install
 
