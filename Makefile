@@ -68,22 +68,22 @@ unregister_catalogsource:
 	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
 	oc delete imagecontentsourcepolicy web-terminal-brew-registry-mirror --ignore-not-found
 
-### change the default controller on a custom image which has been set with env. variable in the ClusterServiceVersion file
+### change the default controller image used in the ClusterServiceVersion file to a custom image specified by the WTO_IMG environment variable
 _select_controller_image:
 	sed -i.bak \
-	  -e "s|quay.io/wto/web-terminal-operator:next|$${WTO_IMG}|g" \
+	  -e "s|containerImage: .*:[^']*|containerImage: $${WTO_IMG}|g" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 
-### return the default controller image on the ClusterServiceVersion file
+### reset the controller image used in the ClusterServiceVersion file to the default imag
 _reset_controller_image:
 	sed -i.bak \
-	  -e "s|quay.io/.*web-terminal-operator:[^']*|quay.io/wto/web-terminal-operator:next|g" \
+	  -e "s|containerImage: .*:[^']*|containerImage: quay.io/wto/web-terminal-operator:next|g" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 
-### build controller using registry and tag from the WTO_IMG env. variable, chnage reference for the controller image in the ClusterServiceVersion
-### on the WTO_IMG, build the bundle and index and push them to a registry, reset the ClusterServiceVersion 
+### Build the controller using the registry and tag from the WTO_IMG environment variable, change the reference for the controller image 
+### used in the ClusterServiceVersion to the WTO_IMG, build and push the bundle and index to a registry, reset the ClusterServiceVersion to its original state
 build_custom_iib_image: build_controller_image _select_controller_image build _reset_controller_image 
 
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
