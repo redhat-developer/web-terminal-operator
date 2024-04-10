@@ -72,13 +72,15 @@ unregister_catalogsource:
 _select_controller_image:
 	sed -i.bak \
 	  -e "s|containerImage: .*:[^']*|containerImage: $${WTO_IMG}|g" \
+	  -e "s|image: .*:[^']*|image: $${WTO_IMG}|g" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 
-### reset the controller image used in the ClusterServiceVersion file to the default imag
+### reset the controller image used in the ClusterServiceVersion file to the default image
 _reset_controller_image:
 	sed -i.bak \
 	  -e "s|containerImage: .*:[^']*|containerImage: quay.io/wto/web-terminal-operator:next|g" \
+	  -e "s|image: .*:[^']*|image: quay.io/wto/web-terminal-operator:next|g" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 
