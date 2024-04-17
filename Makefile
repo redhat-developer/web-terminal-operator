@@ -68,6 +68,26 @@ unregister_catalogsource:
 	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
 	oc delete imagecontentsourcepolicy web-terminal-brew-registry-mirror --ignore-not-found
 
+### change the default controller image used in the ClusterServiceVersion file to a custom image specified by the WTO_IMG environment variable
+_select_controller_image:
+	sed -i.bak \
+	  -e "s|containerImage: .*:[^']*|containerImage: $${WTO_IMG}|g" \
+	  -e "s|image: .*:[^']*|image: $${WTO_IMG}|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
+	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
+
+### reset the controller image used in the ClusterServiceVersion file to the default image
+_reset_controller_image:
+	sed -i.bak \
+	  -e "s|containerImage: .*:[^']*|containerImage: quay.io/wto/web-terminal-operator:next|g" \
+	  -e "s|image: .*:[^']*|image: quay.io/wto/web-terminal-operator:next|g" \
+	  ./manifests/web-terminal.clusterserviceversion.yaml
+	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
+
+### Build the controller using the registry and tag from the WTO_IMG environment variable, change the reference for the controller image 
+### used in the ClusterServiceVersion to the WTO_IMG, build and push the bundle and index to a registry, reset the ClusterServiceVersion to its original state
+build_custom_iib_image: build_controller_image _select_controller_image build _reset_controller_image 
+
 ### build_install: build the catalog and create catalogsource and operator subscription on the cluster
 build_install: _print_vars _select_controller_image build _reset_controller_image install
 
