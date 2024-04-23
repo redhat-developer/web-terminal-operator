@@ -8,8 +8,7 @@
 //
 // Contributors:
 //   Red Hat, Inc. - initial API and implementation
-//
-
+//lhgit
 package config
 
 import (
