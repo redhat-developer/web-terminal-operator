@@ -8,7 +8,7 @@
 //
 // Contributors:
 //   Red Hat, Inc. - initial API and implementation
-//
+//=
 package config
 
 import (
