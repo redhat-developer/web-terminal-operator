@@ -1,3 +1,17 @@
+#### 1.11
+- All container images used in the Web Terminal Operator have been migrated from UBI8 to UBI9 based images.
+- Default tooling versions have been updated:
+  - oc v4.15.0 -> v4.16.0
+  - kubectl v1.28.2 -> 1.29.1
+  - kustomize v5.3.0 -> v5.4.2
+  - odo v3.15.0 -> v3.16.1
+  - helm v3.12.1 -> v3.14.4
+  - knative v1.11.2 -> v1.12.0
+  - tekton v0.35.1 -> v0.37.0
+  - rhoas v0.53.0 -> v0.53.0
+  - submariner v0.17.0 -> v0.17.2
+  - virtctl v1.2.0 -> v1.2.2
+
 #### 1.10
 - **Known issues:**
   - There is a [known issue](https://github.com/redhat-developer/web-terminal-operator/issues/162) where users logged in to an OpenShift 4.15 (or higher) cluster as `kubeadmin` are unable to create web terminals. The error message shown is `"Error Loading OpenShift command line terminal: User is not a owner of the requested workspace"`. Regular OpenShift cluster users are unaffected.
@@ -7,7 +21,7 @@
   - kustomize v5.2.1 -> v5.3.0
   - odo v3.15.0 -> v3.15.0
   - helm v3.12.1 -> v3.12.1
-  - knative v1.9.2 -> v1.10.0
+  - knative v1.9.2 -> v1.11.2
   - tekton v0.33.0 -> v0.35.1
   - rhoas v0.53.0 -> v0.53.0
   - submariner v0.16.2 -> v0.17.0

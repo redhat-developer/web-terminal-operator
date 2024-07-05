@@ -9,8 +9,8 @@
 #   Red Hat, Inc. - initial API and implementation
 #
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/go-toolset
-FROM registry.access.redhat.com/ubi8/go-toolset:1.20.12-2 as builder
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi9/go-toolset
+FROM registry.access.redhat.com/ubi9/go-toolset:1.21.10-1.1719562237 AS builder
 ENV GOPATH=/go/
 USER root
 
@@ -29,8 +29,8 @@ COPY . .
 # compile terminal controller binary
 RUN make compile
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8-minimal
-FROM registry.access.redhat.com/ubi8-minimal:8.9-1137
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi9-minimal
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.4-1134
 RUN microdnf -y update && microdnf clean all && rm -rf /var/cache/yum && echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 WORKDIR /
 COPY --from=builder /web-terminal-operator/_output/bin/web-terminal-controller /usr/local/bin/web-terminal-controller
