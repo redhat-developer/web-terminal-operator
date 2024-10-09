@@ -1,3 +1,15 @@
+#### 1.12
+- Default tooling versions have been updated:
+  - oc v4.16.0 -> v4.17.0
+  - kubectl 1.29.1 -> 1.30.2
+  - kustomize v5.4.2 -> v5.5.0
+  - helm v3.14.4 -> v3.14.4
+  - knative v1.12.0 -> v1.12.0
+  - tekton v0.37.0 -> v0.38.1
+  - rhoas v0.53.0 -> v0.53.0
+  - submariner v0.17.2 -> v0.18.1
+  - virtctl v1.2.2 -> v1.3.1
+
 #### 1.11
 - All container images used in the Web Terminal Operator have been migrated from UBI8 to UBI9 based images.
 - odo has been removed from the Web Terminal tooling container image as it does not currently support UBI9 based images. See [WTO-298](https://issues.redhat.com/browse/WTO-298) for more information.
