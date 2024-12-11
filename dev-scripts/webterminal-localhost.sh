@@ -148,8 +148,8 @@ function update_frontend() {
   echo "Reverting patch"
   sed -i.bak -e "s|routingClass: 'basic'|routingClass: 'web-terminal'|" \
              -e "/components:.*web-terminal-exec/d" \
-      ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
-  rm ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
+      ./frontend/packages/webterminal-plugin/src/components/cloud-shell/cloud-shell-utils.ts
+  rm ./frontend/packages/webterminal-plugin/src/components/cloud-shell/cloud-shell-utils.ts.bak
 }
 
 function patch_frontend() {
@@ -160,9 +160,9 @@ function patch_frontend() {
              -e '/       name: .web-terminal-exec./{n;n;a\
       components: [{name: "web-terminal-exec",container: {command: ["/go/bin/che-machine-exec","--authenticated-user-id","$(DEVWORKSPACE_CREATOR)","--idle-timeout","$(WEB_TERMINAL_IDLE_TIMEOUT)","--pod-selector","controller.devfile.io/devworkspace_id=$(DEVWORKSPACE_ID)","--use-bearer-token",]}}],
       }' \
-      ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
-  rm ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts.bak
-  git --no-pager diff ./frontend/packages/console-app/src/components/cloud-shell/cloud-shell-utils.ts
+      ./frontend/packages/webterminal-plugin/src/components/cloud-shell/cloud-shell-utils.ts
+  rm ./frontend/packages/webterminal-plugin/src/components/cloud-shell/cloud-shell-utils.ts.bak
+  git --no-pager diff ./frontend/packages/webterminal-plugin/src/components/cloud-shell/cloud-shell-utils.ts
 }
 
 function set_up_oauth() {
