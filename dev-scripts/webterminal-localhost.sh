@@ -171,8 +171,21 @@ function set_up_oauth() {
   oc get oauthclient console-oauth-client -o jsonpath='{.secret}' > examples/console-client-secret
 
   echo "Fetching CA"
+  # Create temporary secret with ca.crt
+  oc apply -f - <<EOF
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: default-sa-token
+      namespace: default
+      annotations:
+        kubernetes.io/service-account.name: default
+    type: kubernetes.io/service-account-token
+EOF
+
   oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
   jq '.items[0].data."ca.crt"' -r | python -m base64 -d > examples/ca.crt
+  oc delete secret default-sa-token -n default
 }
 
 parseArgs "$@"
