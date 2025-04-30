@@ -25,11 +25,11 @@ jobs:
         go-version: 1.21.13
     -
       name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     -
       name: Cache go modules
       id: cache-mod
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout web-terminal-operator source code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: "Check WTO Controller image"
       run: docker build -t wto-controller:test -f build/dockerfiles/controller.Dockerfile .
