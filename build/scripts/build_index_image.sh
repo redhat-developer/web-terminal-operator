@@ -62,7 +62,7 @@ $PODMAN build -f ./build/dockerfiles/Dockerfile -t "$BUNDLE_IMAGE" .
 $PODMAN push "$BUNDLE_IMAGE"
 
 # Get digest for bundle image we just built
-BUNDLE_DIGEST=$($PODMAN inspect "$BUNDLE_IMAGE" | jq ".[].RepoDigests[0]" -r)
+BUNDLE_DIGEST=$(skopeo inspect "docker://$BUNDLE_IMAGE" | jq '"\(.Name)@\(.Digest)"' -r)
 echo "Using bundle $BUNDLE_DIGEST in index"
 
 set -x
