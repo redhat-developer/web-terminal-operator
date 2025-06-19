@@ -1,0 +1,79 @@
+#
+# Copyright (c) 2020-2024 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+schemaVersion: 2.3.0
+metadata:
+  name: web-terminal-operator
+components:
+  - name: tools
+    container:
+      image: quay.io/wto/web-terminal-operator-devtools:latest
+      memoryRequest: 1Gi
+      memoryLimit: 16Gi
+      cpuLimit: '4'
+      cpuRequest: '0.5'
+      env:
+        - name: DOCKER
+          value: podman
+commands:
+  - id: build-and-push-controller
+    exec:
+      label: "1. Build and push WTO controller image"
+      component: tools
+      commandLine: |
+        read -p "ENTER a container registry org to push the web-terminal-operator images (e.g. quay.io/janedoe): " WTO_IMG_REPO &&
+        read -p "ENTER the tag for the image (e.g. dev): " WTO_IMG_TAG &&
+        export WTO_IMG=${WTO_IMG_REPO}/web-terminal-operator:${WTO_IMG_TAG} &&
+        export BUNDLE_IMG=${WTO_IMG_REPO}/web-terminal-operator-metadata:${WTO_IMG_TAG} &&
+        export INDEX_IMG=${WTO_IMG_REPO}/web-terminal-operator-index:${WTO_IMG_TAG} &&
+        make build
+      group:
+        kind: build
+  - id: install-operator
+    exec:
+      label: "2. Register CatalogSource and install the operator"
+      component: tools
+      commandLine: |
+        read -p "ENTER a container registry org to use the web-terminal-operator images (e.g. quay.io/janedoe): " WTO_IMG_REPO &&
+        read -p "ENTER the tag for the image (e.g. dev): " WTO_IMG_TAG &&
+        export WTO_IMG=${WTO_IMG_REPO}/web-terminal-operator:${WTO_IMG_TAG} &&
+        export BUNDLE_IMG=${WTO_IMG_REPO}/web-terminal-operator-metadata:${WTO_IMG_TAG} &&
+        export INDEX_IMG=${WTO_IMG_REPO}/web-terminal-operator-index:${WTO_IMG_TAG} &&
+        make install
+      group:
+        kind: run
+
+  - id: register-catalogsource
+    exec:
+      label: "3. Register CatalogSource only"
+      component: tools
+      commandLine: |
+        read -p "ENTER a container registry org to push the web-terminal-operator images (e.g. quay.io/janedoe): " WTO_IMG_REPO &&
+        read -p "ENTER the tag for the image (e.g. dev): " WTO_IMG_TAG &&
+        export WTO_IMG=${WTO_IMG_REPO}/web-terminal-operator:${WTO_IMG_TAG} &&
+        export BUNDLE_IMG=${WTO_IMG_REPO}/web-terminal-operator-metadata:${WTO_IMG_TAG} &&
+        export INDEX_IMG=${WTO_IMG_REPO}/web-terminal-operator-index:${WTO_IMG_TAG} &&
+        make register_catalogsource
+      group:
+        kind: run
+
+  - id: unregister-catalogsource
+    exec:
+      label: "4. Unregister CatalogSource"
+      component: tools
+      commandLine: make unregister_catalogsource
+      group:
+        kind: run
+
+  - id: uninstall-operator
+    exec:
+      label: "5. Uninstall the Web Terminal Operator"
+      component: tools
+      commandLine: make uninstall
+      group:
+        kind: run

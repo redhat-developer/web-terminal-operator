@@ -36,7 +36,6 @@ This repo includes a `Makefile` to simplify deploying the Operator to a cluster:
 | `make register_catalogsource` | Register the CatalogSource but do not install the operator. This enables the operator to be installed manually through OperatorHub. |
 | `make unregister_catalogsource` | Remove the CatalogSource from the cluster. |
 | `make uninstall` | uninstalls the Web Terminal Operator Subscription and related ClusterServiceVersion |
-| `make uninstall_v1_2` | Remove the installed WTO 1.2 from the cluster |
 
 The commands above require being logged in to the cluster as a `cluster-admin`. See `make help` for a full list of supported environment variables and rules available.
 
