@@ -1,4 +1,5 @@
 #### 1.13
+- The default server timeouts for web-terminal-exec has been increased from 3 seconds to 10 seconds. See [pull request](https://github.com/redhat-developer/web-terminal-exec/pull/118) for more information.
 - Default tooling versions have been updated:
   - oc v4.17.0 -> v4.18.11
   - kubectl 1.30.2 -> 1.31.1
