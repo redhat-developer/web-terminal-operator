@@ -1,3 +1,15 @@
+#### 1.14
+- Default tooling versions have been updated:
+  - oc v4.18.11 -> v4.19.9
+  - kubectl 1.30.2 -> 1.31.1
+  - kustomize v5.6.0 -> v5.7.1
+  - helm v3.15.4 -> v3.17.1
+  - knative v1.15.0-4 -> v1.15.0-6
+  - tekton v0.40.0 -> v1.19.0
+  - rhoas v0.53.0 -> v0.53.0
+  - submariner v0.20.0 -> v0.21.0
+  - virtctl v1.5.0 -> v1.6.0
+
 #### 1.13
 - The default server timeouts for web-terminal-exec has been increased from 3 seconds to 10 seconds. See [pull request](https://github.com/redhat-developer/web-terminal-exec/pull/118) for more information.
 - Default tooling versions have been updated:
