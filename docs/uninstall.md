@@ -8,7 +8,7 @@ Manual steps are required to uninstall the Web Terminal Operator in order to avo
 
 	```
 	kubectl delete devworkspaces.workspace.devfile.io --all-namespaces --all --wait
-	kubectl delete workspaceroutings.controller.devfile.io --all-namespaces --all --wait
+	kubectl delete devworkspaceroutings.controller.devfile.io --all-namespaces --all --wait
 	kubectl delete components.controller.devfile.io --all-namespaces --all --wait
 	```
 	Note: This step must be done first, as otherwise the resources above may have finalizers that block automatic cleanup.
@@ -18,7 +18,7 @@ Manual steps are required to uninstall the Web Terminal Operator in order to avo
 3. Remove the custom resource definitions installed by the operator
 
 	```
-	kubectl delete customresourcedefinitions.apiextensions.k8s.io workspaceroutings.controller.devfile.io
+	kubectl delete customresourcedefinitions.apiextensions.k8s.io devworkspaceroutings.controller.devfile.io
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io components.controller.devfile.io
 	kubectl delete customresourcedefinitions.apiextensions.k8s.io devworkspaces.workspace.devfile.io
 	```
