@@ -48,7 +48,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.PUSH_REGISTRY }}/${{ secrets.QUAY_USERNAME }}/web-terminal-operator-devtools:latest
-            ${{ env.PUSH_REGISTRY }}/${{ secrets.QUAY_USERNAME }}/web-terminal-operator-devtools:sha-${{ steps.git-sha.outputs.sha }}
+            ${{ env.PUSH_REGISTRY }}/wto/web-terminal-operator-devtools:latest
+            ${{ env.PUSH_REGISTRY }}/wto/web-terminal-operator-devtools:sha-${{ steps.git-sha.outputs.sha }}
           file: ./build/dockerfiles/devtools.Dockerfile
 
