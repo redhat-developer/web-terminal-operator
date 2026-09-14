@@ -18,6 +18,15 @@ include build/makefiles/version.mk
 
 all: help
 
+### test: Run unit tests
+test:
+	go test -v ./pkg/...
+
+### test-coverage: Run unit tests with coverage report
+test-coverage:
+	go test -v -coverprofile=coverage.out -covermode=atomic ./pkg/...
+	go tool cover -func=coverage.out
+
 _print_vars:
 	echo "Current env vars:"
 	echo "    WTO_IMG=$(WTO_IMG)"
