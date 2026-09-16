@@ -10,7 +10,6 @@
 package webterminal
 
 import (
-	"os"
 	"testing"
 
 	dw "github.com/devfile/api/v2/pkg/apis/workspaces/v1alpha2"
@@ -108,7 +107,7 @@ func TestHandleUnmanagedToolingState(t *testing.T) {
 }
 
 func TestHandleUnmanagedToolingStateEnvUnset(t *testing.T) {
-	os.Unsetenv("RELATED_IMAGE_web_terminal_tooling")
+	t.Setenv("RELATED_IMAGE_web_terminal_tooling", "")
 
 	spec := makeToolingTemplate("any-image")
 	cluster := makeToolingTemplate("quay.io/wto/web-terminal-tooling:old")
@@ -149,7 +148,7 @@ func TestGetSpecToolingTemplate(t *testing.T) {
 }
 
 func TestGetSpecToolingTemplateEnvUnset(t *testing.T) {
-	os.Unsetenv("RELATED_IMAGE_web_terminal_tooling")
+	t.Setenv("RELATED_IMAGE_web_terminal_tooling", "")
 
 	_, err := getSpecToolingTemplate("test-namespace")
 	if err == nil {

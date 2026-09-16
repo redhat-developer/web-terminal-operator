@@ -10,7 +10,6 @@
 package config
 
 import (
-	"os"
 	"testing"
 )
 
@@ -36,11 +35,7 @@ func TestGetDefaultToolingImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.envVal != "" {
-				t.Setenv(toolingImageEnvVar, tt.envVal)
-			} else {
-				os.Unsetenv(toolingImageEnvVar)
-			}
+			t.Setenv(toolingImageEnvVar, tt.envVal)
 			got, err := GetDefaultToolingImage()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetDefaultToolingImage() error = %v, wantErr %v", err, tt.wantErr)
@@ -75,11 +70,7 @@ func TestGetDefaultExecImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.envVal != "" {
-				t.Setenv(execImageEnvVar, tt.envVal)
-			} else {
-				os.Unsetenv(execImageEnvVar)
-			}
+			t.Setenv(execImageEnvVar, tt.envVal)
 			got, err := GetDefaultExecImage()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetDefaultExecImage() error = %v, wantErr %v", err, tt.wantErr)
@@ -92,11 +83,9 @@ func TestGetDefaultExecImage(t *testing.T) {
 	}
 }
 
-func TestGetNamespace(t *testing.T) {
+func TestGetNamespaceReturnsErrorOutsideCluster(t *testing.T) {
 	_, err := GetNamespace()
 	if err == nil {
-		t.Log("GetNamespace() succeeded — running in a Kubernetes pod")
-		return
+		t.Fatal("expected error when service account namespace file does not exist")
 	}
-	t.Log("GetNamespace() returned expected error in non-cluster environment:", err)
 }

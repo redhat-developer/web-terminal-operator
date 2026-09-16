@@ -18,6 +18,8 @@ include build/makefiles/version.mk
 
 all: help
 
+.PHONY: test test-coverage
+
 ### test: Run unit tests
 test:
 	go test -v ./pkg/...

@@ -10,7 +10,6 @@
 package webterminal
 
 import (
-	"os"
 	"testing"
 
 	dw "github.com/devfile/api/v2/pkg/apis/workspaces/v1alpha2"
@@ -108,7 +107,7 @@ func TestHandleUnmanagedExecState(t *testing.T) {
 }
 
 func TestHandleUnmanagedExecStateEnvUnset(t *testing.T) {
-	os.Unsetenv("RELATED_IMAGE_web_terminal_exec")
+	t.Setenv("RELATED_IMAGE_web_terminal_exec", "")
 
 	spec := makeExecTemplate("any-image")
 	cluster := makeExecTemplate("quay.io/wto/web-terminal-exec:old")
@@ -149,7 +148,7 @@ func TestGetSpecExecTemplate(t *testing.T) {
 }
 
 func TestGetSpecExecTemplateEnvUnset(t *testing.T) {
-	os.Unsetenv("RELATED_IMAGE_web_terminal_exec")
+	t.Setenv("RELATED_IMAGE_web_terminal_exec", "")
 
 	_, err := getSpecExecTemplate("test-namespace")
 	if err == nil {
