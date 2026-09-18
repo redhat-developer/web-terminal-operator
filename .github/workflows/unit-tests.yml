@@ -1,0 +1,43 @@
+#
+# Copyright (c) 2020-2024 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+name: Unit Tests & Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  unit-tests:
+    name: Run unit tests
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run unit tests with coverage
+        run: make test-coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          use_oidc: true
+          flags: unit-tests
+          files: ./coverage.out
+          fail_ci_if_error: false
