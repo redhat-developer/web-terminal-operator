@@ -101,6 +101,18 @@ spec:
                 name: web-terminal-controller
                 resources: {}
               serviceAccountName: web-terminal-controller
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - networking.k8s.io
+          resources:
+          - networkpolicies
+          verbs:
+          - create
+          - delete
+          - update
+          - patch
+        serviceAccountName: web-terminal-controller
       permissions:
         - rules:
           - apiGroups:
