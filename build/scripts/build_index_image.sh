@@ -24,6 +24,7 @@ parse_args() {
       '--bundle-image') BUNDLE_IMAGE="$2"; shift 1;;
       '--index-image') INDEX_IMAGE="$2"; shift 1;;
       '--container-tool') PODMAN="$2"; shift 1;;
+      '--platform') PLATFORM="$2"; shift 1;;
       '--force') FORCE="true";;
       *) echo "[ERROR] Unknown parameter is used: $1."; usage; exit 1;;
     esac
@@ -54,11 +55,16 @@ fi
 # Remove replaces field from WTO CSV since we're building a single-version catalog
 cp "manifests/${CSV_FILENAME}" "${SCRATCH_DIR}/${CSV_FILENAME}"
 trap restore_changes EXIT
-yq -Yi 'del(.spec.replaces)' "manifests/${CSV_FILENAME}"
+sed -i.tmp '/^  replaces:/d' "manifests/${CSV_FILENAME}" && rm -f "manifests/${CSV_FILENAME}.tmp"
+
+PLATFORM_FLAG=""
+if [ -n "$PLATFORM" ]; then
+  PLATFORM_FLAG="--platform $PLATFORM"
+fi
 
 # Build bundle image
 echo "Building bundle image $BUNDLE_IMAGE"
-$PODMAN build -f ./build/dockerfiles/Dockerfile -t "$BUNDLE_IMAGE" .
+$PODMAN build $PLATFORM_FLAG -f ./build/dockerfiles/Dockerfile -t "$BUNDLE_IMAGE" .
 $PODMAN push "$BUNDLE_IMAGE"
 
 # Get digest for bundle image we just built
@@ -67,7 +73,17 @@ echo "Using bundle $BUNDLE_DIGEST in index"
 
 set -x
 
+BINARY_IMAGE_FLAG=""
+if [ -n "$PLATFORM" ]; then
+  OPM_DIGEST=$(skopeo inspect --raw docker://quay.io/operator-framework/opm:latest \
+    | jq -r --arg platform "$PLATFORM" '.manifests[] | select(.platform.os + "/" + .platform.architecture == $platform) | .digest')
+  if [ -z "$OPM_DIGEST" ]; then
+    error "Could not find opm image for platform $PLATFORM"
+  fi
+  BINARY_IMAGE_FLAG="--binary-image quay.io/operator-framework/opm@${OPM_DIGEST}"
+fi
+
 # Add bundle to index
 echo "Building index image $INDEX_IMAGE"
-opm index add -c "$PODMAN" --bundles "$BUNDLE_DIGEST" --tag "$INDEX_IMAGE"
+opm index add -c "$PODMAN" --bundles "$BUNDLE_DIGEST" --tag "$INDEX_IMAGE" $BINARY_IMAGE_FLAG
 $PODMAN push "$INDEX_IMAGE"

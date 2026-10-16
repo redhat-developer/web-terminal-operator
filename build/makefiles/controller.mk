@@ -31,7 +31,7 @@ compile:
 
 ### build_controller_image: Build container image for Web Terminal Operator
 build_controller_image:
-	$(DOCKER) build --platform=linux/amd64 -t $(WTO_IMG) -f build/dockerfiles/controller.Dockerfile .
+	$(DOCKER) build --platform=linux/$(ARCH) -t $(WTO_IMG) -f build/dockerfiles/controller.Dockerfile .
 ifneq ($(INITIATOR),CI)
 ifeq ($(WTO_IMG),quay.io/wto/web-terminal-operator:next)
 	@echo -n "Are you sure you want to push $(WTO_IMG)? [y/N] " && read ans && [ $${ans:-N} = y ]
