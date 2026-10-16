@@ -2,11 +2,15 @@ SHELL := bash
 .SHELLFLAGS = -ec
 
 WTO_IMG ?= quay.io/wto/web-terminal-operator:next
+EXEC_IMG ?= quay.io/wto/web-terminal-exec:next
+TOOLING_IMG ?= quay.io/wto/web-terminal-tooling:next
 BUNDLE_IMG ?= quay.io/wto/web-terminal-operator-metadata:next
 INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 GET_DIGEST_WITH ?= skopeo
 
 DOCKER ?= docker
+ARCH ?= amd64
+PLATFORM_ARG = $(if $(ARCH),--platform linux/$(ARCH))
 
 .ONESHELL:
 ifndef VERBOSE
@@ -40,7 +44,8 @@ build: _print_vars _check_imgs_env _check_skopeo_installed
 	build/scripts/build_index_image.sh \
 		--bundle-image $(BUNDLE_IMG) \
 		--index-image $(INDEX_IMG) \
-		--container-tool $(DOCKER)
+		--container-tool $(DOCKER) \
+		$(PLATFORM_ARG)
 
 ### export: export the bundles stored in the index to the exported-manifests folder
 export: _print_vars _check_imgs_env
@@ -79,19 +84,23 @@ unregister_catalogsource:
 	oc delete catalogsource custom-web-terminal-catalog -n openshift-marketplace --ignore-not-found
 	oc delete imagecontentsourcepolicy web-terminal-brew-registry-mirror --ignore-not-found
 
-### change the default controller image used in the ClusterServiceVersion file to a custom image specified by the WTO_IMG environment variable
+### change the images used in the ClusterServiceVersion file to custom images specified by WTO_IMG, EXEC_IMG, and TOOLING_IMG
 _select_controller_image:
 	sed -i.bak \
 	  -e "s|containerImage: .*:[^']*|containerImage: $${WTO_IMG}|g" \
 	  -e "s|image: .*:[^']*|image: $${WTO_IMG}|g" \
+	  -e "/RELATED_IMAGE_web_terminal_exec/{n;s|value: .*|value: $(EXEC_IMG)|;}" \
+	  -e "/RELATED_IMAGE_web_terminal_tooling/{n;s|value: .*|value: $(TOOLING_IMG)|;}" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 
-### reset the controller image used in the ClusterServiceVersion file to the default image
+### reset the images used in the ClusterServiceVersion file to defaults
 _reset_controller_image:
 	sed -i.bak \
 	  -e "s|containerImage: .*:[^']*|containerImage: quay.io/wto/web-terminal-operator:next|g" \
 	  -e "s|image: .*:[^']*|image: quay.io/wto/web-terminal-operator:next|g" \
+	  -e "/RELATED_IMAGE_web_terminal_exec/{n;s|value: .*|value: quay.io/wto/web-terminal-exec:next|;}" \
+	  -e "/RELATED_IMAGE_web_terminal_tooling/{n;s|value: .*|value: quay.io/wto/web-terminal-tooling:next|;}" \
 	  ./manifests/web-terminal.clusterserviceversion.yaml
 	rm ./manifests/web-terminal.clusterserviceversion.yaml.bak
 
@@ -154,4 +163,5 @@ help: Makefile
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
 	echo '    DOCKER                         - Container build tool to use for building containers (e.g. podman, docker). Set to $(DOCKER)'
+	echo '    ARCH                           - Target architecture for container images (e.g. amd64, arm64). Defaults to host architecture'
 	echo '    GET_DIGEST_WITH                - The tool name for obtaining an image didgest. Supported tools: skopeo, podman, docker'

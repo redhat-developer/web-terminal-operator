@@ -25,14 +25,15 @@ import (
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/redhat-developer/web-terminal-operator/pkg/config"
+	"github.com/redhat-developer/web-terminal-operator/pkg/tlssetup"
 )
 
-func syncExecTemplate(ctx context.Context, client crclient.Client, namespace string) error {
+func syncExecTemplate(ctx context.Context, client crclient.Client, namespace string, serverTLS tlssetup.ServerTLS) error {
 	clusterDWT, err := getClusterExecTemplate(ctx, client, namespace)
 	if err != nil {
 		return err
 	}
-	specDWT, err := getSpecExecTemplate(namespace)
+	specDWT, err := getSpecExecTemplate(namespace, serverTLS)
 	if err != nil {
 		return nil
 	}
@@ -102,7 +103,7 @@ func handleUnmanagedExecState(spec, cluster *dw.DevWorkspaceTemplate) *dw.DevWor
 	return result
 }
 
-func getSpecExecTemplate(namespace string) (*dw.DevWorkspaceTemplate, error) {
+func getSpecExecTemplate(namespace string, serverTLS tlssetup.ServerTLS) (*dw.DevWorkspaceTemplate, error) {
 	image, err := config.GetDefaultExecImage()
 	if err != nil {
 		return nil, err
@@ -133,6 +134,10 @@ func getSpecExecTemplate(namespace string) (*dw.DevWorkspaceTemplate, error) {
 										{
 											Name:  "WEB_TERMINAL_IDLE_TIMEOUT",
 											Value: "15m",
+										},
+										{
+											Name:  "TLS_MIN_VERSION",
+											Value: fmt.Sprintf("%d", serverTLS.MinTLSVersion),
 										},
 									},
 									MemoryLimit:   config.ExecMemoryLimit,
