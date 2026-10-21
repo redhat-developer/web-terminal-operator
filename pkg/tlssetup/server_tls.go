@@ -135,7 +135,7 @@ func watchAPIServer(dynClient dynamic.Interface, initial ServerTLS, onCancel con
 		retries = 0
 
 		for event := range watcher.ResultChan() {
-			if event.Type != watch.Modified {
+			if event.Type != watch.Modified && event.Type != watch.Added {
 				continue
 			}
 			unstrObj, ok := event.Object.(*unstructured.Unstructured)
