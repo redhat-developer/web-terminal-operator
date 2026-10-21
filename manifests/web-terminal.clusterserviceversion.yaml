@@ -93,14 +93,32 @@ spec:
                 - name: OPERATOR_NAME
                   value: web-terminal-operator
                 - name: RELATED_IMAGE_web_terminal_tooling
-                  value: quay.io/wto/web-terminal-tooling:latest
+                  value: quay.io/wto/web-terminal-tooling:next
                 - name: RELATED_IMAGE_web_terminal_exec
-                  value: quay.io/eclipse/che-machine-exec:nightly
+                  value: quay.io/wto/web-terminal-exec:next
                 image: quay.io/wto/web-terminal-operator:next
                 imagePullPolicy: Always
                 name: web-terminal-controller
                 resources: {}
               serviceAccountName: web-terminal-controller
+      clusterPermissions:
+        - rules:
+          - apiGroups:
+            - config.openshift.io
+            resourceNames:
+            - cluster
+            resources:
+            - apiservers
+            verbs:
+            - get
+          - apiGroups:
+            - config.openshift.io
+            resources:
+            - apiservers
+            verbs:
+            - list
+            - watch
+          serviceAccountName: web-terminal-controller
       permissions:
         - rules:
           - apiGroups:
