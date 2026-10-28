@@ -1,0 +1,111 @@
+#
+# Copyright (c) 2019-2026 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Red Hat, Inc. - initial API and implementation
+
+version: 2
+updates:
+  # Enable version updates for Go modules
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    target-branch: "1.11.x"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    target-branch: "1.13.x"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    target-branch: "1.14.x"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    target-branch: "1.15.x"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    target-branch: "1.16.x"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    target-branch: "1.17.x"
+    schedule:
+      interval: "weekly"
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
+  # Enable version updates for Docker
+  - package-ecosystem: "docker"
+    directory: "/build/dockerfiles"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/build/dockerfiles"
+    target-branch: "1.11.x"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/build/dockerfiles"
+    target-branch: "1.13.x"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/build/dockerfiles"
+    target-branch: "1.14.x"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/build/dockerfiles"
+    target-branch: "1.15.x"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/build/dockerfiles"
+    target-branch: "1.16.x"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/build/dockerfiles"
+    target-branch: "1.17.x"
+    schedule:
+      interval: "weekly"
