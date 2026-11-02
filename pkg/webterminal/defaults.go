@@ -16,6 +16,7 @@ import (
 	"context"
 
 	"github.com/redhat-developer/web-terminal-operator/pkg/config"
+	"github.com/redhat-developer/web-terminal-operator/pkg/tlssetup"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -25,7 +26,7 @@ var (
 	log = ctrl.Log.WithName("sync-templates")
 )
 
-func SetupDefaultWebTerminalTemplates(ctx context.Context, client crclient.Client) error {
+func SetupDefaultWebTerminalTemplates(ctx context.Context, client crclient.Client, serverTLS tlssetup.ServerTLS) error {
 	namespace, err := config.GetNamespace()
 	if err != nil {
 		return err
@@ -36,7 +37,7 @@ func SetupDefaultWebTerminalTemplates(ctx context.Context, client crclient.Clien
 		return err
 	}
 	log.Info("Syncing DevWorkspaceTemplate for Web Terminal Exec")
-	if err := syncExecTemplate(ctx, client, namespace); err != nil {
+	if err := syncExecTemplate(ctx, client, namespace, serverTLS); err != nil {
 		return err
 	}
 

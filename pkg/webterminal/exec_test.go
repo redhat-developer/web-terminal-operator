@@ -16,6 +16,7 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/redhat-developer/web-terminal-operator/pkg/config"
+	"github.com/redhat-developer/web-terminal-operator/pkg/tlssetup"
 )
 
 func makeExecTemplate(image string) *dw.DevWorkspaceTemplate {
@@ -129,7 +130,7 @@ func TestGetSpecExecTemplate(t *testing.T) {
 	const testImage = "quay.io/wto/web-terminal-exec:test"
 	t.Setenv("RELATED_IMAGE_web_terminal_exec", testImage)
 
-	dwt, err := getSpecExecTemplate("test-namespace")
+	dwt, err := getSpecExecTemplate("test-namespace", tlssetup.ServerTLS{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -150,7 +151,7 @@ func TestGetSpecExecTemplate(t *testing.T) {
 func TestGetSpecExecTemplateEnvUnset(t *testing.T) {
 	t.Setenv("RELATED_IMAGE_web_terminal_exec", "")
 
-	_, err := getSpecExecTemplate("test-namespace")
+	_, err := getSpecExecTemplate("test-namespace", tlssetup.ServerTLS{})
 	if err == nil {
 		t.Error("expected error when env var is unset")
 	}
