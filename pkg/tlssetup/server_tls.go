@@ -121,7 +121,8 @@ func watchAPIServer(dynClient dynamic.Interface, initial ServerTLS, onCancel con
 		if err != nil {
 			retries++
 			if retries > maxRetries {
-				log.Error(err, "Failed to watch APIServer, max retries exceeded, giving up")
+				log.Error(err, "Failed to watch APIServer, max retries exceeded, restarting operator")
+				onCancel()
 				return
 			}
 			backoff := time.Duration(math.Min(float64(initialBackoff)*math.Pow(2, float64(retries-1)), float64(maxBackoff)))
