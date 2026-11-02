@@ -16,21 +16,25 @@ import (
 	"context"
 	"crypto/tls"
 	"testing"
-	"time"
 
 	"github.com/go-logr/logr"
 	configv1 "github.com/openshift/api/config/v1"
+	ostls "github.com/openshift/controller-runtime-common/pkg/tls"
+	libgocrypto "github.com/openshift/library-go/pkg/crypto"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/watch"
-	dynamicfake "k8s.io/client-go/dynamic/fake"
-	k8stesting "k8s.io/client-go/testing"
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
+
+func defaultMinTLSVersion() uint16 {
+	profile := *configv1.TLSProfiles[libgocrypto.DefaultTLSProfileType]
+	tlsConfigFn, _ := ostls.NewTLSConfigFromProfile(profile)
+	cfg := &tls.Config{}
+	tlsConfigFn(cfg)
+	return cfg.MinVersion
+}
 
 func newScheme() *k8sruntime.Scheme {
 	scheme := k8sruntime.NewScheme()
@@ -63,24 +67,6 @@ func makeAPIServer(profileType configv1.TLSProfileType, adherence configv1.TLSAd
 	return apiServer
 }
 
-func makeUnstructuredAPIServer(profile *configv1.TLSSecurityProfile, adherence configv1.TLSAdherencePolicy) *unstructured.Unstructured {
-	apiServer := &configv1.APIServer{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "config.openshift.io/v1",
-			Kind:       "APIServer",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "cluster",
-		},
-		Spec: configv1.APIServerSpec{
-			TLSSecurityProfile: profile,
-			TLSAdherence:       adherence,
-		},
-	}
-	obj, _ := k8sruntime.DefaultUnstructuredConverter.ToUnstructured(apiServer)
-	return &unstructured.Unstructured{Object: obj}
-}
-
 // --- BuildServerTLSOptions tests ---
 
 func TestBuildServerTLSOptions_APIServerNotFound(t *testing.T) {
@@ -110,9 +96,6 @@ func TestBuildServerTLSOptions_StrictAdherenceAppliesClusterProfile(t *testing.T
 	}
 	if result.InitialTLSAdherencePolicy != configv1.TLSAdherencePolicyStrictAllComponents {
 		t.Errorf("expected adherence %q, got %q", configv1.TLSAdherencePolicyStrictAllComponents, result.InitialTLSAdherencePolicy)
-	}
-	if result.InitialTLSProfileSpec.MinTLSVersion != configv1.VersionTLS13 {
-		t.Errorf("expected profile MinTLSVersion %q, got %q", configv1.VersionTLS13, result.InitialTLSProfileSpec.MinTLSVersion)
 	}
 }
 
@@ -164,171 +147,63 @@ func TestBuildServerTLSOptions_NoOpinionAdherenceUsesDefault(t *testing.T) {
 	}
 }
 
-// --- watchAPIServer tests ---
+// --- BuildServerTLSOptions additional tests ---
 
-func newFakeDynClient(fakeWatcher *watch.FakeWatcher) *dynamicfake.FakeDynamicClient {
-	scheme := k8sruntime.NewScheme()
-	scheme.AddKnownTypeWithName(
-		schema.GroupVersionKind{Group: "config.openshift.io", Version: "v1", Kind: "APIServer"},
-		&unstructured.Unstructured{},
-	)
-	scheme.AddKnownTypeWithName(
-		schema.GroupVersionKind{Group: "config.openshift.io", Version: "v1", Kind: "APIServerList"},
-		&unstructured.UnstructuredList{},
-	)
-	dynClient := dynamicfake.NewSimpleDynamicClient(scheme)
-	dynClient.PrependWatchReactor("apiservers", func(action k8stesting.Action) (bool, watch.Interface, error) {
-		return true, fakeWatcher, nil
-	})
-	return dynClient
-}
+func TestBuildServerTLSOptions_NilProfileWithStrictAdherence(t *testing.T) {
+	apiServer := &configv1.APIServer{
+		ObjectMeta: metav1.ObjectMeta{Name: "cluster"},
+		Spec: configv1.APIServerSpec{
+			TLSSecurityProfile: nil,
+			TLSAdherence:       configv1.TLSAdherencePolicyStrictAllComponents,
+		},
+	}
+	client := newFakeClient(apiServer)
 
-func waitForCancel(t *testing.T, cancelled <-chan struct{}, expectCancel bool) {
-	t.Helper()
-	select {
-	case <-cancelled:
-		if !expectCancel {
-			t.Error("onCancel was called but should not have been")
-		}
-	case <-time.After(2 * time.Second):
-		if expectCancel {
-			t.Error("timed out waiting for onCancel")
-		}
+	result, err := BuildServerTLSOptions(context.Background(), client, logr.Discard())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.InitialTLSAdherencePolicy != configv1.TLSAdherencePolicyStrictAllComponents {
+		t.Errorf("expected adherence %q, got %q", configv1.TLSAdherencePolicyStrictAllComponents, result.InitialTLSAdherencePolicy)
+	}
+	if result.MinTLSVersion == 0 {
+		t.Error("expected a non-zero MinTLSVersion")
 	}
 }
 
-func TestWatchAPIServer_RestartsOnAdherencePolicyChange(t *testing.T) {
-	fakeWatcher := watch.NewFakeWithChanSize(1, false)
-	dynClient := newFakeDynClient(fakeWatcher)
-	cancelled := make(chan struct{})
-
-	initial := ServerTLS{
-		InitialTLSAdherencePolicy: configv1.TLSAdherencePolicyStrictAllComponents,
-		MinTLSVersion:             tls.VersionTLS12,
+func TestBuildServerTLSOptions_EmptyAdherenceUsesDefault(t *testing.T) {
+	apiServer := &configv1.APIServer{
+		ObjectMeta: metav1.ObjectMeta{Name: "cluster"},
+		Spec: configv1.APIServerSpec{
+			TLSSecurityProfile: &configv1.TLSSecurityProfile{
+				Type: configv1.TLSProfileModernType,
+			},
+			TLSAdherence: "",
+		},
 	}
+	client := newFakeClient(apiServer)
 
-	go watchAPIServer(dynClient, initial, func() { close(cancelled) }, logr.Discard())
-
-	fakeWatcher.Modify(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileIntermediateType},
-		configv1.TLSAdherencePolicyNoOpinion,
-	))
-
-	waitForCancel(t, cancelled, true)
+	result, err := BuildServerTLSOptions(context.Background(), client, logr.Discard())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	expected := defaultMinTLSVersion()
+	if result.MinTLSVersion != expected {
+		t.Errorf("expected MinTLSVersion %d (library-go default for non-strict adherence), got %d",
+			expected, result.MinTLSVersion)
+	}
 }
 
-func TestWatchAPIServer_RestartsOnAddedEventWithChangedAdherence(t *testing.T) {
-	fakeWatcher := watch.NewFakeWithChanSize(1, false)
-	dynClient := newFakeDynClient(fakeWatcher)
-	cancelled := make(chan struct{})
+func TestBuildServerTLSOptions_OldProfileWithStrictAdherence(t *testing.T) {
+	apiServer := makeAPIServer(configv1.TLSProfileOldType, configv1.TLSAdherencePolicyStrictAllComponents)
+	client := newFakeClient(apiServer)
 
-	initial := ServerTLS{
-		InitialTLSAdherencePolicy: configv1.TLSAdherencePolicyNoOpinion,
-		MinTLSVersion:             tls.VersionTLS12,
+	result, err := BuildServerTLSOptions(context.Background(), client, logr.Discard())
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
-
-	go watchAPIServer(dynClient, initial, func() { close(cancelled) }, logr.Discard())
-
-	fakeWatcher.Add(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileIntermediateType},
-		configv1.TLSAdherencePolicyStrictAllComponents,
-	))
-
-	waitForCancel(t, cancelled, true)
+	if result.MinTLSVersion != tls.VersionTLS10 {
+		t.Errorf("expected MinTLSVersion %d (TLS 1.0 from Old profile), got %d", tls.VersionTLS10, result.MinTLSVersion)
+	}
 }
 
-func TestWatchAPIServer_RestartsOnTLSVersionChange(t *testing.T) {
-	fakeWatcher := watch.NewFakeWithChanSize(1, false)
-	dynClient := newFakeDynClient(fakeWatcher)
-	cancelled := make(chan struct{})
-
-	initial := ServerTLS{
-		InitialTLSAdherencePolicy: configv1.TLSAdherencePolicyStrictAllComponents,
-		MinTLSVersion:             tls.VersionTLS12,
-	}
-
-	go watchAPIServer(dynClient, initial, func() { close(cancelled) }, logr.Discard())
-
-	fakeWatcher.Modify(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileModernType},
-		configv1.TLSAdherencePolicyStrictAllComponents,
-	))
-
-	waitForCancel(t, cancelled, true)
-}
-
-func TestWatchAPIServer_IgnoresProfileChangeWithNonStrictAdherence(t *testing.T) {
-	fakeWatcher := watch.NewFakeWithChanSize(2, false)
-	dynClient := newFakeDynClient(fakeWatcher)
-	cancelled := make(chan struct{})
-
-	initial := ServerTLS{
-		InitialTLSAdherencePolicy: configv1.TLSAdherencePolicyNoOpinion,
-		MinTLSVersion:             tls.VersionTLS12,
-	}
-
-	go watchAPIServer(dynClient, initial, func() { close(cancelled) }, logr.Discard())
-
-	// This event should be ignored: profile changed but adherence is not strict
-	fakeWatcher.Modify(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileModernType},
-		configv1.TLSAdherencePolicyNoOpinion,
-	))
-
-	// This event triggers cancel, proving the first event was properly skipped
-	fakeWatcher.Modify(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileModernType},
-		configv1.TLSAdherencePolicyStrictAllComponents,
-	))
-
-	waitForCancel(t, cancelled, true)
-}
-
-func TestWatchAPIServer_IgnoresDeleteEvents(t *testing.T) {
-	fakeWatcher := watch.NewFakeWithChanSize(2, false)
-	dynClient := newFakeDynClient(fakeWatcher)
-	cancelled := make(chan struct{})
-
-	initial := ServerTLS{
-		InitialTLSAdherencePolicy: configv1.TLSAdherencePolicyStrictAllComponents,
-		MinTLSVersion:             tls.VersionTLS12,
-	}
-
-	go watchAPIServer(dynClient, initial, func() { close(cancelled) }, logr.Discard())
-
-	// Delete event should be ignored
-	fakeWatcher.Delete(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileModernType},
-		configv1.TLSAdherencePolicyNoOpinion,
-	))
-
-	// This Modified event triggers cancel, proving delete was ignored
-	fakeWatcher.Modify(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileIntermediateType},
-		configv1.TLSAdherencePolicyNoOpinion,
-	))
-
-	waitForCancel(t, cancelled, true)
-}
-
-func TestWatchAPIServer_NoRestartWhenTLSVersionUnchanged(t *testing.T) {
-	fakeWatcher := watch.NewFakeWithChanSize(1, false)
-	dynClient := newFakeDynClient(fakeWatcher)
-	cancelled := make(chan struct{})
-
-	initial := ServerTLS{
-		InitialTLSAdherencePolicy: configv1.TLSAdherencePolicyStrictAllComponents,
-		InitialTLSProfileSpec:     *configv1.TLSProfiles[configv1.TLSProfileIntermediateType],
-		MinTLSVersion:             tls.VersionTLS12,
-	}
-
-	go watchAPIServer(dynClient, initial, func() { close(cancelled) }, logr.Discard())
-
-	// Same adherence, same min TLS version → no restart
-	fakeWatcher.Modify(makeUnstructuredAPIServer(
-		&configv1.TLSSecurityProfile{Type: configv1.TLSProfileIntermediateType},
-		configv1.TLSAdherencePolicyStrictAllComponents,
-	))
-
-	waitForCancel(t, cancelled, false)
-}

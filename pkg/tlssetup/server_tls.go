@@ -40,7 +40,6 @@ var apiServerGVR = schema.GroupVersionResource{
 
 type ServerTLS struct {
 	MinTLSVersion             uint16
-	InitialTLSProfileSpec     configv1.TLSProfileSpec
 	InitialTLSAdherencePolicy configv1.TLSAdherencePolicy
 }
 
@@ -59,7 +58,6 @@ func BuildServerTLSOptions(ctx context.Context, client crclient.Client, log logr
 	}
 
 	serverTLS := ServerTLS{
-		InitialTLSProfileSpec:     profile,
 		InitialTLSAdherencePolicy: adherence,
 	}
 
