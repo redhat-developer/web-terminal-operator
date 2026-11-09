@@ -1,3 +1,17 @@
+#### 1.18
+- **Breaking:** `helm` now runs Helm v4; use `helm3` for the previous behaviour.
+- Default tooling versions have been updated:
+  - oc v4.22.1 -> v5.0.1
+  - kubectl 1.35.2 -> 1.36.2
+  - kustomize v5.8.1 -> v5.8.3
+  - helm3 v3.22.0-90 -> v3.22.0-90
+  - helm4 v4.3.0 -> v4.3.0
+  - knative v1.15.0-6 -> v1.15.0-6
+  - tekton v1.20.0 -> v1.20.0
+  - rhoas v0.53.0 -> v0.53.0
+  - submariner v0.24.0 -> v0.25.0
+  - virtctl v1.8.4 -> v1.9.1
+
 #### 1.17
 - Web terminal tooling memory limits have been increased (request: 128Mi -> 512Mi, limit: 512Mi -> 4Gi).
 - Web terminal exec now resolves user UID via SelfSubjectReview to support external authentication.
