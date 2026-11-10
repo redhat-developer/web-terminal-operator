@@ -9,8 +9,6 @@ INDEX_IMG ?= quay.io/wto/web-terminal-operator-index:next
 GET_DIGEST_WITH ?= skopeo
 
 DOCKER ?= docker
-ARCH ?= amd64
-PLATFORM_ARG = $(if $(ARCH),--platform linux/$(ARCH))
 
 .ONESHELL:
 ifndef VERBOSE
@@ -44,8 +42,7 @@ build: _print_vars _check_imgs_env _check_skopeo_installed
 	build/scripts/build_index_image.sh \
 		--bundle-image $(BUNDLE_IMG) \
 		--index-image $(INDEX_IMG) \
-		--container-tool $(DOCKER) \
-		$(PLATFORM_ARG)
+		--container-tool $(DOCKER)
 
 ### export: export the bundles stored in the index to the exported-manifests folder
 export: _print_vars _check_imgs_env
@@ -163,5 +160,4 @@ help: Makefile
 	echo '    BUNDLE_IMG                     - The name of the olm registry bundle image. Set to $(BUNDLE_IMG)'
 	echo '    INDEX_IMG                      - The name of the olm registry index image. Set to $(INDEX_IMG)'
 	echo '    DOCKER                         - Container build tool to use for building containers (e.g. podman, docker). Set to $(DOCKER)'
-	echo '    ARCH                           - Target architecture for container images (e.g. amd64, arm64). Defaults to host architecture'
 	echo '    GET_DIGEST_WITH                - The tool name for obtaining an image didgest. Supported tools: skopeo, podman, docker'
