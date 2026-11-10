@@ -29,7 +29,7 @@ RUN curl -sSLO https://github.com/operator-framework/operator-registry/releases/
     chmod +x linux-amd64-opm && \
     mv linux-amd64-opm /usr/local/bin/opm
 
-ENV OC_VERSION=4.22
+ENV OC_VERSION=5.0
 RUN curl -L https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-${OC_VERSION}/openshift-client-linux.tar.gz | \
     tar -C /usr/local/bin -xz --no-same-owner && \
     chmod +x /usr/local/bin/oc
