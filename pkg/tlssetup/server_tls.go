@@ -52,6 +52,7 @@ func BuildServerTLSOptions(ctx context.Context, client crclient.Client, log logr
 		log.Error(err, "Failed to read APIServer/cluster, falling back to library-go default TLS profile")
 	} else if p, err := ostls.GetTLSProfileSpec(apiServer.Spec.TLSSecurityProfile); err != nil {
 		log.Error(err, "Failed to resolve TLS profile spec, falling back to library-go default TLS profile")
+		adherence = apiServer.Spec.TLSAdherence
 	} else {
 		profile = p
 		adherence = apiServer.Spec.TLSAdherence
@@ -125,7 +126,7 @@ func watchAPIServer(dynClient dynamic.Interface, initial ServerTLS, onCancel con
 				onCancel()
 				return
 			}
-			backoff := time.Duration(math.Min(float64(initialBackoff)*math.Pow(2, float64(retries-1)), float64(maxBackoff)))
+			backoff := computeBackoff(retries, initialBackoff, maxBackoff)
 			log.Error(err, "Failed to watch APIServer, retrying", "attempt", retries, "maxRetries", maxRetries, "backoff", backoff)
 			time.Sleep(backoff)
 			continue
@@ -175,6 +176,18 @@ func watchAPIServer(dynClient dynamic.Interface, initial ServerTLS, onCancel con
 				return
 			}
 		}
-		log.Info("APIServer watch closed, reconnecting")
+		retries++
+		if retries > maxRetries {
+			log.Error(nil, "APIServer watch channel keeps closing unexpectedly, restarting operator")
+			onCancel()
+			return
+		}
+		backoff := computeBackoff(retries, initialBackoff, maxBackoff)
+		log.Info("APIServer watch closed, reconnecting with backoff", "attempt", retries, "backoff", backoff)
+		time.Sleep(backoff)
 	}
+}
+
+func computeBackoff(retries int, initial, max time.Duration) time.Duration {
+	return time.Duration(math.Min(float64(initial)*math.Pow(2, float64(retries-1)), float64(max)))
 }

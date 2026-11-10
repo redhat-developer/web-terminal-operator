@@ -126,8 +126,8 @@ func TestBuildServerTLSOptions_InvalidCustomProfileFallsBack(t *testing.T) {
 	if result.MinTLSVersion != tls.VersionTLS12 {
 		t.Errorf("expected MinTLSVersion %d (TLS 1.2, fallback default), got %d", tls.VersionTLS12, result.MinTLSVersion)
 	}
-	if result.InitialTLSAdherencePolicy != "" {
-		t.Errorf("expected empty adherence (profile resolution failed), got %q", result.InitialTLSAdherencePolicy)
+	if result.InitialTLSAdherencePolicy != configv1.TLSAdherencePolicyStrictAllComponents {
+		t.Errorf("expected adherence %q preserved despite profile resolution failure, got %q", configv1.TLSAdherencePolicyStrictAllComponents, result.InitialTLSAdherencePolicy)
 	}
 }
 
