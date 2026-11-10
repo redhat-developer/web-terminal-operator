@@ -118,6 +118,15 @@ spec:
             verbs:
             - list
             - watch
+          - apiGroups:
+            - networking.k8s.io
+            resources:
+            - networkpolicies
+            verbs:
+            - create
+            - delete
+            - update
+            - patch
           serviceAccountName: web-terminal-controller
       permissions:
         - rules:
